@@ -11,6 +11,7 @@
  <link rel="stylesheet" href="v4.css">
  <link rel="stylesheet" href="v5.css">
  <link rel="stylesheet" href="v6.css">
+ <link rel="stylesheet" href="world.css">
  <script src="config.js" defer></script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
  <script src="app.js" defer></script>
@@ -69,7 +70,17 @@
    <section class="panel" id="panel-budget" aria-labelledby="heading-budget" hidden>
     <div class="panel-heading"><div><h2 id="heading-budget">Сколько?</h2><p>Выбери стиль — рассчитаем жильё, еду, транспорт и впечатления</p></div><span class="hint-chip">Главная идея Qansha?</span></div>
     <div class="living-intro"><span class="living-badge">◉ Qansha? — Сколько уйдёт?</span><p>Узнай примерные расходы до поездки: питание, продукты, рестораны, транспорт и жильё. Без скрытых формул.</p></div>
-    <div class="living-location"><label for="budgetPlace">Страна и город</label><select id="budgetPlace" aria-label="Выбери страну и город"></select></div>
+    <div class="living-location world-location">
+      <div class="world-location-header"><strong>Страна и город</strong><span class="world-city-count" id="worldCityCount">Города всего мира</span></div>
+      <div class="world-location-grid">
+       <div class="world-country-field"><label for="budgetCountry">Страна</label><select id="budgetCountry" aria-label="Выберите страну"><option value="FR">Франция</option></select></div>
+       <div class="world-city-field" id="worldCityField"><label for="budgetCitySearch">Город</label><input type="search" id="budgetCitySearch" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="budgetCityResults" aria-expanded="false" aria-label="Найти город в выбранной стране" placeholder="Начните писать название города" value="Париж">
+       <div class="world-city-results" id="budgetCityResults" role="listbox" hidden></div></div>
+      </div>
+      <p class="world-city-status" id="worldCityStatus" aria-live="polite">Начните вводить город — покажем варианты из глобального справочника.</p>
+      <div id="budgetCustomNotice" class="budget-custom-notice" hidden><p>Для этого города пока нет проверенных местных цен. Числа ниже — <strong>ваши плановые ориентиры</strong>, а не стоимость жизни в выбранном городе. Укажите бюджет, чтобы оценить поездку.</p><label for="budgetHotelNight">Плановая стоимость двухместного номера за ночь (EUR)</label><input id="budgetHotelNight" type="number" min="10" max="3000" step="5" inputmode="numeric" value="85"></div>
+      <small class="world-city-credit">География: <a href="https://www.geonames.org/" rel="noopener noreferrer" target="_blank">GeoNames</a> · <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer" target="_blank">CC BY 4.0</a>. Город в справочнике не означает наличие авиарейсов или гостиниц.</small>
+     </div>
     <div class="travel-ranges" aria-label="Настройки путешествия">
       <div class="travel-range"><div class="range-header"><label for="budgetDays">Сколько дней?</label><strong id="budgetDaysValue">5 дней</strong></div><input type="range" id="budgetDays" min="1" max="30" value="5" step="1" aria-describedby="budgetDaysHelp"><div class="range-ticks"><span>1 день</span><span>7 дней</span><span>30 дней</span></div><small id="budgetDaysHelp">Проживание: дни минус одна ночь</small></div>
       <div class="travel-range"><div class="range-header"><label for="budgetTravelers">Сколько путешественников?</label><strong id="budgetTravelersValue">2 человека</strong></div><input type="range" id="budgetTravelers" min="1" max="12" value="2" step="1"><div class="range-ticks"><span>1 человек</span><span>6 человек</span><span>12 человек</span></div><small>Номера рассчитываются из двухместного размещения</small></div>
