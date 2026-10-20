@@ -115,6 +115,7 @@
   document.querySelectorAll('input[placeholder], [title], [aria-label]').forEach(el=>{for(const key of ['placeholder','title','aria-label']){if(!el.hasAttribute(key))continue;const normalizedKey=key.replace(/[^A-Za-z]/g,'');const base='i18nOrig'+normalizedKey;const prior='i18nLast'+normalizedKey;let val=el.getAttribute(key);if(el.dataset[prior]!==val)el.dataset[base]=val;const translated=t(el.dataset[base]||val);if(val!==translated)el.setAttribute(key,translated);el.dataset[prior]=translated}});
   document.querySelectorAll('[data-lang]').forEach(b=>{b.classList.toggle('active',b.dataset.lang===lang);b.setAttribute('aria-pressed',String(b.dataset.lang===lang))});
   document.documentElement.lang=lang;
+  document.title=lang==='kk'?'Qansha? — Бір жауап · Әуе билеттері және қонақүйлер':lang==='en'?'How much? — One answer · Flights and hotels':'Сколько? — Один ответ · Авиабилеты и отели';
  }
  function refresh(){translateAll()}
  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;translateAll()})}
