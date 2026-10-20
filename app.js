@@ -364,7 +364,7 @@
   return matches.length===1?matches[0]:null;
  }
  async function compareFindCities(side){
-  const query=$('compare'+side).value.trim(),stateSearch=compareSearch[side],seq=++stateSearch.seq;
+  const entered=$('compare'+side).value.trim(),query=entered===compareCityLabel(compareSelected[side])?'':entered,stateSearch=compareSearch[side],seq=++stateSearch.seq;
   const list=$('compare'+side+'List');
   $('compareCityStatus').textContent=tr('Ищем города…');
   try{
