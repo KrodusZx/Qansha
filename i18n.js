@@ -1579,7 +1579,8 @@
   PRG:['Прага','Прага','Prague'],BSZ:['Бишкек','Бішкек','Bishkek'],DYU:['Душанбе','Душанбе','Dushanbe']
  };
  function city(code,fallback){const names=cityNames[String(code||'').toUpperCase()];return names?names[({ru:0,kk:1,en:2})[lang]]:t(fallback)}
- window.QANSHA_I18N={t,city,idea:(country,i,fallback)=>t(fallback),locale,language:()=>lang,refresh,setLanguage:setLang};
+ function cityAliases(code){return cityNames[String(code||'').toUpperCase()]?.slice()||[]}
+ window.QANSHA_I18N={t,city,cityAliases,idea:(country,i,fallback)=>t(fallback),locale,language:()=>lang,refresh,setLanguage:setLang};
  document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
   observer=new MutationObserver(schedule);
