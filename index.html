@@ -10,6 +10,7 @@
  <link rel="stylesheet" href="styles.css">
  <link rel="stylesheet" href="v4.css">
  <link rel="stylesheet" href="v5.css">
+ <link rel="stylesheet" href="v6.css">
  <script src="config.js" defer></script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
  <script src="app.js" defer></script>
@@ -18,12 +19,12 @@
 <body>
  <div class="shell">
   <header class="topbar">
-   <a class="brand" href="/" aria-label="Qansha? Главная"><span class="brand-icon">Q</span><span class="brand-wordmark"><span class="brand-title">Qansha<span class="brand-accent">?</span></span><small>Бір жауап — один ответ</small></span></a>
+   <a class="brand" href="/" aria-label="Qansha? Главная"><span class="brand-icon">Q</span><span class="brand-wordmark"><span class="brand-title">Qansha<span class="brand-accent">?</span></span><small>Сколько? — Один ответ.</small></span></a>
    <div class="top-actions"><div class="lang-switch" role="group" aria-label="Сайт тілі / Язык / Language"><button type="button" data-lang="kk" aria-pressed="false" title="Қазақша">ҚАЗ</button><button type="button" data-lang="ru" aria-pressed="true" title="Русский">РУС</button><button type="button" data-lang="en" aria-pressed="false" title="English">EN</button></div><button type="button" class="icon-button" id="favOpen" aria-label="Избранное"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.8 4.8a5.6 5.6 0 0 0-7.9 0l-.9.9-.9-.9a5.6 5.6 0 0 0-7.9 7.9L12 21l8.8-8.3a5.6 5.6 0 0 0 0-7.9Z"/></svg><span id="favCount" class="count" hidden>0</span></button><button type="button" class="account-button" id="accountOpen">Войти</button></div>
   </header>
   <main>
-   <section class="headline" aria-label="Планирование путешествия"><p class="small-label">QANSHA? · ПУТЕШЕСТВУЙ БОЛЬШЕ</p><h1>Бір жауап <span>— один ответ.</span></h1><p>Дешёвые авиабилеты, конкретные отели и бюджет поездки. Всё в одном месте.</p></section>
-   <nav class="tabs" aria-label="Разделы Qansha?"><button class="tab is-active" data-tab="flights" type="button" aria-current="page">✈ <span>Авиабилеты</span></button><button class="tab" data-tab="hotels" type="button">▦ <span>Отели</span></button><button class="tab" data-tab="budget" type="button">◉ <span>Сколько уйдёт?</span></button><button class="tab" data-tab="compare" type="button">⇄ <span>Сравнить</span></button></nav>
+   <section class="headline" aria-label="Планирование путешествия"><p class="small-label">QANSHA? · ПУТЕШЕСТВУЙ БОЛЬШЕ</p><h1>Сколько? <span>— Один ответ.</span></h1><p>Дешёвые авиабилеты, конкретные отели и бюджет поездки. Всё в одном месте.</p></section>
+   <nav class="tabs" aria-label="Разделы Qansha?"><button class="tab is-active" data-tab="flights" type="button" aria-current="page">✈ <span>Авиабилеты</span></button><button class="tab" data-tab="hotels" type="button">▦ <span>Отели</span></button><button class="tab" data-tab="budget" type="button">◉ <span>Сколько?</span></button><button class="tab" data-tab="compare" type="button">⇄ <span>Сравнить</span></button></nav>
    <section class="panel" id="panel-flights" aria-labelledby="heading-flights">
     <div class="panel-heading"><div><h2 id="heading-flights">Авиабилеты</h2><p>Самые дешёвые из доступных предложений</p></div><span class="hint-chip">Google Flights</span></div>
     <form id="flightForm" autocomplete="off">
@@ -40,7 +41,7 @@
      </div>
      <div class="form-bottom"><button class="primary-btn" id="searchFlights" type="submit">Найти авиабилеты <span>→</span></button><span class="form-note">Цены и багаж уточняйте перед покупкой</span></div>
     </form>
-    <div class="results" id="flightResults"><div class="empty-state"><span class="empty-icon">✈</span><strong>Начни с направления</strong><p>Выбери города и даты — мы покажем найденные предложения по цене.</p></div></div>
+    <div id="flightFilterPanel" class="advanced-filters flight-filter-panel" hidden><div class="filters-intro"><strong>Фильтры авиабилетов</strong><small>По найденным предложениям</small></div><div class="hotel-filter-grid"><div><label for="flightSort">Сортировка</label><select id="flightSort"><option value="price">Сначала дешёвые</option><option value="duration">Самый быстрый</option><option value="stops">Меньше пересадок</option></select></div><div><label for="flightStops">Пересадки</label><select id="flightStops"><option value="all">Любые</option><option value="0">Прямой рейс</option><option value="1">Не более 1 пересадки</option></select></div><div><label for="flightAirline">Авиакомпания</label><select id="flightAirline"><option value="all">Все авиакомпании</option></select></div><div><label for="flightTime">Время вылета</label><select id="flightTime"><option value="all">Любое время</option><option value="morning">Утро 06–12</option><option value="day">День 12–18</option><option value="evening">Вечер 18–24</option><option value="night">Ночь 00–06</option></select></div><div><label for="flightMaxPrice">Цена до (EUR)</label><input id="flightMaxPrice" type="number" inputmode="numeric" min="1" placeholder="Без ограничения"></div><div><label for="flightMaxDuration">Перелёт до (часов)</label><input id="flightMaxDuration" type="number" inputmode="numeric" min="1" placeholder="Без ограничения"></div></div></div><div class="results" id="flightResults"><div class="empty-state"><span class="empty-icon">✈</span><strong>Начни с направления</strong><p>Выбери города и даты — мы покажем найденные предложения по цене.</p></div></div>
    </section>
    <section class="panel" id="panel-hotels" aria-labelledby="heading-hotels" hidden>
     <div class="panel-heading"><div><h2 id="heading-hotels">Отели</h2><p>Конкретные варианты на ваши даты</p></div><span class="hint-chip">Google Hotels</span></div>
@@ -66,7 +67,7 @@
     <div class="results" id="hotelResults"><div class="empty-state"><span class="empty-icon">▦</span><strong>Найди свой отель</strong><p>Покажем названия гостиниц, цены за поездку и подберём варианты под бюджет.</p></div></div>
    </section>
    <section class="panel" id="panel-budget" aria-labelledby="heading-budget" hidden>
-    <div class="panel-heading"><div><h2 id="heading-budget">Сколько уйдёт на поездку?</h2><p>Выбери стиль — рассчитаем жильё, еду, транспорт и впечатления</p></div><span class="hint-chip">Главная идея Qansha?</span></div>
+    <div class="panel-heading"><div><h2 id="heading-budget">Сколько?</h2><p>Выбери стиль — рассчитаем жильё, еду, транспорт и впечатления</p></div><span class="hint-chip">Главная идея Qansha?</span></div>
     <div class="living-intro"><span class="living-badge">◉ Qansha? — Сколько уйдёт?</span><p>Узнай примерные расходы до поездки: питание, продукты, рестораны, транспорт и жильё. Без скрытых формул.</p></div>
     <div class="living-location"><label for="budgetPlace">Страна и город</label><select id="budgetPlace" aria-label="Выбери страну и город"></select></div>
     <div class="travel-ranges" aria-label="Настройки путешествия">
@@ -82,7 +83,7 @@
     <div class="budget-spend-guide"><div class="section-title"><h3>Куда уйдут деньги?</h3><span>Оценка на человека / день</span></div><div id="budgetBreakdown" class="spend-grid"></div></div>
     <div class="activity-guide"><div class="section-title"><h3>Куда можно сходить?</h3><span>Идеи для города и стиля</span></div><div id="budgetIdeas" class="ideas-grid"></div></div>
     <div class="range-card"><div class="range-label"><label for="dailyBudget">Расходы на месте / человек / день</label><strong id="dailyValue">65 €</strong></div><input type="range" id="dailyBudget" min="10" max="250" value="65" step="5"><div class="range-ends"><span>Экономно</span><span>С комфортом</span></div></div>
-    <div class="totals"><div><span>Авиабилеты</span><strong id="totalFlights">Выбери рейс</strong></div><div><span>Проживание</span><strong id="totalHotel">Выбери отель</strong></div><div><span>Расходы на месте</span><strong id="totalDaily">—</strong></div><div class="total-line"><span>Вся поездка</span><strong id="totalTrip">—</strong></div></div>
+    <div class="selected-offers-summary" id="selectedOffersSummary" aria-live="polite"></div><div class="totals"><div><span>Авиабилеты</span><strong id="totalFlights">Выбери рейс</strong></div><div><span>Проживание</span><strong id="totalHotel">Выбери отель</strong></div><div><span>Расходы на месте</span><strong id="totalDaily">—</strong></div><div class="total-line"><span>Вся поездка</span><strong id="totalTrip">—</strong></div></div>
     <div class="budget-callout" id="budgetNote">Найди авиабилеты и отель в соседних вкладках — мы подставим их стоимость сюда. Без них итог не будет выдаваться за реальную цену.</div>
     <div class="budget-shortcuts"><button type="button" data-goto="flights">Выбрать рейс →</button><button type="button" data-goto="hotels">Выбрать отель →</button></div>
    </section>
@@ -100,6 +101,6 @@
  <div class="modal-backdrop" id="calendarModal" hidden><div class="modal-sheet calendar-sheet" role="dialog" aria-modal="true" aria-label="Выбор даты"><div class="modal-head"><div><h2 id="calendarTitle">Дата вылета</h2><p id="calendarSubtitle">Цены показываются только после онлайн-проверки</p></div><button type="button" class="icon-button modal-close" data-close="calendarModal" aria-label="Закрыть">×</button></div><div class="calendar-month"><button type="button" id="monthPrev" aria-label="Предыдущий месяц">‹</button><strong id="monthName"></strong><button type="button" id="monthNext" aria-label="Следующий месяц">›</button></div><div class="calendar-week"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div><div class="calendar-grid" id="calendarGrid"></div><div class="calendar-bottom"><p id="calendarHelp">Чтобы увидеть минимальные цены на дни, запроси их у поискового сервиса. Пустая цена — не отсутствие билетов.</p><button id="loadCalendar" type="button" class="outline-btn">Узнать цены на 7 дат</button></div></div></div>
  <div class="modal-backdrop" id="accountModal" hidden><div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Вход в аккаунт"><div class="modal-head"><div><h2>Личный кабинет</h2><p>Вход по ссылке на почту</p></div><button type="button" class="icon-button modal-close" data-close="accountModal" aria-label="Закрыть">×</button></div><div class="account-form"><input type="email" id="authEmail" placeholder="Ваш email" autocomplete="email"><button class="primary-btn" type="button" id="sendLink">Отправить ссылку</button><button class="outline-btn" id="logOut" type="button" hidden>Выйти</button><p class="modal-message" id="authMessage">Авторизация требует подключения Supabase.</p></div></div></div>
  <div class="modal-backdrop" id="favoritesModal" hidden><div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Избранное"><div class="modal-head"><div><h2>Избранное</h2><p>Сохранённые предложения</p></div><button type="button" class="icon-button modal-close" data-close="favoritesModal" aria-label="Закрыть">×</button></div><div class="favorites-list" id="favoritesList"></div></div></div>
- <div class="toast" id="toast" aria-live="polite" hidden></div>
+ <div class="modal-backdrop" id="offerDetailsModal" hidden><div class="modal-sheet details-sheet" role="dialog" aria-modal="true" aria-labelledby="offerDetailsTitle"><div class="modal-head"><div><h2 id="offerDetailsTitle">Подробнее</h2><p id="offerDetailsSubtitle">Данные поставщика</p></div><button type="button" class="icon-button modal-close" data-close="offerDetailsModal" aria-label="Закрыть">×</button></div><div class="details-body" id="offerDetailsBody" aria-live="polite"></div></div></div><div class="toast" id="toast" aria-live="polite" hidden></div>
 </body>
 </html>
