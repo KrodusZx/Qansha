@@ -1,0 +1,45 @@
+
+/* Qansha v6 */
+.top-actions #favOpen{width:38px!important;height:38px!important;min-height:38px!important;min-width:38px!important;padding:7px!important;flex:none;box-sizing:border-box;border-radius:11px}
+.top-actions #favOpen svg{height:19px;width:19px}
+.fav-heart{width:20px;height:20px;display:inline-block;vertical-align:middle;fill:#fff;stroke:#e27815;stroke-width:1.9;transition:fill .2s ease,stroke .2s ease,transform .25s ease}
+.favorite-toggle{display:inline-flex!important;align-items:center;justify-content:center;gap:6px}
+.favorite-toggle.is-favorite .fav-heart{fill:#f47b16;stroke:#f47b16;animation:heartPop .38s cubic-bezier(.2,1.8,.3,1)}
+.favorite-toggle.is-favorite{color:#d96709!important;border-color:#ffaf67!important;background:#fff3e7!important}
+@keyframes heartPop{0%{transform:scale(.72)}45%{transform:scale(1.28) rotate(-8deg)}80%{transform:scale(.95)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.fav-heart{transition:none;animation:none!important}}
+.flight-filter-panel{margin:15px 0!important}
+.flight-filter-panel[hidden]{display:none!important}
+.flight-legs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px;margin:11px 0}
+.flight-leg{min-width:0;background:#fff8f0;border:1px solid #ffe0c1;border-radius:11px;padding:11px}
+.flight-route{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:14px;font-weight:800;padding:6px 0}
+.leg-stops{color:#886646;font-size:12px}
+.fare-tags{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.fare-tags span{background:#fff0de;color:#86501f;border-radius:18px;padding:6px 9px;font-size:12px}
+.offer-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.offer-actions button,.offer-actions a{min-height:39px}
+.offer-actions .chosen-button{background:#fff1e2;color:#ad580e;border-color:#fda052}
+.offer-actions .booking-link{display:inline-flex;align-items:center;padding:9px 13px;background:#f47710;border:1px solid #f47710;color:white!important;border-radius:9px;font-weight:700;cursor:pointer;text-decoration:none}
+.hotel-image-wrap{position:relative;background:linear-gradient(135deg,#fddbb5,#fff0dc);width:145px;min-width:145px;min-height:126px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hotel-image-wrap .hotel-placeholder{font-size:34px;color:#d78b47}
+.hotel-image-wrap .hotel-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hotel-row{align-items:stretch}
+.hotel-content{min-width:0;flex:1}
+.hotel-name-button{padding:0;border:none;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#f6bd89;text-underline-offset:4px}
+.details-sheet{width:min(670px,calc(100vw - 22px));max-height:86vh;overflow-y:auto}
+.details-body{padding-bottom:10px}
+.details-main-photo{width:100%;height:280px;max-height:45vh;object-fit:cover;border-radius:13px;background:#ffe6cf}
+.details-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:9px 0}
+.details-gallery button{padding:0;cursor:pointer;border:2px solid transparent;border-radius:9px;overflow:hidden}
+.details-gallery button.is-active{border-color:#f47b16}
+.details-gallery img{width:100%;height:63px;object-fit:cover;display:block}
+.details-amenities{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.details-amenities span{font-size:12px;padding:6px 10px;border-radius:16px;background:#fff0e0;color:#8c541e}
+.details-providers{display:grid;gap:9px;margin:15px 0}
+.details-providers a{display:block;border-radius:11px;padding:12px;background:#fff2e5;border:1px solid #ffd7b1;color:#9b510d;text-decoration:none;font-weight:700}
+.detail-message{font-size:13px;line-height:1.6;color:#836045;background:#fff5e9;padding:10px;border-radius:11px;margin:12px 0}
+.selected-offers-summary{display:grid;gap:8px;margin:14px 0}
+.selected-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fff9f2;border:1px solid #ffdfbc;border-radius:11px;padding:11px;font-size:13px}
+.selected-summary strong{color:#a85713}
+.selected-summary button{border:1px solid #f5be8e;padding:7px;background:white;border-radius:8px;color:#a75618;cursor:pointer}
+@media(max-width:520px){.hotel-image-wrap{width:107px;min-width:107px;min-height:124px}.details-gallery img{height:48px}.flight-leg{padding:9px}}

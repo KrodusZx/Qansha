@@ -3,8 +3,40 @@
 (() => {
  'use strict';
  const entries = [
- ['Авиабилеты','Әуе билеттері','Flights'],['Отели','Қонақүйлер','Hotels'],['Сколько уйдёт?','Қанша жұмсалады?','How much will it cost?'],['Сравнить','Салыстыру','Compare'],
- ['Бір жауап — один ответ','Бір жауап','One answer'],['Бір жауап','Бір жауап','One answer'],['— один ответ.','— бір жауап.','— one answer.'],
+
+ ['Фильтры авиабилетов','Әуе билеттерінің сүзгілері','Flight filters'],
+ ['По найденным предложениям','Табылған ұсыныстар бойынша','Applied to found offers'],
+ ['Самый быстрый','Ең жылдам','Fastest'],['Меньше пересадок','Ауысу азырақ','Fewest stops'],
+ ['Пересадки','Ауысу','Stops'],['Прямой рейс','Тікелей рейс','Direct flight'],['Не более 1 пересадки','Ең көбі 1 ауысу','Up to 1 stop'],
+ ['Авиакомпания','Әуе компаниясы','Airline'],['Все авиакомпании','Барлық әуе компаниялары','All airlines'],
+ ['Время вылета','Ұшу уақыты','Departure time'],['Любое время','Кез келген уақыт','Any time'],
+ ['Утро 06–12','Таңертең 06–12','Morning 06–12'],['День 12–18','Күндіз 12–18','Afternoon 12–18'],
+ ['Вечер 18–24','Кеш 18–24','Evening 18–24'],['Ночь 00–06','Түн 00–06','Night 00–06'],
+ ['Цена до (EUR)','Баға шегі (EUR)','Price up to (EUR)'],['Перелёт до (часов)','Ұшу ұзақтығы (сағат)','Flight time up to (hours)'],
+ ['Найденные авиарейсы','Табылған рейстер','Found flights'],
+ ['Багаж: уточнить','Жүк: нақтылау қажет','Checked baggage: verify'],
+ ['Ручная кладь: уточнить','Қол жүгі: нақтылау қажет','Cabin bag: verify'],
+ ['Обмен и возврат: уточнить','Айырбастау және қайтару: нақтылау','Changes and refunds: verify'],
+ ['Выбрать','Таңдау','Select'],['✓ Выбран · отменить','✓ Таңдалды · қайтару','✓ Selected · remove'],
+ ['В избранном','Таңдаулыларда','Saved'],['В избранное','Таңдаулыларға','Save'],
+ ['Подробнее','Толығырақ','Details'],['Фото и детали','Фото және мәлімет','Photos & details'],
+ ['Купить у партнёра','Серіктестен сатып алу','Buy with partner'],
+ ['Бронировать','Брондау','Book'],['Отменить выбор','Таңдауды болдырмау','Remove selection'],
+ ['Рейс','Рейс','Flight'],['Информация о рейсе','Рейс туралы ақпарат','Flight details'],
+ ['Переход к продавцу','Сатушының сайтына өту','Go to seller'],
+ ['Данные поставщика','Қызмет көрсетуші деректері','Provider details'],
+ ['Фотографии, удобства и бронирование','Фотолар, мүмкіндіктер және брондау','Photos, amenities & booking'],
+ ['Фотографии пока недоступны у поставщика.','Қызмет көрсетуші фотоларды ұсынбады.','Photos are not available from the provider.'],
+ ['Загружаем дополнительную информацию…','Қосымша мәліметтер жүктелуде…','Loading more details…'],
+ ['Не выбран','Таңдалмады','Not selected'],['выбранный отель','таңдалған қонақүй','selected hotel'],
+ ['модельная оценка','шамамен есеп','model estimate'],['Добавлено в расчёт поездки','Сапар есебіне қосылды','Added to trip budget'],
+ ['Выбор отменён — цена убрана из расчёта','Таңдау жойылды — баға есептен алынды','Selection removed from trip budget'],
+ ['Сохранено в избранное','Таңдаулыларға сақталды','Saved to favorites'],
+ ['Удалено из избранного','Таңдаулылардан жойылды','Removed from favorites'],
+ ['Нет вариантов с такими фильтрами','Бұл сүзгілер бойынша ұсыныс жоқ','No results match these filters'],
+
+ ['Авиабилеты','Әуе билеттері','Flights'],['Отели','Қонақүйлер','Hotels'],['Сколько?','Qansha?','How much?'],['Сравнить','Салыстыру','Compare'],
+ ['Сколько? — Один ответ.','Qansha? — Бір жауап.','How much? — One answer.'],['— Один ответ.','— Бір жауап.','— One answer.'],
  ['Дешёвые авиабилеты, конкретные отели и бюджет поездки. Всё в одном месте.','Арзан әуе билеттері, нақты қонақүйлер және сапар бюджеті. Барлығы бір жерде.','Cheap flights, real hotels and your travel budget. All in one place.'],
  ['QANSHA? · ПУТЕШЕСТВУЙ БОЛЬШЕ','QANSHA? · КӨБІРЕК САЯХАТТА','QANSHA? · TRAVEL MORE'],
  ['Войти','Кіру','Sign in'],['Аккаунт','Аккаунт','Account'],['Избранное','Таңдаулылар','Favorites'],
@@ -83,6 +115,7 @@
   document.querySelectorAll('input[placeholder], [title], [aria-label]').forEach(el=>{for(const key of ['placeholder','title','aria-label']){if(!el.hasAttribute(key))continue;const normalizedKey=key.replace(/[^A-Za-z]/g,'');const base='i18nOrig'+normalizedKey;const prior='i18nLast'+normalizedKey;let val=el.getAttribute(key);if(el.dataset[prior]!==val)el.dataset[base]=val;const translated=t(el.dataset[base]||val);if(val!==translated)el.setAttribute(key,translated);el.dataset[prior]=translated}});
   document.querySelectorAll('[data-lang]').forEach(b=>{b.classList.toggle('active',b.dataset.lang===lang);b.setAttribute('aria-pressed',String(b.dataset.lang===lang))});
   document.documentElement.lang=lang;
+  document.title=lang==='kk'?'Qansha? — Бір жауап · Әуе билеттері және қонақүйлер':lang==='en'?'How much? — One answer · Flights and hotels':'Сколько? — Один ответ · Авиабилеты и отели';
  }
  function refresh(){translateAll()}
  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;translateAll()})}
