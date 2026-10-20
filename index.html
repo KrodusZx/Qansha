@@ -3,8 +3,8 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
- <meta name="theme-color" content="#0d1320">
- <title>Qansha? — авиабилеты, отели, бюджет</title>
+ <meta name="theme-color" content="#fff9f4">
+ <title>Qansha? Бір жауап — авиабилеты, отели, бюджет</title>
  <meta name="description" content="Сравнивайте предложения авиабилетов, выбирайте отели и планируйте бюджет путешествия в Qansha?.">
  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23121828' rx='24'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='67' font-weight='bold' fill='%237ac7fe'%3EQ%3C/text%3E%3C/svg%3E">
  <link rel="stylesheet" href="styles.css">
@@ -15,11 +15,11 @@
 <body>
  <div class="shell">
   <header class="topbar">
-   <a class="brand" href="/" aria-label="Qansha? Главная"><span class="brand-icon">Q</span><span>Qansha<span class="brand-accent">?</span></span></a>
+   <a class="brand" href="/" aria-label="Qansha? Главная"><span class="brand-icon">Q</span><span class="brand-wordmark"><span class="brand-title">Qansha<span class="brand-accent">?</span></span><small>Бір жауап — один ответ</small></span></a>
    <div class="top-actions"><button type="button" class="icon-button" id="favOpen" aria-label="Избранное"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.8 4.8a5.6 5.6 0 0 0-7.9 0l-.9.9-.9-.9a5.6 5.6 0 0 0-7.9 7.9L12 21l8.8-8.3a5.6 5.6 0 0 0 0-7.9Z"/></svg><span id="favCount" class="count" hidden>0</span></button><button type="button" class="account-button" id="accountOpen">Войти</button></div>
   </header>
   <main>
-   <section class="headline" aria-label="Планирование путешествия"><p class="small-label">ПУТЕШЕСТВУЙ БОЛЬШЕ</p><h1>Вся поездка. <span>Один расчёт.</span></h1><p>Найди перелёт, выбери отель и узнай итоговый бюджет — без лишних шагов.</p></section>
+   <section class="headline" aria-label="Планирование путешествия"><p class="small-label">QANSHA? · ПУТЕШЕСТВУЙ БОЛЬШЕ</p><h1>Бір жауап <span>— один ответ.</span></h1><p>Дешёвые авиабилеты, конкретные отели и бюджет поездки. Всё в одном месте.</p></section>
    <nav class="tabs" aria-label="Разделы Qansha?"><button class="tab is-active" data-tab="flights" type="button" aria-current="page">✈ <span>Авиабилеты</span></button><button class="tab" data-tab="hotels" type="button">▦ <span>Отели</span></button><button class="tab" data-tab="budget" type="button">◉ <span>Бюджет</span></button></nav>
    <section class="panel" id="panel-flights" aria-labelledby="heading-flights">
     <div class="panel-heading"><div><h2 id="heading-flights">Авиабилеты</h2><p>Самые дешёвые из доступных предложений</p></div><span class="hint-chip">Google Flights</span></div>
@@ -46,14 +46,17 @@
       <div class="field"><label>Выезд</label><button class="date-button" data-date="checkout" type="button"><span id="checkoutText">Дата выезда</span><span>▦</span></button></div>
       <div class="field"><label for="hotelGuests">Гости</label><select id="hotelGuests"><option value="1">1 гость</option><option value="2">2 гостя</option><option value="3">3 гостя</option><option value="4">4 гостя</option><option value="5">5 гостей</option><option value="6">6 гостей</option><option value="7">7 гостей</option><option value="8">8 гостей</option><option value="9">9 гостей</option></select></div>
      </div>
-     <div class="form-bottom"><button class="primary-btn" id="searchHotels" type="submit">Найти отели <span>→</span></button><span class="form-note">Эконом · Средний · Комфорт</span></div>
+     <div class="hotel-preferences" aria-label="Уровень проживания"><div class="hotel-preferences-heading"><strong>Какой отель подобрать?</strong><span>Выбери категорию — мы сразу начнём поиск</span></div><div class="tier-pills" role="group" aria-label="Категория отеля"><button type="button" class="tier-pill" data-hotel-tier="economy">Эконом</button><button type="button" class="tier-pill is-active" data-hotel-tier="standard">Средний</button><button type="button" class="tier-pill" data-hotel-tier="comfort">Комфорт</button></div></div>
+    <div class="form-bottom"><button class="primary-btn" id="searchHotels" type="submit">Найти отели <span>→</span></button><span class="form-note">Эконом · Средний · Комфорт</span></div>
     </form>
+    <div class="recommendation-slot" id="hotelRecommendation" aria-live="polite" hidden></div>
     <div class="results" id="hotelResults"><div class="empty-state"><span class="empty-icon">▦</span><strong>Найди свой отель</strong><p>Покажем названия гостиниц, цены за поездку и подберём варианты под бюджет.</p></div></div>
    </section>
    <section class="panel" id="panel-budget" aria-labelledby="heading-budget" hidden>
     <div class="panel-heading"><div><h2 id="heading-budget">Бюджет поездки</h2><p>Собери поездку из выбранных предложений</p></div><span class="hint-chip">Расчёт</span></div>
     <div class="budget-summary-route"><span id="budgetRoute">Астана → Париж</span><span id="budgetNights">— ночей</span></div>
     <div class="budget-options"><div><label for="budgetTier">Стиль путешествия</label><select id="budgetTier"><option value="economy">Эконом</option><option value="standard" selected>Средний</option><option value="comfort">Комфорт</option></select></div><div><label for="budgetCurrency">Валюта</label><select id="budgetCurrency"><option value="EUR">EUR €</option><option value="KZT">KZT ₸</option><option value="USD">USD $</option></select></div></div>
+    <div class="recommendation-slot budget-recommendation" id="budgetRecommendation" aria-live="polite"></div>
     <div class="range-card"><div class="range-label"><label for="dailyBudget">Расходы на месте / человек / день</label><strong id="dailyValue">65 €</strong></div><input type="range" id="dailyBudget" min="10" max="250" value="65" step="5"><div class="range-ends"><span>Экономно</span><span>С комфортом</span></div></div>
     <div class="totals"><div><span>Авиабилеты</span><strong id="totalFlights">Выбери рейс</strong></div><div><span>Проживание</span><strong id="totalHotel">Выбери отель</strong></div><div><span>Расходы на месте</span><strong id="totalDaily">—</strong></div><div class="total-line"><span>Вся поездка</span><strong id="totalTrip">—</strong></div></div>
     <div class="budget-callout" id="budgetNote">Найди авиабилеты и отель в соседних вкладках — мы подставим их стоимость сюда. Без них итог не будет выдаваться за реальную цену.</div>
