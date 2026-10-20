@@ -1,0 +1,51 @@
+/* Qansha? 5 — living-cost calculator, mobile friendly controls and 3 languages */
+.lang-switch{display:flex;align-items:center;gap:2px;padding:4px;border:1px solid #eddcd0;background:#fff;border-radius:12px;box-shadow:0 3px 12px #5f30100b}
+.lang-switch button{font-size:11px;font-weight:850;letter-spacing:.3px;border:0;background:transparent;color:#71594a;border-radius:9px;padding:9px 10px;min-width:38px}
+.lang-switch button.active{color:#fff;background:#f46122;box-shadow:0 3px 10px #f4612226}
+.living-intro{border:1px solid #f2dfce;background:linear-gradient(105deg,#fff8ed,#fff 74%);border-radius:17px;padding:19px 20px;margin:0 0 18px}
+.living-intro p{margin:9px 0 0;color:#705849;font-size:14px;line-height:1.65}
+.living-badge{display:inline-flex;gap:6px;align-items:center;color:#dc480f;font-size:12px;font-weight:850;letter-spacing:.02em}
+.living-location{margin:17px 0 20px}.living-location label{display:block;color:#6d5a4e;font-size:13px;font-weight:800;margin-bottom:8px}
+.living-location select{display:block;width:100%;max-width:500px;padding:15px 14px;min-height:51px;background:#fff;color:#231e1b;border:1px solid #efded1;border-radius:13px;outline-color:#f46122}
+.travel-ranges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:14px 0 22px}
+.travel-range{border:1px solid #f0e3d8;background:#fff;border-radius:16px;padding:17px 18px;min-width:0;box-shadow:0 5px 24px #a9601c08}
+.travel-range .range-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.travel-range label{font-weight:800;font-size:14px;color:#3e332e}.travel-range strong{font-size:19px;white-space:nowrap;color:#eb5319;letter-spacing:-.5px}
+.travel-range input[type=range]{display:block;width:100%;accent-color:#f46122;margin:22px 0 14px;height:8px;cursor:pointer}
+.travel-range .range-ticks{display:flex;align-items:center;justify-content:space-between;color:#8b786e;font-size:11px;gap:8px}
+.travel-range small{display:block;margin-top:14px;color:#8b786e;font-size:11px;line-height:1.5}
+.living-prices{margin:22px 0 24px;padding:23px;border-radius:18px;background:#fffaf4;border:1px solid #f1e0cf}
+.living-prices .section-title{margin-bottom:15px}.living-prices .section-title h3{margin:0;font-size:21px}.living-prices .section-title p{font-size:12px;line-height:1.5;color:#786b62;margin:7px 0 0}
+.price-estimate-label{display:inline-block;white-space:nowrap;background:#fff;border-radius:30px;padding:8px 10px;color:#bd450f;font-size:11px;font-weight:800;border:1px solid #f2d5bf}
+.living-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.living-card{display:flex;gap:11px;align-items:flex-start;padding:16px 13px;border:1px solid #eedfd3;background:#fff;border-radius:14px;min-width:0}
+.living-card-icon{width:35px;height:35px;display:grid;place-items:center;flex-shrink:0;background:#fff0e7;border-radius:10px;font-size:18px}
+.living-card>div:last-child{min-width:0;display:flex;flex-direction:column;align-items:start;gap:7px}
+.living-card span{font-weight:750;color:#4b3830;font-size:12px;line-height:1.5}
+.living-card strong{font-size:22px;letter-spacing:-.8px;line-height:1.16;color:#f05a1d;white-space:nowrap;font-variant-numeric:tabular-nums}
+.living-card small{font-size:10px;line-height:1.5;color:#84746b}
+.living-disclaimer{font-size:11px;color:#877369;line-height:1.65;margin:17px 2px 0}
+#panel-budget{scroll-margin-top:78px}
+#budgetDaysValue,#budgetTravelersValue,#totalTrip,#budgetScenarioTotal strong{font-variant-numeric:tabular-nums}
+@media(max-width:960px){.living-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.topbar{gap:8px}.top-actions{gap:5px}.lang-switch{gap:0;padding:3px}.lang-switch button{padding:8px 6px;font-size:10px;min-width:32px}.account-button{padding:10px 9px;font-size:11px}.brand-wordmark small{font-size:8px}.living-intro{padding:15px}.living-intro p{font-size:12px}.travel-ranges{grid-template-columns:1fr;gap:10px}.travel-range{padding:14px}.travel-range label{font-size:13px}.living-prices{padding:16px 13px}.living-prices .section-title h3{font-size:19px}.living-cards{gap:9px}.living-card{padding:12px 10px;gap:8px}.living-card-icon{width:28px;height:30px;font-size:16px}.living-card strong{font-size:16px}.living-card span{font-size:11px}.living-card small{font-size:9px}.price-estimate-label{font-size:9px}}
+@media(max-width:360px){.living-cards{grid-template-columns:1fr}.lang-switch button{padding:7px 4px;min-width:28px;font-size:9px}.account-button{font-size:10px}}
+/* Preserve the white/orange visual identity of the published site. */
+:root{color-scheme:light;--bg:#fff9f4;--panel:#fff;--card:#fff;--border:#eadfd6;--text:#29221d;--muted:#74675d;--accent:#f46122;--ink:#251810}
+body{background:radial-gradient(900px 450px at 92% -18%,#fff0e0 0,transparent 85%),var(--bg);color:var(--text)}
+a{color:#da4814}.brand-icon{background:#f46122;color:#fff}.count{color:#fff}
+.topbar{border-color:#eddfd4}.tabs{background:#fff5ed;border-color:#efddcf}.tab{color:#766456}.tab:hover{background:#ffe8d8}.tab.is-active{background:#fff;color:#e65b20;box-shadow:0 3px 14px #d9814330,inset 0 0 0 1px #ffcaab}
+.panel{background:#fff;border-color:#ebdfd7;box-shadow:0 9px 34px #c57f470e}.hint-chip{background:#fff2e8;border-color:#ffe0cc;color:#d65718}
+.field label,.budget-options label,.range-label label{color:#685a4e}
+.field input,.field select,.field .date-button,.budget-options select,.account-form input{background:#fff;border-color:#e7d8cc;color:#29221d}
+.field input:focus,.field select:focus,.field .date-button:focus-visible,.budget-options select:focus,.account-form input:focus{box-shadow:0 0 0 3px #ffccb3}
+.field input::placeholder{color:#9c8980}.suggestions{background:#fff;border-color:#efd8c9;box-shadow:0 15px 35px #96553220}
+.suggestion{color:#332923}.suggestion:hover,.suggestion:focus{background:#fff3e9}
+.primary-btn{background:#f46122;color:#fff}.primary-btn:hover{background:#e24b13}
+.offer{background:#fff;border-color:#e9dcd0}.outline-btn{border-color:#efcfbc;background:#fff8f0;color:#c74b17}
+.banner-note{background:#fff7ee;border-color:#f1decf;color:#66584e}.warning{color:#c35c05}.hotel-tag{background:#fff1e6;color:#9c440e}
+.budget-summary-route{background:#fff4ea}.range-card{background:#fff8f1}.totals,.totals>div{border-color:#e7d8cc}.totals>.total-line{background:#fff1e6}
+.budget-shortcuts button{border-color:#efcfbc;color:#d44d19}.modal-backdrop{background:#261e18b0}.modal-sheet{background:#fff;border-color:#eddccb;box-shadow:0 25px 85px #42220d40}
+.modal-close{background:#fff0e4;color:#4c2c1d}.calendar-month button{background:#fff4ea;border-color:#eadacb;color:#d65118}
+.day{background:#fff8f3;color:#35291e;border-color:#f0e3d8}.day small{color:#b56030}.day.selected{background:#ffe4d2;border-color:#f46122}.day.today{border-color:#d99f78}
+.calendar-bottom{border-top-color:#eddfd4}footer{color:#8b7769}.toast{background:#fff;border-color:#f6c8a8;color:#29221d;box-shadow:0 14px 36px #964d2238}
