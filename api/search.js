@@ -1,3 +1,4 @@
+const {charge}=require('../lib/security');
 /** Qansha? 2.1: transparent fare comparison from Google Flights/Hotels via SerpApi.
  * This is not a booking engine. A flight offer is an estimate from separately-priced
  * outbound and return one-way tickets for ONE adult, extrapolated to the group.
@@ -26,7 +27,7 @@ async function serp(params){
   const response=await fetch('https://serpapi.com/search.json?'+p.toString(),{signal:c.signal});
   if(!response.ok){const n=response.status;bad(n===429?'Лимит запросов API исчерпан. Попробуйте позже.':`Поисковый сервис недоступен (${n}).`,n===429?429:502)}
   const data=await response.json();
-  if(data.error){if(/hasn't returned any results|no results for this query|no results found/i.test(data.error))return {best_flights:[],other_flights:[],properties:[]};bad('Поиск поставщика: '+safe(data.error),502);}
+  if(data.error){if(/hasn't returned any results|no results for this query|no results found/i.test(data.error))return {best_flights:[],other_flights:[],properties:[]};bad('Поставщик поиска временно недоступен. Попробуйте позже.',502);}
   if(cache.size>250)cache.clear();cache.set(key,{exp:Date.now()+120000,data});
   return data;
  }catch(e){if(e.name==='AbortError')bad('Поиск занимает слишком много времени. Попробуйте снова.',504);throw e}
@@ -144,7 +145,8 @@ async function calendar(q){
 }
 module.exports=async(req,res)=>{
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');
- if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
- try{const k=txt(req.query.kind);const data=k==='flights'?await flights(req.query):k==='hotels'?await hotels(req.query):k==='calendar'?await calendar(req.query):k==='hotelDetails'?await hotelDetails(req.query):k==='hotelPhotos'?await hotelPhotos(req.query):k==='flightBooking'?await flightBooking(req.query):bad('Неизвестный запрос.');return res.status(200).json(data)}
- catch(e){const code=Number(e.status)||500;return res.status(code).json({error:code===500?'Ошибка сервера поиска. Попробуйте позднее.':e.message})}
+ const k=txt(req.query?.kind);const weight=k==='calendar'?9:k==='flights'?3:k==='hotelPhotos'||k==='hotelDetails'||k==='flightBooking'?2:1;
+ if(!charge(req,res,{scope:'search',weight}))return;
+ try{const data=k==='flights'?await flights(req.query):k==='hotels'?await hotels(req.query):k==='calendar'?await calendar(req.query):k==='hotelDetails'?await hotelDetails(req.query):k==='hotelPhotos'?await hotelPhotos(req.query):k==='flightBooking'?await flightBooking(req.query):bad('Неизвестный запрос.');return res.status(200).json(data)}
+ catch(e){const code=Number(e.status)||500;return res.status(code).json({error:code===500?'Ошибка сервера поиска. Попробуйте позднее.':String(e.message||'Поиск временно недоступен.').replaceAll(process.env.SERPAPI_API_KEY||'__none__','[hidden]')})}
 };

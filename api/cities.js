@@ -1,3 +1,4 @@
+const {charge}=require('../lib/security');
 /** Qansha worldwide city search. GeoNames-derived world cities, CC BY 4.0.
  * Data attribution: https://www.geonames.org/ — source:
  * https://github.com/datasets/world-cities (cities >15k people, plus capitals).
@@ -25,7 +26,7 @@ function search(text,country){const q=normalize(text),alias=aliases[q]||(/[а-я
 module.exports=async(req,res)=>{
  res.setHeader('Content-Type','application/json; charset=utf-8');
  res.setHeader('Cache-Control','public, s-maxage=86400, stale-while-revalidate=86400');
- if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
+ if(!charge(req,res,{scope:'cities'}))return;
  try{load();if(req.query.mode==='countries')return res.status(200).json({countries:codes,totalCities:records.length,source:'GeoNames / CC BY 4.0'});
  const term=String(req.query.q||'').trim().slice(0,80),country=String(req.query.country||'').toUpperCase();
  if(country&&(!/^[A-Z]{2}$/.test(country)||!codes.includes(country)))return res.status(400).json({error:'Неизвестная страна'});
