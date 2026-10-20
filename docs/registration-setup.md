@@ -1,3 +1,13 @@
+# Qansha — Registration launch checklist
+
+**Existing services configured on 21 October 2026:** Supabase project **Project Qansha** already exists, the per-user `public.favorites` table with RLS policies was migrated and verified, and Vercel `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` are set for Preview and Production. **Do not create a second Supabase project or copy keys into front-end files.**
+
+**Still required before users can register:** In Supabase Authentication → URL Configuration set **Site URL** to `https://qansha.com`; allow `https://qansha.com/**` and the exact Vercel Preview URL for QA. Connect a transactional **custom SMTP** provider, verify sending domain via SPF/DKIM, and test confirmation and recovery emails to an address that is not in the Supabase organization. Until SMTP is configured, default emails are restricted to authorized project members. Do not turn off Confirm Email as a workaround.
+
+The acceptance tests below remain necessary before publishing on the main site.
+
+---
+
 # Qansha account registration — Supabase setup
 
 The UI and API integration are implemented, but **registration is not live until a Supabase project is connected**. The login modal deliberately shows a disabled/configuration message without a valid public configuration. No fake accounts are created.
