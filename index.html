@@ -63,13 +63,15 @@
      </div>
      <div class="hotel-preferences" aria-label="Уровень проживания"><div class="hotel-preferences-heading"><strong>Какой отель подобрать?</strong><span>Выбери категорию — мы сразу начнём поиск</span></div><div class="tier-pills" role="group" aria-label="Категория отеля"><button type="button" class="tier-pill" data-hotel-tier="economy">Эконом</button><button type="button" class="tier-pill is-active" data-hotel-tier="standard">Средний</button><button type="button" class="tier-pill" data-hotel-tier="comfort">Комфорт</button></div></div>
     <div class="advanced-filters"><div class="filters-intro"><strong>Фильтры как в сервисе бронирования</strong><small>Применяются к найденным вариантам</small></div><div class="hotel-filter-grid">
-      <div><label for="hotelSort">Сортировка</label><select id="hotelSort"><option value="price">Сначала дешёвые</option><option value="rating">Лучший рейтинг</option><option value="stars">Больше звёзд</option></select></div>
+      <div><label for="hotelSort">Сортировка</label><select id="hotelSort"><option value="price">Сначала дешёвые</option><option value="expensive">Сначала дорогие</option><option value="rating">Лучший рейтинг</option><option value="stars">Больше звёзд</option><option value="stars-low">Меньше звёзд</option></select></div>
       <div><label for="hotelStars">Звёзды отеля</label><select id="hotelStars"><option value="0">Любые</option><option value="2">2★ и выше</option><option value="3">3★ и выше</option><option value="4">4★ и выше</option><option value="5">Только 5★</option></select></div>
       <div><label for="hotelRating">Оценка гостей</label><select id="hotelRating"><option value="0">Любая</option><option value="3.5">От 3,5</option><option value="4">От 4,0</option><option value="4.5">От 4,5</option></select></div>
-      <div><label for="hotelMaxPrice">Макс. цена за поездку (EUR)</label><input id="hotelMaxPrice" inputmode="numeric" type="number" min="1" step="10" placeholder="Без ограничения"></div>
+      <div><label for="hotelMinPrice">Цена от (<span id="hotelMinCurrency">EUR</span>)</label><input id="hotelMinPrice" inputmode="numeric" type="number" min="0" step="1" placeholder="Без ограничения"></div>
+      <div><label for="hotelMaxPrice">Цена до (<span id="hotelMaxCurrency">EUR</span>)</label><input id="hotelMaxPrice" inputmode="numeric" type="number" min="0" step="1" placeholder="Без ограничения"></div>
       <div><label for="hotelType">Тип жилья</label><select id="hotelType"><option value="all">Все варианты</option><option value="hotel">Отели</option><option value="other">Апартаменты / другое</option></select></div>
       <label class="check-filter"><input id="hotelFreeCancel" type="checkbox"> Бесплатная отмена <small>Если подтверждено поставщиком</small></label>
     </div></div>
+    <div class="hotel-price-presets" aria-label="Быстрый фильтр минимальной цены"><span>Быстрая цена от:</span><button type="button" data-hotel-min-kzt="0">Все</button><button type="button" data-hotel-min-kzt="30000">30 000 ₸+</button><button type="button" data-hotel-min-kzt="50000">50 000 ₸+</button><button type="button" data-hotel-min-kzt="100000">100 000 ₸+</button></div>
     <div class="form-bottom"><button class="primary-btn" id="searchHotels" type="submit">Найти отели <span>→</span></button><span class="form-note">Эконом · Средний · Комфорт</span></div>
     </form>
     <div class="recommendation-slot" id="hotelRecommendation" aria-live="polite" hidden></div>
