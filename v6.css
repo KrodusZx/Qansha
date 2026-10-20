@@ -43,3 +43,7 @@
 .selected-summary strong{color:#a85713}
 .selected-summary button{border:1px solid #f5be8e;padding:7px;background:white;border-radius:8px;color:#a75618;cursor:pointer}
 @media(max-width:520px){.hotel-image-wrap{width:107px;min-width:107px;min-height:124px}.details-gallery img{height:48px}.flight-leg{padding:9px}}
+
+#favOpen svg{transition:fill .2s ease,stroke .2s ease,transform .25s ease}
+#favOpen.has-favorites svg{fill:#f47b16;stroke:#f47b16;animation:heartPop .38s cubic-bezier(.2,1.8,.3,1)}
+@media(prefers-reduced-motion:reduce){#favOpen svg{transition:none;animation:none!important}}
