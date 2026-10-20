@@ -9,15 +9,17 @@
  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23121828' rx='24'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='67' font-weight='bold' fill='%237ac7fe'%3EQ%3C/text%3E%3C/svg%3E">
  <link rel="stylesheet" href="styles.css">
  <link rel="stylesheet" href="v4.css">
+ <link rel="stylesheet" href="v5.css">
  <script src="config.js" defer></script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
  <script src="app.js" defer></script>
+ <script src="i18n.js" defer></script>
 </head>
 <body>
  <div class="shell">
   <header class="topbar">
    <a class="brand" href="/" aria-label="Qansha? Главная"><span class="brand-icon">Q</span><span class="brand-wordmark"><span class="brand-title">Qansha<span class="brand-accent">?</span></span><small>Бір жауап — один ответ</small></span></a>
-   <div class="top-actions"><button type="button" class="icon-button" id="favOpen" aria-label="Избранное"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.8 4.8a5.6 5.6 0 0 0-7.9 0l-.9.9-.9-.9a5.6 5.6 0 0 0-7.9 7.9L12 21l8.8-8.3a5.6 5.6 0 0 0 0-7.9Z"/></svg><span id="favCount" class="count" hidden>0</span></button><button type="button" class="account-button" id="accountOpen">Войти</button></div>
+   <div class="top-actions"><div class="lang-switch" role="group" aria-label="Сайт тілі / Язык / Language"><button type="button" data-lang="kk" aria-pressed="false" title="Қазақша">ҚАЗ</button><button type="button" data-lang="ru" aria-pressed="true" title="Русский">РУС</button><button type="button" data-lang="en" aria-pressed="false" title="English">EN</button></div><button type="button" class="icon-button" id="favOpen" aria-label="Избранное"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.8 4.8a5.6 5.6 0 0 0-7.9 0l-.9.9-.9-.9a5.6 5.6 0 0 0-7.9 7.9L12 21l8.8-8.3a5.6 5.6 0 0 0 0-7.9Z"/></svg><span id="favCount" class="count" hidden>0</span></button><button type="button" class="account-button" id="accountOpen">Войти</button></div>
   </header>
   <main>
    <section class="headline" aria-label="Планирование путешествия"><p class="small-label">QANSHA? · ПУТЕШЕСТВУЙ БОЛЬШЕ</p><h1>Бір жауап <span>— один ответ.</span></h1><p>Дешёвые авиабилеты, конкретные отели и бюджет поездки. Всё в одном месте.</p></section>
@@ -65,11 +67,18 @@
    </section>
    <section class="panel" id="panel-budget" aria-labelledby="heading-budget" hidden>
     <div class="panel-heading"><div><h2 id="heading-budget">Сколько уйдёт на поездку?</h2><p>Выбери стиль — рассчитаем жильё, еду, транспорт и впечатления</p></div><span class="hint-chip">Главная идея Qansha?</span></div>
+    <div class="living-intro"><span class="living-badge">◉ Qansha? — Сколько уйдёт?</span><p>Узнай примерные расходы до поездки: питание, продукты, рестораны, транспорт и жильё. Без скрытых формул.</p></div>
+    <div class="living-location"><label for="budgetPlace">Страна и город</label><select id="budgetPlace" aria-label="Выбери страну и город"></select></div>
+    <div class="travel-ranges" aria-label="Настройки путешествия">
+      <div class="travel-range"><div class="range-header"><label for="budgetDays">Сколько дней?</label><strong id="budgetDaysValue">5 дней</strong></div><input type="range" id="budgetDays" min="1" max="30" value="5" step="1" aria-describedby="budgetDaysHelp"><div class="range-ticks"><span>1 день</span><span>7 дней</span><span>30 дней</span></div><small id="budgetDaysHelp">Проживание: дни минус одна ночь</small></div>
+      <div class="travel-range"><div class="range-header"><label for="budgetTravelers">Сколько путешественников?</label><strong id="budgetTravelersValue">2 человека</strong></div><input type="range" id="budgetTravelers" min="1" max="12" value="2" step="1"><div class="range-ticks"><span>1 человек</span><span>6 человек</span><span>12 человек</span></div><small>Номера рассчитываются из двухместного размещения</small></div>
+    </div>
     <div class="trip-scenarios" id="budgetScenarios" role="group" aria-label="Три сценария путешествия"></div>
     <div class="budget-summary-route"><span id="budgetRoute">Астана → Париж</span><span id="budgetNights">— ночей</span></div>
     <div class="budget-options"><div><label for="budgetTier">Стиль путешествия</label><select id="budgetTier"><option value="economy">Эконом</option><option value="standard" selected>Средний</option><option value="comfort">Комфорт</option></select></div><div><label for="budgetCurrency">Валюта</label><select id="budgetCurrency"><option value="EUR">EUR €</option><option value="KZT">KZT ₸</option><option value="USD">USD $</option></select></div></div>
     <div class="recommendation-slot budget-recommendation" id="budgetRecommendation" aria-live="polite"></div>
     <div class="budget-estimate-hero" id="budgetScenarioTotal" aria-live="polite"></div>
+    <section class="living-prices" aria-label="Сколько стоит жизнь в выбранной стране"><div class="section-title"><div><h3>Сколько стоит жизнь?</h3><p>Ориентиры для выбранного города, не официальная средняя по стране</p></div><span class="price-estimate-label">≈ Оценка</span></div><div class="living-cards" id="livingCards" aria-live="polite"></div><p class="living-disclaimer">Цены — модельные ориентиры для планирования, не проверенные прайсы магазинов и ресторанов. Учитывают примерный уровень цен города, а не средние расходы всех жителей. Стоимость ужина и продуктовой корзины приведена для сравнения и не прибавляется повторно к дневному бюджету.</p></section>
     <div class="budget-spend-guide"><div class="section-title"><h3>Куда уйдут деньги?</h3><span>Оценка на человека / день</span></div><div id="budgetBreakdown" class="spend-grid"></div></div>
     <div class="activity-guide"><div class="section-title"><h3>Куда можно сходить?</h3><span>Идеи для города и стиля</span></div><div id="budgetIdeas" class="ideas-grid"></div></div>
     <div class="range-card"><div class="range-label"><label for="dailyBudget">Расходы на месте / человек / день</label><strong id="dailyValue">65 €</strong></div><input type="range" id="dailyBudget" min="10" max="250" value="65" step="5"><div class="range-ends"><span>Экономно</span><span>С комфортом</span></div></div>
@@ -80,7 +89,7 @@
    <section class="panel" id="panel-compare" aria-labelledby="heading-compare" hidden>
      <div class="panel-heading"><div><h2 id="heading-compare">Где дешевле отдохнуть?</h2><p>Сравни две страны через примерные расходы на поездку</p></div><span class="hint-chip">Сравнение стран</span></div>
      <div class="compare-intro">Сравнение рассчитано по модельным расходам на жильё и жизнь в городе. <strong>Билеты не включены</strong> — они зависят от места вылета и даты.</div>
-     <div class="compare-controls"><div><label for="compareLeft">Страна №1</label><select id="compareLeft"></select></div><div><label for="compareRight">Страна №2</label><select id="compareRight"></select></div><div><label for="compareDays">Дней</label><select id="compareDays"><option value="3">3 дня</option><option value="5" selected>5 дней</option><option value="7">7 дней</option><option value="10">10 дней</option><option value="14">14 дней</option></select></div></div>
+     <div class="compare-controls"><div><label for="compareLeft">Страна №1</label><select id="compareLeft"></select></div><div><label for="compareRight">Страна №2</label><select id="compareRight"></select></div><div><label for="compareDays">Дней</label><select id="compareDays"><option value="3">3 дня</option><option value="5" selected>5 дней</option><option value="7">7 дней</option><option value="10">10 дней</option><option value="14">14 дней</option><option value="21">21 день</option><option value="30">30 дней</option></select></div></div>
      <div id="compareResults" class="compare-results" aria-live="polite"></div>
      <div class="compare-rank-heading"><h3>Ещё недорогие направления</h3><p>Оценка поездки на одного человека, без авиабилетов</p></div>
      <div id="compareRanking" class="compare-ranking"></div>
