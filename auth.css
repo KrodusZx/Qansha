@@ -1,0 +1,27 @@
+/* Qansha account modal: public registration, email confirmation and secure session */
+.auth-sheet{width:min(500px,100%);padding:25px}
+.auth-mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;border-radius:13px;background:#fff4ed;padding:5px;margin:4px 0 20px}
+.auth-mode-tabs button{border:0;border-radius:10px;min-height:44px;padding:10px 8px;font-weight:750;font-size:14px;background:transparent;color:#725447;cursor:pointer}
+.auth-mode-tabs button.is-active{background:#fff;box-shadow:0 2px 10px #a85c3030;color:#dc5c20}
+.auth-field{display:grid;gap:8px}
+.auth-field label{font-size:13px;font-weight:750;color:#64574e}
+.auth-sheet .account-form{gap:16px}
+.auth-sheet .account-form input{width:100%;box-sizing:border-box;height:51px}
+.auth-sheet .account-form input:focus{outline:2px solid #f36b2b;outline-offset:1px}
+.auth-sheet .account-form .primary-btn{min-height:52px}
+.auth-text-button{align-self:center;border:0;background:transparent;color:#ba4e14;text-decoration:underline;text-underline-offset:3px;font-weight:700;cursor:pointer;font-size:13px}
+.auth-text-button:hover{color:#80300b}
+.auth-status{min-height:18px;margin:15px 0 7px;line-height:1.6}
+.auth-status[data-kind=error]{color:#a72e19}
+.auth-status[data-kind=success]{color:#216a48}
+.auth-note{font-size:11px;line-height:1.55;color:var(--muted);margin:14px 0 0}
+.auth-unavailable{background:#fff5ed;border:1px solid #f1d7bf;border-radius:13px;padding:18px;line-height:1.6;font-size:13px}
+.auth-unavailable strong{display:block;font-size:15px;margin-bottom:5px}
+.auth-unavailable p{margin:0;color:var(--muted)}
+.auth-user{text-align:center;padding:12px 4px}
+.auth-user strong{display:block;font-size:18px;margin-top:12px}
+.auth-user p{font-size:13px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}
+.auth-user .outline-btn{width:100%;min-height:46px;margin-top:12px}
+.auth-avatar{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;margin:0 auto;background:#d9f6e8;color:#156c44;font-size:26px;font-weight:800}
+.auth-sheet [hidden]{display:none!important}
+@media(max-width:650px){.auth-sheet{padding:23px 18px calc(22px + env(safe-area-inset-bottom));max-height:94dvh}.auth-mode-tabs button{font-size:13px}.auth-sheet .account-form input{font-size:16px}}
