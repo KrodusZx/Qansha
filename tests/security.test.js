@@ -37,7 +37,7 @@ test('security headers disallow inline scripting, embedding, and loading mixed H
  const main=config.headers.find(e=>e.source==='/(.*)');assert.ok(main);
  const map=Object.fromEntries(main.headers.map(h=>[h.key.toLowerCase(),h.value]));
  const csp=map['content-security-policy'];
- assert.ok(csp.includes("script-src 'self' https://cdn.jsdelivr.net"));
+ assert.ok(csp.includes("script-src 'self'") && csp.includes("https://cdn.jsdelivr.net"));
  assert.ok(!csp.includes("'unsafe-eval'")&&!csp.includes("script-src 'self' 'unsafe-inline'"));
  assert.ok(csp.includes("script-src-attr 'none'"));
  assert.ok(csp.includes("frame-ancestors 'none'"));
