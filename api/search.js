@@ -55,7 +55,7 @@ async function flights(q){
  // not a misleading incomplete round-trip with unselected return service.
  const there=await serp({...shared,departure_id:origin,arrival_id:destination,outbound_date:depart});
  const outward=offers(there),combos=[];
- if(oneWay){for(let i=0;i<outward.length;i++){const a=outward[i];combos.push({id:`oneway-${i}`,kind:'flight',price:Number(a.price)*adults,currency:'EUR',perAdultPrice:Number(a.price),groupPriceIsEstimate:adults>1,fareType:'oneway',source:'Google Flights',legs:[leg(a)],airlines:[...new Set(a.flights.map(f=>safe(f.airline)).filter(Boolean))],checkedBags:null,seats:null,durations:Number(a.total_duration||0),stopCount:a.flights.length-1,bookingToken:safe(a.booking_token)})}}
+ if(oneWay){for(let i=0;i<outward.length;i++){const a=outward[i];combos.push({id:`oneway-${i}`,kind:'flight',price:Number(a.price)*adults,currency:'EUR',perAdultPrice:Number(a.price),groupPriceIsEstimate:adults>1,fareType:'oneway',source:'Google Flights',legs:[leg(a)],airlines:[...new Set(a.flights.map(f=>safe(f.airline)).filter(Boolean))],checkedBags:null,seats:null,durations:Number(a.total_duration||0),stopCount:a.flights.length-1,bookingToken:String(a.booking_token||'').slice(0,1800)})}}
  else {
  const backAgain=await serp({...shared,departure_id:destination,arrival_id:origin,outbound_date:back});
  const returning=offers(backAgain);
@@ -76,7 +76,7 @@ async function hotels(q){
  const nights=(Date.parse(checkOut)-Date.parse(checkIn))/86400000;
  if(nights>30)bad('Максимальная длительность проживания — 30 ночей.');
  const rooms=Math.ceil(travelers/2),perRoomAdults=travelers===1?1:2;
- const pageToken=txt(q.pageToken);if(pageToken&&(pageToken.length>1400||!/^[A-Za-z0-9_+=:/-]+$/.test(pageToken)))bad('Некорректная страница поиска.');
+ const pageToken=txt(q.pageToken);if(pageToken&&(pageToken.length>2600||!/^[A-Za-z0-9_+=:/-]+$/.test(pageToken)))bad('Некорректная страница поиска.');
  const data=await serp({engine:'google_hotels',q:`Hotels in ${city}`,check_in_date:checkIn,check_out_date:checkOut,
   adults:String(perRoomAdults),currency:'EUR',hl:'ru',gl:'kz',sort_by:'3',...(pageToken?{next_page_token:pageToken}:{})});
  const items=[...(data.properties||[]),...(data.non_matching_properties||[])].filter(h=>h?.name);
@@ -89,10 +89,10 @@ async function hotels(q){
    rating:Number(h.overall_rating)||null,price:roomPrice*rooms,roomPrice,currency:'EUR',
    roomCount:rooms,checkInDate:checkIn,checkOutDate:checkOut,room:'Цена за один номер; категорию уточните у поставщика',
    address:safe(h.address),latitude:Number.isFinite(lat)?lat:null,longitude:Number.isFinite(lon)?lon:null,
-   thumbnail:safe(h.images?.[0]?.original_image||h.images?.[0]?.thumbnail),images:(h.images||[]).slice(0,6).map(im=>safe(im.original_image||im.thumbnail)).filter(u=>/^https:\/\//.test(u)),propertyToken:safe(h.property_token),amenities:(h.amenities||[]).slice(0,18).map(safe),source:'Google Hotels',estimatedGroupPrice:rooms>1,propertyType:safe(h.type||'hotel'),freeCancellation:h.free_cancellation===true?true:null,
+   thumbnail:(String(h.images?.[0]?.thumbnail||h.images?.[0]?.original_image||'').slice(0,2400)),images:(h.images||[]).slice(0,6).map(im=>String(im.original_image||im.thumbnail||'').slice(0,2400)).filter(u=>/^https:\/\//.test(u)),propertyToken:safe(h.property_token),amenities:(h.amenities||[]).slice(0,18).map(safe),source:'Google Hotels',estimatedGroupPrice:rooms>1,propertyType:safe(h.type||'hotel'),freeCancellation:h.free_cancellation===true?true:null,
    bookingUrl: /^https:\/\//.test(h.link||'')?String(h.link).slice(0,1800):/^https:\/\//.test(h.prices?.[0]?.link||'')?String(h.prices[0].link).slice(0,1800):null};
  }).filter(Boolean).sort((a,b)=>a.price-b.price).slice(0,60);
- return {kind:'hotels',offers:result,nextPageToken:String(data.serpapi_pagination?.next_page_token||'').slice(0,1400)||null,nights,rooms,environment:env,source:'Google Hotels',searchedAt:new Date().toISOString(),
+ return {kind:'hotels',offers:result,nextPageToken:String(data.serpapi_pagination?.next_page_token||'').slice(0,2600)||null,nights,rooms,environment:env,source:'Google Hotels',searchedAt:new Date().toISOString(),
   guestAllocationNote:rooms>1?'Цена на компанию рассчитана как стоимость одного номера × число номеров. Google Hotels не подтвердил наличие нескольких одинаковых номеров; перепроверьте размещение и итоговую цену перед оплатой.':'Цену и условия номера необходимо подтвердить у поставщика.'};
 }
 
@@ -115,7 +115,7 @@ async function hotelPhotos(q){
 async function flightBooking(q){
  const token=txt(q.bookingToken);if(!validToken(token))bad('Нет предложения для бронирования');
  const d=await serp({engine:'google_flights',booking_token:token,hl:'ru',gl:'kz',currency:'EUR'});
- const src=[...(Array.isArray(d.booking_options)?d.booking_options:[]),...(d.booking_options?.together||[]),...(d.booking_options?.separate||[])];
+ const src=[...(Array.isArray(d.booking_options)?d.booking_options:[]),...(Array.isArray(d.booking_options?.together)?d.booking_options.together:[]),...(Array.isArray(d.booking_options?.separate)?d.booking_options.separate:[])];
  const options=src.flatMap(x=>[x,...(x?.options||[])]).filter(x=>x&&typeof x==='object').map(x=>({name:safe(x.book_with||x.airline||x.name||'Сайт бронирования'),url:cleanUrl(x.booking_link||x.link||x.url)})).filter(x=>x.url).slice(0,10);
  return {kind:'flightBooking',options}
 }
