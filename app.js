@@ -56,7 +56,7 @@
    const primary=preview?'<button type="button" class="primary-btn small-action" data-return-start="'+i+'">Выбрать обратный рейс →</button>':
     '<button type="button" class="outline-btn '+(chosen?'chosen-button':'')+'" data-pick="flight" data-index="'+i+'" aria-pressed="'+chosen+'">'+(chosen?'✓ Выбран · отменить':'Выбрать')+'</button>';
    const details=preview?'Ориентир за туда-обратно · '+state.passengers+' взрослых · обратный рейс не выбран':
-    curr(o.perAdultPrice||o.price/state.passengers)+' на человека · '+state.passengers+' взрослых · '+(state.tripType==='oneway'?'в одну сторону':'туда-обратно');
+    'Ориентир по запросу на '+state.passengers+' взрослых · '+(state.tripType==='oneway'?'в одну сторону':'туда-обратно');
    return '<article class="offer flight-offer '+(chosen?'chosen':'')+'"><div class="offer-top"><strong class="offer-title">'+esc(flightTitle(o))+'</strong><span class="offer-price">'+(preview?'<small class="fare-from">от </small>':'')+curr(o.price)+'</span></div>'+
     '<div class="flight-legs">'+flightCards(o)+'</div><div class="fare-tags"><span>🧳 Багаж: уточнить</span><span>🎒 Ручная кладь: уточнить</span><span>↺ Возврат: уточнить</span></div>'+
     '<div class="offer-details">'+details+'</div><div class="offer-actions">'+primary+(preview?'':faveButton('flight',o,i))+
