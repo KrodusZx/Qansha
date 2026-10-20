@@ -162,6 +162,1313 @@
  ['Пока нет подтверждённых вариантов','Әзірге расталған ұсыныстар жоқ','No verified offers yet'],['Посмотреть в Google Hotels','Google Hotels сайтынан қарау','See Google Hotels'],['Цена найдена у Google Hotels и может измениться.','Баға Google Hotels арқылы табылды және өзгеруі мүмкін.','Price found via Google Hotels and may change.'],['Подбираем отель','Қонақүй ізделуде','Finding hotels'],['Проверяем доступность и цены на выбранные даты…','Таңдалған күндерге бағалар мен орындарды тексеріп жатырмыз…','Checking availability and prices for your dates…'],['Отель из поиска','Іздеудегі қонақүй','Hotel search offer'],['Подобран','Ұсынылды','Suggested'],['Выбранный отель','Таңдалған қонақүй','Selected hotel'],['Отель','Қонақүй','Hotel'],['Мы найдём подходящие варианты с названиями и ценами на выбранные даты.','Таңдалған күндерге нақты қонақүй атаулары мен бағаларын іздейміз.','We’ll find named properties with prices for your dates.'],['без алкоголя','алкогольсіз','without alcohol'],['Ориентиры для выбранного города, не официальная средняя по стране','Таңдалған қалаға арналған шамамен алынған бағалар, ресми ұлттық орташа емес','Approximate city prices, not national averages'],
  ['Избранные предложения','Таңдаулы ұсыныстар','Saved offers'],['Войти / регистрация','Кіру / тіркелу','Sign in / register'],['Email','Электрондық пошта','Email'],['Отправить ссылку','Сілтемені жіберу','Send sign-in link'],['Выйти','Шығу','Sign out'],['Закрыть','Жабу','Close'],['Удалить','Жою','Remove'],['Следующий месяц','Келесі ай','Next month'],['Предыдущий месяц','Алдыңғы ай','Previous month'],['Выбрать дату','Күнді таңдау','Select a date'],['Показать ещё','Тағы көрсету','Show more'],['Загрузка','Жүктелуде','Loading'],['Поиск','Іздеу','Search'],['Найденные авиарейсы','Табылған рейстер','Flight results'],['Найденные отели','Табылған қонақүйлер','Hotel results'],['Самый дешёвый','Ең арзаны','Cheapest'],['Средний','Орташа','Standard'],['Предложение','Ұсыныс','Offer'],['Цена','Бағасы','Price'],['Нет предложений','Ұсыныстар жоқ','No offers'],['Найти','Іздеу','Search']
  ];
+ entries.push(...[
+ [
+  "Личный кабинет",
+  "Жеке кабинет",
+  "My account"
+ ],
+ [
+  "Вход по ссылке на почту",
+  "Электрондық поштадағы сілтеме арқылы кіру",
+  "Sign in with an email link"
+ ],
+ [
+  "Ваш email",
+  "Электрондық поштаңыз",
+  "Your email"
+ ],
+ [
+  "Вход в аккаунт",
+  "Аккаунтқа кіру",
+  "Sign in to your account"
+ ],
+ [
+  "Авторизация требует подключения Supabase.",
+  "Кіру қызметі әзірге қолжетімсіз.",
+  "Sign-in is currently unavailable."
+ ],
+ [
+  "Регистрация станет доступна после настройки Supabase в проекте.",
+  "Тіркелу қызметі әзірге қолжетімсіз.",
+  "Registration is currently unavailable."
+ ],
+ [
+  "Пока не удалось подключить аккаунт:",
+  "Аккаунтқа қосылу мүмкін болмады:",
+  "Could not connect your account:"
+ ],
+ [
+  "Вы вошли как",
+  "Сіз кірген аккаунт:",
+  "Signed in as"
+ ],
+ [
+  "Введите email — мы пришлём ссылку для входа или регистрации.",
+  "Электрондық поштаңызды енгізіңіз — кіру немесе тіркелу сілтемесін жібереміз.",
+  "Enter your email and we will send a sign-in or registration link."
+ ],
+ [
+  "Подключи Supabase",
+  "Кіру қызметі әзірге қолжетімсіз",
+  "Sign-in is currently unavailable"
+ ],
+ [
+  "Укажи правильный email",
+  "Электрондық пошта мекенжайын дұрыс енгізіңіз",
+  "Enter a valid email address"
+ ],
+ [
+  "Проверь почту: ссылка для входа отправлена.",
+  "Поштаңызды тексеріңіз: кіру сілтемесі жіберілді.",
+  "Check your email: your sign-in link has been sent."
+ ],
+ [
+  "Сохранённые предложения",
+  "Сақталған ұсыныстар",
+  "Saved offers"
+ ],
+ [
+  "Сохрани авиабилет или отель, и они появятся здесь.",
+  "Әуе билетін немесе қонақүйді сақтасаңыз, олар осында көрсетіледі.",
+  "Save a flight or hotel and it will appear here."
+ ],
+ [
+  "сохранённая, не подтверждённая цена",
+  "сақталған, расталмаған баға",
+  "saved price, not a confirmed quote"
+ ],
+ [
+  "Избранное недоступно:",
+  "Таңдаулылар қолжетімсіз:",
+  "Favorites unavailable:"
+ ],
+ [
+  "Не удалось сохранить:",
+  "Сақтау мүмкін болмады:",
+  "Could not save:"
+ ],
+ [
+  "Не удалось удалить",
+  "Жою мүмкін болмады",
+  "Could not remove"
+ ],
+ [
+  "Международный поиск: выбирайте маршрут и сравнивайте доступные тарифы",
+  "Халықаралық іздеу: бағытты таңдап, қолжетімді тарифтерді салыстырыңыз",
+  "Worldwide search: choose a route and compare available fares"
+ ],
+ [
+  "Класс обслуживания",
+  "Қызмет көрсету класы",
+  "Travel class"
+ ],
+ [
+  "Премиум-эконом",
+  "Премиум үнемді класс",
+  "Premium economy"
+ ],
+ [
+  "Бизнес",
+  "Бизнес-класс",
+  "Business"
+ ],
+ [
+  "Первый класс",
+  "Бірінші класс",
+  "First class"
+ ],
+ [
+  "Пересадки при поиске",
+  "Іздеудегі ауысулар",
+  "Stops when searching"
+ ],
+ [
+  "Любые — больше вариантов",
+  "Кез келген — көбірек нұсқа",
+  "Any — more options"
+ ],
+ [
+  "Только прямые",
+  "Тек тікелей рейстер",
+  "Direct flights only"
+ ],
+ [
+  "Максимум одна",
+  "Ең көбі бір ауысу",
+  "Up to one stop"
+ ],
+ [
+  "Максимум две",
+  "Ең көбі екі ауысу",
+  "Up to two stops"
+ ],
+ [
+  "Поиск показывает тарифы для выбранного числа взрослых. Для маршрута туда-обратно обратный рейс выбирается отдельно. Багаж и итоговую цену подтвердит продавец.",
+  "Іздеу таңдалған ересектер санына арналған тарифтерді көрсетеді. Барып-қайту сапарында кері рейс бөлек таңдалады. Жүк шарттары мен түпкілікті бағаны сатушы растайды.",
+  "Fares are shown for the selected number of adults. For round trips, choose the return flight separately. The seller confirms baggage and the final price."
+ ],
+ [
+  "Дата заезда",
+  "Келу күні",
+  "Check-in date"
+ ],
+ [
+  "Дата выезда",
+  "Кету күні",
+  "Check-out date"
+ ],
+ [
+  "Выбери отель",
+  "Қонақүйді таңдаңыз",
+  "Choose a hotel"
+ ],
+ [
+  "Найди авиабилеты и отель в соседних вкладках — мы подставим их стоимость сюда. Без них итог не будет выдаваться за реальную цену.",
+  "Көрші бөлімдерден әуе билеті мен қонақүйді таңдаңыз — олардың құнын осында қосамыз. Оларсыз қорытынды нақты баға болып саналмайды.",
+  "Choose flights and a hotel in the other tabs to include their costs here. Without them, the total is only an estimate."
+ ],
+ [
+  "Бронируемые цены и наличие мест подтверждаются у поставщика. Мы не продаём билеты и не бронируем номера.",
+  "Брондау бағалары мен бос орындарды қызмет көрсетуші растайды. Біз билет сатпаймыз және бөлме брондамаймыз.",
+  "The provider confirms bookable prices and availability. We do not sell tickets or book rooms."
+ ],
+ [
+  "Поиск работает на данных партнёра, когда API подключён.",
+  "Іздеу қосылған кезде серіктестің деректері қолданылады.",
+  "Search uses partner data when the service is connected."
+ ],
+ [
+  "Дата вылета",
+  "Ұшу күні",
+  "Departure date"
+ ],
+ [
+  "Дата возвращения",
+  "Қайту күні",
+  "Return date"
+ ],
+ [
+  "Выбор даты",
+  "Күнді таңдау",
+  "Choose a date"
+ ],
+ [
+  "Цены показываются только после онлайн-проверки",
+  "Бағалар тек онлайн тексеруден кейін көрсетіледі",
+  "Prices appear only after an online check"
+ ],
+ [
+  "Чтобы увидеть минимальные цены на дни, запроси их у поискового сервиса. Пустая цена — не отсутствие билетов.",
+  "Күндер бойынша ең төмен бағаларды көру үшін іздеуді іске қосыңыз. Бағаның көрсетілмеуі билет жоқ дегенді білдірмейді.",
+  "Request date prices to see the lowest fares. A blank price does not mean no tickets are available."
+ ],
+ [
+  "Узнать цены на 7 дат",
+  "7 күннің бағасын білу",
+  "Check prices for 7 dates"
+ ],
+ [
+  "Пн",
+  "Дс",
+  "Mon"
+ ],
+ [
+  "Вт",
+  "Сс",
+  "Tue"
+ ],
+ [
+  "Ср",
+  "Ср",
+  "Wed"
+ ],
+ [
+  "Чт",
+  "Бс",
+  "Thu"
+ ],
+ [
+  "Пт",
+  "Жм",
+  "Fri"
+ ],
+ [
+  "Сб",
+  "Сб",
+  "Sat"
+ ],
+ [
+  "Вс",
+  "Жс",
+  "Sun"
+ ],
+ [
+  "Аэропорт",
+  "Әуежай",
+  "Airport"
+ ],
+ [
+  "Совпадений нет. Попробуй название на английском или код аэропорта.",
+  "Сәйкестік табылмады. Ағылшынша атауын немесе әуежай кодын енгізіңіз.",
+  "No matches. Try the English name or airport code."
+ ],
+ [
+  "Тарифы на даты — от найденной стоимости в одну сторону",
+  "Күндер бойынша тарифтер — бір бағытқа табылған ең төмен бағадан бастап",
+  "Date fares start from the lowest one-way price found"
+ ],
+ [
+  "Цены за всё проживание на выбранные ночи",
+  "Таңдалған түндерге тұрудың толық бағасы",
+  "Total stay prices for the selected nights"
+ ],
+ [
+  "Стоимость появится только после запроса к поисковому сервису. Пустые даты не означают отсутствие предложений.",
+  "Баға іздеуден кейін көрсетіледі. Бос күндер ұсыныс жоқ дегенді білдірмейді.",
+  "Prices appear after a search. Empty dates do not mean there are no offers."
+ ],
+ [
+  "Сначала выбери города вылета и прилёта.",
+  "Алдымен ұшу және келу қалаларын таңдаңыз.",
+  "Choose departure and arrival cities first."
+ ],
+ [
+  "Сначала выбери город отеля.",
+  "Алдымен қонақүй орналасқан қаланы таңдаңыз.",
+  "Choose a hotel city first."
+ ],
+ [
+  "Проверяем",
+  "Тексерілуде",
+  "Checking"
+ ],
+ [
+  "Проверено",
+  "Тексерілді",
+  "Checked"
+ ],
+ [
+  "дат.",
+  "күн.",
+  "dates."
+ ],
+ [
+  "Цены ориентировочные и могут измениться.",
+  "Бағалар болжамды және өзгеруі мүмкін.",
+  "Prices are estimates and may change."
+ ],
+ [
+  "Не удалось загрузить цены:",
+  "Бағаларды жүктеу мүмкін болмады:",
+  "Could not load prices:"
+ ],
+ [
+  "Сервис временно недоступен",
+  "Қызмет уақытша қолжетімсіз",
+  "Service temporarily unavailable"
+ ],
+ [
+  "Ошибка поиска",
+  "Іздеу қатесі",
+  "Search error"
+ ],
+ [
+  "Проверь даты вылета и возвращения",
+  "Ұшу және қайту күндерін тексеріңіз",
+  "Check your departure and return dates"
+ ],
+ [
+  "Проверь даты заезда и выезда",
+  "Келу және кету күндерін тексеріңіз",
+  "Check your check-in and check-out dates"
+ ],
+ [
+  "Ищем варианты",
+  "Нұсқалар ізделуде",
+  "Searching for offers"
+ ],
+ [
+  "Запрашиваем цены у поставщика. Подожди немного.",
+  "Қызмет көрсетушіден бағалар сұралып жатыр. Сәл күтіңіз.",
+  "Requesting prices from the provider. Please wait."
+ ],
+ [
+  "Не удалось получить предложения",
+  "Ұсыныстарды алу мүмкін болмады",
+  "Could not retrieve offers"
+ ],
+ [
+  "Это не означает, что билетов или отелей нет. Попробуй другие даты или проверь предложения у поставщика.",
+  "Бұл билет немесе қонақүй жоқ дегенді білдірмейді. Басқа күндерді таңдаңыз немесе қызмет көрсетушіден тексеріңіз.",
+  "This does not mean there are no flights or hotels. Try other dates or check with the provider."
+ ],
+ [
+  "Открыть",
+  "Ашу",
+  "Open"
+ ],
+ [
+  "Выбери аэропорты из подсказок.",
+  "Әуежайларды ұсыныстардан таңдаңыз.",
+  "Choose airports from the suggestions."
+ ],
+ [
+  "Выбери разные аэропорты.",
+  "Әртүрлі әуежайларды таңдаңыз.",
+  "Choose different airports."
+ ],
+ [
+  "перес.",
+  "ауысу",
+  "stops"
+ ],
+ [
+  "пересад.",
+  "ауысу",
+  "stops"
+ ],
+ [
+  "время уточняется",
+  "уақыты нақтыланады",
+  "time to be confirmed"
+ ],
+ [
+  "На эти даты нет предложений",
+  "Бұл күндерге ұсыныс жоқ",
+  "No offers for these dates"
+ ],
+ [
+  "вариантов",
+  "нұсқа",
+  "offers"
+ ],
+ [
+  "Цены предварительные. Для маршрута туда-обратно сначала выберите обратный рейс; багаж и итоговую стоимость подтвердит продавец.",
+  "Бағалар алдын ала көрсетілген. Барып-қайту сапары үшін алдымен кері рейсті таңдаңыз; жүк пен түпкілікті бағаны сатушы растайды.",
+  "Prices are preliminary. For round trips, select the return flight first; the seller confirms baggage and the final price."
+ ],
+ [
+  "Выбрать обратный рейс",
+  "Кері рейсті таңдау",
+  "Choose return flight"
+ ],
+ [
+  "Ориентир за туда-обратно",
+  "Барып-қайтудың болжамды бағасы",
+  "Estimated round-trip fare"
+ ],
+ [
+  "обратный рейс не выбран",
+  "кері рейс таңдалмаған",
+  "return flight not selected"
+ ],
+ [
+  "Ориентир по запросу на",
+  "Іздеудегі болжамды баға:",
+  "Search estimate for"
+ ],
+ [
+  "в одну сторону",
+  "бір бағытқа",
+  "one way"
+ ],
+ [
+  "туда-обратно",
+  "барып-қайту",
+  "round trip"
+ ],
+ [
+  "Возврат: уточнить",
+  "Қайтару: нақтылау қажет",
+  "Refunds: verify"
+ ],
+ [
+  "Купить у продавца",
+  "Сатушыдан сатып алу",
+  "Buy from seller"
+ ],
+ [
+  "Другой обратный рейс",
+  "Басқа кері рейс",
+  "Different return flight"
+ ],
+ [
+  "Измените фильтры.",
+  "Сүзгілерді өзгертіңіз.",
+  "Change your filters."
+ ],
+ [
+  "самолёт не указан",
+  "ұшақ көрсетілмеген",
+  "aircraft not specified"
+ ],
+ [
+  "класс уточняется",
+  "класы нақтыланады",
+  "class to be confirmed"
+ ],
+ [
+  "Багаж, ручная кладь, обмен и возврат не подтверждены поставщиком. Итоговую цену и условия необходимо проверить у продавца.",
+  "Жүк, қол жүгі, айырбастау және қайтару шарттарын қызмет көрсетуші растаған жоқ. Түпкілікті баға мен шарттарды сатушыдан тексеріңіз.",
+  "Baggage, cabin bags, changes and refunds are not confirmed by the provider. Check the final price and conditions with the seller."
+ ],
+ [
+  "Найти рейс и купить через",
+  "Рейсті тауып, сатып алу:",
+  "Find and book with"
+ ],
+ [
+  "не принимает платежи. Ссылка ведёт к поиску по маршруту и датам, а не гарантирует бронирование выбранного тарифа.",
+  "төлем қабылдамайды. Сілтеме бағыт пен күндер бойынша іздеуге апарады, таңдалған тарифке брондау кепілдігін бермейді.",
+  "does not accept payments. The link opens a route and date search and does not guarantee the selected fare."
+ ],
+ [
+  "Выберите обратный рейс",
+  "Кері рейсті таңдаңыз",
+  "Choose a return flight"
+ ],
+ [
+  "После выбора рейса обратно покажем тариф за весь маршрут для",
+  "Кері рейс таңдалғаннан кейін бүкіл бағыттың тарифі көрсетіледі. Ересектер саны:",
+  "After choosing the return flight, we will show the full-route fare for"
+ ],
+ [
+  "Загружаем обратные рейсы",
+  "Кері рейстер жүктелуде",
+  "Loading return flights"
+ ],
+ [
+  "Без пересадок",
+  "Ауысусыз",
+  "Nonstop"
+ ],
+ [
+  "Поставщик не вернул обратные рейсы для этого варианта. Выберите другой вылет или даты.",
+  "Бұл нұсқаға кері рейстер табылмады. Басқа ұшу рейсін немесе күндерді таңдаңыз.",
+  "The provider returned no inbound flights for this option. Choose another outbound flight or dates."
+ ],
+ [
+  "Не удалось загрузить обратные рейсы:",
+  "Кері рейстерді жүктеу мүмкін болмады:",
+  "Could not load return flights:"
+ ],
+ [
+  "Оба рейса выбраны и добавлены в бюджет",
+  "Екі рейс те таңдалып, бюджетке қосылды",
+  "Both flights selected and added to your budget"
+ ],
+ [
+  "Адрес уточняется",
+  "Мекенжайы нақтыланады",
+  "Address to be confirmed"
+ ],
+ [
+  "за всё проживание",
+  "бүкіл тұру мерзіміне",
+  "for the entire stay"
+ ],
+ [
+  "Смотреть цены и бронировать",
+  "Бағаларды қарап, брондау",
+  "See prices and book"
+ ],
+ [
+  "Для группы стоимость может быть приблизительной.",
+  "Топ үшін көрсетілген баға болжамды болуы мүмкін.",
+  "Group prices may be approximate."
+ ],
+ [
+  "Сравните цену, тип номера и условия отмены на",
+  "Бағаны, бөлме түрін және бас тарту шарттарын салыстырыңыз:",
+  "Compare prices, room types and cancellation terms on"
+ ],
+ [
+  "Возможны дополнительные налоги и сборы.",
+  "Қосымша салықтар мен алымдар болуы мүмкін.",
+  "Additional taxes and fees may apply."
+ ],
+ [
+  "Подробности не переданы поставщиком. Проверьте условия на странице бронирования.",
+  "Қызмет көрсетуші толық мәлімет бермеген. Шарттарды брондау бетінен тексеріңіз.",
+  "The provider did not supply details. Check conditions on the booking page."
+ ],
+ [
+  "Условия и актуальная стоимость — у продавца.",
+  "Шарттар мен өзекті баға — сатушыда.",
+  "The seller provides current prices and conditions."
+ ],
+ [
+  "Дополнительная информация временно недоступна. Используйте ссылку на бронирование.",
+  "Қосымша мәлімет уақытша қолжетімсіз. Брондау сілтемесін пайдаланыңыз.",
+  "Additional details are temporarily unavailable. Use the booking link."
+ ],
+ [
+  "Выбери город из подсказок.",
+  "Қаланы ұсыныстардан таңдаңыз.",
+  "Choose a city from the suggestions."
+ ],
+ [
+  "По выбранным датам поставщик не вернул отели с ценами.",
+  "Таңдалған күндерге бағасы көрсетілген қонақүйлер табылмады.",
+  "The provider returned no priced hotels for these dates."
+ ],
+ [
+  "оценка для группы",
+  "топқа арналған болжам",
+  "group estimate"
+ ],
+ [
+  "Цена найдена у",
+  "Баға табылған дереккөз:",
+  "Price found via"
+ ],
+ [
+  "поисковой системы",
+  "іздеу жүйесі",
+  "search provider"
+ ],
+ [
+  "и может измениться.",
+  "және өзгеруі мүмкін.",
+  "and may change."
+ ],
+ [
+  "Смотреть отели",
+  "Қонақүйлерді қарау",
+  "View hotels"
+ ],
+ [
+  "Посмотреть в",
+  "Қарау:",
+  "View on"
+ ],
+ [
+  "По выбранным датам отели не найдены",
+  "Таңдалған күндерге қонақүйлер табылмады",
+  "No hotels found for these dates"
+ ],
+ [
+  "Не удалось загрузить ещё:",
+  "Қосымша нәтижелерді жүктеу мүмкін болмады:",
+  "Could not load more:"
+ ],
+ [
+  "выберите нужный город",
+  "қажетті қаланы таңдаңыз",
+  "choose your city"
+ ],
+ [
+  "Вылет",
+  "Ұшу",
+  "Departure"
+ ],
+ [
+  "пассажиров",
+  "жолаушы",
+  "passengers"
+ ],
+ [
+  "число путешественников изменено",
+  "саяхатшылар саны өзгерді",
+  "traveler count changed"
+ ],
+ [
+  "даты/гости не совпадают",
+  "күндер немесе қонақтар саны сәйкес емес",
+  "dates or guests do not match"
+ ],
+ [
+  "Предварительный расчёт:",
+  "Алдын ала есеп:",
+  "Preliminary estimate:"
+ ],
+ [
+  "авиабилет учтён;",
+  "әуе билеті есепке алынды;",
+  "flight included;"
+ ],
+ [
+  "выбранный билет относится к другому направлению или группе;",
+  "таңдалған билет басқа бағытқа немесе топқа арналған;",
+  "the selected flight is for a different route or group;"
+ ],
+ [
+  "выберите авиабилет, чтобы учесть его стоимость;",
+  "құнын қосу үшін әуе билетін таңдаңыз;",
+  "select a flight to include its cost;"
+ ],
+ [
+  "отель учтён.",
+  "қонақүй есепке алынды.",
+  "hotel included."
+ ],
+ [
+  "выбранный отель не совпадает с городом, датами или числом гостей; проживание плановое.",
+  "таңдалған қонақүй қалаға, күндерге немесе қонақтар санына сәйкес емес; тұру құны жоспарлы.",
+  "the selected hotel does not match the city, dates or guests; accommodation is estimated."
+ ],
+ [
+  "проживание пока оценено по модели.",
+  "тұру құны әзірге үлгі бойынша есептелген.",
+  "accommodation is currently modeled."
+ ],
+ [
+  "Перед оплатой проверьте цены у продавца.",
+  "Төлем алдында сатушының бағасын тексеріңіз.",
+  "Verify prices with the seller before paying."
+ ],
+ [
+  "Параметры поиска изменены",
+  "Іздеу параметрлері өзгерді",
+  "Search settings changed"
+ ],
+ [
+  "Нажмите «Найти авиабилеты», чтобы обновить цены.",
+  "Бағаларды жаңарту үшін «Билеттерді іздеу» түймесін басыңыз.",
+  "Select “Search flights” to update prices."
+ ],
+ [
+  "Источник отелей изменён",
+  "Қонақүй дереккөзі өзгерді",
+  "Hotel provider changed"
+ ],
+ [
+  "Нажмите «Найти отели», чтобы запросить новые предложения.",
+  "Жаңа ұсыныстарды алу үшін «Қонақүйлерді іздеу» түймесін басыңыз.",
+  "Select “Search hotels” to get new offers."
+ ],
+ [
+  "день",
+  "күн",
+  "day"
+ ],
+ [
+  "дня",
+  "күн",
+  "days"
+ ],
+ [
+  "человек",
+  "адам",
+  "people"
+ ],
+ [
+  "человека",
+  "адам",
+  "people"
+ ],
+ [
+  "гостя",
+  "қонақ",
+  "guests"
+ ],
+ [
+  "взрослый",
+  "ересек",
+  "adult"
+ ],
+ [
+  "взрослых",
+  "ересек",
+  "adults"
+ ],
+ [
+  "стран",
+  "ел",
+  "countries"
+ ],
+ [
+  "ночь",
+  "түн",
+  "night"
+ ],
+ [
+  "ночи",
+  "түн",
+  "nights"
+ ],
+ [
+  "из",
+  "/",
+  "of"
+ ],
+ [
+  "от",
+  "бастап",
+  "from"
+ ],
+ [
+  "ч",
+  "сағ",
+  "h"
+ ],
+ [
+  "мин",
+  "мин",
+  "min"
+ ],
+ [
+  "Погулять по Султанахмету",
+  "Сұлтанахметті аралау",
+  "Explore Sultanahmet"
+ ],
+ [
+  "Посмотреть на Босфор",
+  "Босфорды тамашалау",
+  "See the Bosphorus"
+ ],
+ [
+  "Исследовать Гранд-базар",
+  "Үлкен базарды аралау",
+  "Explore the Grand Bazaar"
+ ],
+ [
+  "Посетить дворцы и музеи",
+  "Сарайлар мен мұражайларға бару",
+  "Visit palaces and museums"
+ ],
+ [
+  "Храмы и Старый город",
+  "Ғибадатханалар мен ескі қаланы көру",
+  "Temples and old town"
+ ],
+ [
+  "Ночной рынок",
+  "Түнгі базар",
+  "Visit the night market"
+ ],
+ [
+  "Прогулка по реке Чао Прайя",
+  "Чао-Прайя бойымен серуендеу",
+  "Explore the Chao Phraya river"
+ ],
+ [
+  "Местная уличная кухня",
+  "Жергілікті көше тағамы",
+  "Try local street food"
+ ],
+ [
+  "Сена и набережные",
+  "Сена жағалауында серуендеу",
+  "Walk along the Seine"
+ ],
+ [
+  "Монмартр",
+  "Монмартрға бару",
+  "Visit Montmartre"
+ ],
+ [
+  "Лувр или музей Орсе",
+  "Лувр не Орсе мұражайы",
+  "Visit the Louvre or Musée d’Orsay"
+ ],
+ [
+  "Сады и пекарни",
+  "Бақтар мен наубайханалар",
+  "Discover gardens and bakeries"
+ ],
+ [
+  "Старый Тбилиси",
+  "Ескі Тбилиси",
+  "Explore Old Tbilisi"
+ ],
+ [
+  "Крепость Нарикала",
+  "Нарикала қамалы",
+  "Narikala Fortress"
+ ],
+ [
+  "Серные бани",
+  "Күкірт моншалары",
+  "Sulfur baths"
+ ],
+ [
+  "Грузинские кафе",
+  "Грузин кафелері",
+  "Georgian cafés"
+ ],
+ [
+  "Медеу и горы",
+  "Медеу мен таулар",
+  "Medeu and the mountains"
+ ],
+ [
+  "Зелёный базар",
+  "Жасыл базар",
+  "Green Bazaar"
+ ],
+ [
+  "Музеи и парки",
+  "Мұражайлар мен саябақтар",
+  "Museums and parks"
+ ],
+ [
+  "Местная кухня",
+  "Ұлттық тағамдар",
+  "Local cuisine"
+ ],
+ [
+  "Старый город",
+  "Ескі қаланы аралау",
+  "Explore the old town"
+ ],
+ [
+  "Базар Чорсу",
+  "Чорсу базары",
+  "Chorsu Bazaar"
+ ],
+ [
+  "Метро и музеи",
+  "Метро мен мұражайлар",
+  "Metro stations and museums"
+ ],
+ [
+  "Поездка в Самарканд",
+  "Самарқандқа саяхат",
+  "Day trip to Samarkand"
+ ],
+ [
+  "Ичери-шехер",
+  "Ішерішаһар",
+  "Icherisheher old town"
+ ],
+ [
+  "Приморский бульвар",
+  "Жағалау бульвары",
+  "Seaside Boulevard"
+ ],
+ [
+  "Центр Гейдара Алиева",
+  "Гейдар Әлиев орталығы",
+  "Heydar Aliyev Center"
+ ],
+ [
+  "Музеи города",
+  "Қала мұражайлары",
+  "City museums"
+ ],
+ [
+  "Дубай-Крик",
+  "Дубай-Крик",
+  "Dubai Creek"
+ ],
+ [
+  "Рынки Дейры",
+  "Дейра базарлары",
+  "Deira markets"
+ ],
+ [
+  "Пляжи",
+  "Жағажайлар",
+  "Beaches"
+ ],
+ [
+  "Смотровые площадки",
+  "Бақылау алаңдары",
+  "Viewpoints"
+ ],
+ [
+  "Колизей снаружи",
+  "Колизей маңымен серуендеу",
+  "Walk around the Colosseum"
+ ],
+ [
+  "Форум и площади",
+  "Форум мен алаңдар",
+  "Forum and piazzas"
+ ],
+ [
+  "Фонтаны",
+  "Субұрқақтар",
+  "Fountains"
+ ],
+ [
+  "Местные траттории",
+  "Жергілікті тратториялар",
+  "Local trattorias"
+ ],
+ [
+  "Готический квартал",
+  "Готика кварталы",
+  "Gothic Quarter"
+ ],
+ [
+  "Городские пляжи",
+  "Қалалық жағажайлар",
+  "City beaches"
+ ],
+ [
+  "Архитектура Гауди",
+  "Гауди сәулеті",
+  "Gaudí architecture"
+ ],
+ [
+  "Продуктовые рынки",
+  "Азық-түлік базарлары",
+  "Food markets"
+ ],
+ [
+  "Карлов мост",
+  "Карл көпірі",
+  "Charles Bridge"
+ ],
+ [
+  "Староместская площадь",
+  "Ескі қала алаңы",
+  "Old Town Square"
+ ],
+ [
+  "Пражский град",
+  "Прага қамалы",
+  "Prague Castle"
+ ],
+ [
+  "Чешские кафе",
+  "Чех кафелері",
+  "Czech cafés"
+ ],
+ [
+  "Башни Петронас",
+  "Петронас мұнаралары",
+  "Petronas Towers"
+ ],
+ [
+  "Пещеры Бату",
+  "Бату үңгірлері",
+  "Batu Caves"
+ ],
+ [
+  "Фуд-корты",
+  "Фуд-корттар",
+  "Food courts"
+ ],
+ [
+  "Парки города",
+  "Қала саябақтары",
+  "City parks"
+ ],
+ [
+  "Пляжи Дананга",
+  "Дананг жағажайлары",
+  "Da Nang beaches"
+ ],
+ [
+  "Мраморные горы",
+  "Мәрмәр таулары",
+  "Marble Mountains"
+ ],
+ [
+  "Рынки",
+  "Жергілікті базарлар",
+  "Local markets"
+ ],
+ [
+  "Поездка в Хойан",
+  "Хойанға саяхат",
+  "Visit Hoi An"
+ ],
+ [
+  "Асакуса",
+  "Асакусаны аралау",
+  "Explore Asakusa"
+ ],
+ [
+  "Сады и храмы",
+  "Бақтар мен ғибадатханалар",
+  "Gardens and shrines"
+ ],
+ [
+  "Район Сибуя",
+  "Сибуя ауданы",
+  "Shibuya district"
+ ],
+ [
+  "Уличные кафе",
+  "Жергілікті кафелер",
+  "Local cafés"
+ ],
+ [
+  "Старый город",
+  "Ескі қаланы аралау",
+  "Explore the old town"
+ ],
+ [
+  "Озеро Цюрих",
+  "Цюрих көлі",
+  "Lake Zurich"
+ ],
+ [
+  "Музеи",
+  "Қала мұражайлары",
+  "City museums"
+ ],
+ [
+  "Прогулки по окрестностям",
+  "Қала сыртында серуендеу",
+  "Nearby nature walks"
+ ],
+ [
+  "Набережная",
+  "Жағалаумен серуендеу",
+  "Waterfront promenade"
+ ],
+ [
+  "Городские музеи",
+  "Қалалық мұражайлар",
+  "City museums"
+ ],
+ [
+  "Геотермальные бассейны",
+  "Геотермалдық бассейндер",
+  "Geothermal pools"
+ ],
+ [
+  "Природные маршруты",
+  "Табиғи маршруттар",
+  "Scenic nature routes"
+ ],
+ [
+  "Marina Bay",
+  "Marina Bay",
+  "Marina Bay"
+ ],
+ [
+  "Gardens by the Bay",
+  "Gardens by the Bay",
+  "Gardens by the Bay"
+ ],
+ [
+  "Hawker centres",
+  "Hawker орталықтары",
+  "Hawker centres"
+ ],
+ [
+  "Ботанический сад",
+  "Ботаникалық бақ",
+  "Botanic Gardens"
+ ],
+ [
+  "Астана",
+  "Астана",
+  "Astana"
+ ],
+ [
+  "Алматы",
+  "Алматы",
+  "Almaty"
+ ],
+ [
+  "Париж",
+  "Париж",
+  "Paris"
+ ],
+ [
+  "Шарль-де-Голль",
+  "Шарль-де-Голль",
+  "Charles de Gaulle"
+ ],
+ [
+  "Орли",
+  "Орли",
+  "Orly"
+ ],
+ [
+  "Лондон",
+  "Лондон",
+  "London"
+ ],
+ [
+  "Хитроу",
+  "Хитроу",
+  "Heathrow"
+ ],
+ [
+  "Нью-Йорк",
+  "Нью-Йорк",
+  "New York"
+ ],
+ [
+  "Дубай",
+  "Дубай",
+  "Dubai"
+ ],
+ [
+  "Стамбул",
+  "Ыстамбұл",
+  "Istanbul"
+ ],
+ [
+  "Бангкок",
+  "Бангкок",
+  "Bangkok"
+ ],
+ [
+  "Ташкент",
+  "Ташкент",
+  "Tashkent"
+ ],
+ [
+  "Баку",
+  "Баку",
+  "Baku"
+ ],
+ [
+  "Пекин",
+  "Бейжің",
+  "Beijing"
+ ],
+ [
+  "Шанхай",
+  "Шанхай",
+  "Shanghai"
+ ],
+ [
+  "Гонконг",
+  "Гонконг",
+  "Hong Kong"
+ ],
+ [
+  "Сингапур",
+  "Сингапур",
+  "Singapore"
+ ],
+ [
+  "Токио",
+  "Токио",
+  "Tokyo"
+ ],
+ [
+  "Ханэда",
+  "Ханэда",
+  "Haneda"
+ ],
+ [
+  "Сеул",
+  "Сеул",
+  "Seoul"
+ ],
+ [
+  "Рим",
+  "Рим",
+  "Rome"
+ ],
+ [
+  "Барселона",
+  "Барселона",
+  "Barcelona"
+ ],
+ [
+  "Цюрих",
+  "Цюрих",
+  "Zurich"
+ ],
+ [
+  "Женева",
+  "Женева",
+  "Geneva"
+ ],
+ [
+  "Рейкьявик",
+  "Рейкьявик",
+  "Reykjavik"
+ ],
+ [
+  "Берлин",
+  "Берлин",
+  "Berlin"
+ ],
+ [
+  "Вена",
+  "Вена",
+  "Vienna"
+ ],
+ [
+  "Куала-Лумпур",
+  "Куала-Лумпур",
+  "Kuala Lumpur"
+ ],
+ [
+  "Санья",
+  "Санья",
+  "Sanya"
+ ],
+ [
+  "Шэньчжэнь",
+  "Шэньчжэнь",
+  "Shenzhen"
+ ],
+ [
+  "Гуанчжоу",
+  "Гуанчжоу",
+  "Guangzhou"
+ ],
+ [
+  "Шымкент",
+  "Шымкент",
+  "Shymkent"
+ ],
+ [
+  "Актау",
+  "Ақтау",
+  "Aktau"
+ ],
+ [
+  "Ереван",
+  "Ереван",
+  "Yerevan"
+ ],
+ [
+  "Тбилиси",
+  "Тбилиси",
+  "Tbilisi"
+ ],
+ [
+  "Кишинёв",
+  "Кишинев",
+  "Chisinau"
+ ],
+ [
+  "Дананг",
+  "Дананг",
+  "Da Nang"
+ ],
+ [
+  "Пхукет",
+  "Пхукет",
+  "Phuket"
+ ],
+ [
+  "Мюнхен",
+  "Мюнхен",
+  "Munich"
+ ],
+ [
+  "Амстердам",
+  "Амстердам",
+  "Amsterdam"
+ ],
+ [
+  "Прага",
+  "Прага",
+  "Prague"
+ ],
+ [
+  "Бишкек",
+  "Бішкек",
+  "Bishkek"
+ ],
+ [
+  "Душанбе",
+  "Душанбе",
+  "Dushanbe"
+ ]
+]);
+ entries.push(...[["Фото","Фото","Photo"],["Фотография","Фотосурет","Photo"],["Номер уточняется у продавца","Бөлмені сатушыдан нақтылаңыз","Confirm the room with the seller"],["Поставщик","Қызмет көрсетуші","Provider"],["Сайт бронирования","Брондау сайты","Booking website"],["Не удалось выполнить запрос. Повторите попытку позже.","Сұрауды орындау мүмкін болмады. Кейінірек қайталап көріңіз.","Could not complete the request. Please try again later."],["Превышен лимит писем. Попробуйте позже.","Хат жіберу шегіне жеттіңіз. Кейінірек қайталап көріңіз.","Too many emails requested. Please try again later."],["Проверьте подключение к интернету.","Интернет байланысын тексеріңіз.","Check your internet connection."],["Для онлайн-поиска требуется SERPAPI_API_KEY в настройках Vercel.","Іздеу қызметі әзірге қолжетімсіз.","Online search is currently unavailable."],["Лимит запросов API исчерпан. Попробуйте позже.","Іздеу шегіне жеттіңіз. Кейінірек қайталап көріңіз.","Search limit reached. Please try again later."],["Поисковый сервис недоступен","Іздеу қызметі қолжетімсіз","Search service unavailable"],["Поставщик поиска временно недоступен. Попробуйте позже.","Іздеу қызметі уақытша қолжетімсіз. Кейінірек қайталап көріңіз.","The search provider is temporarily unavailable. Please try again later."],["Поиск занимает слишком много времени. Попробуйте снова.","Іздеу тым ұзаққа созылды. Қайта көріңіз.","The search timed out. Please try again."],["Укажите разные коды аэропортов IATA.","Әртүрлі әуежайлардың IATA кодтарын енгізіңіз.","Enter different IATA airport codes."],["Укажите корректные даты поездки в течение 365 дней.","Алдағы 365 күн ішіндегі дұрыс сапар күндерін енгізіңіз.","Enter valid travel dates within the next 365 days."],["Можно искать для 1–9 взрослых.","1–9 ересек үшін іздеуге болады.","Search for 1–9 adults."],["Некорректные фильтры перелёта.","Ұшу сүзгілері дұрыс емес.","Invalid flight filters."],["Некорректный вариант рейса.","Рейс нұсқасы дұрыс емес.","Invalid flight option."],["Укажите город проживания.","Тұратын қаланы енгізіңіз.","Enter a city for your stay."],["Укажите корректные даты проживания.","Тұру күндерін дұрыс енгізіңіз.","Enter valid stay dates."],["Можно искать для 1–9 гостей.","1–9 қонақ үшін іздеуге болады.","Search for 1–9 guests."],["Максимальная длительность проживания — 30 ночей.","Ең ұзақ тұру мерзімі — 30 түн.","The maximum stay is 30 nights."],["Некорректная страница поиска.","Іздеу беті дұрыс емес.","Invalid search page."],["Некорректный номер страницы.","Бет нөмірі дұрыс емес.","Invalid page number."],["Для дополнительных страниц переключитесь на отдельный источник.","Қосымша беттер үшін жеке дереккөзді таңдаңыз.","Select a single provider to see more pages."],["Неправильные данные отеля","Қонақүй деректері дұрыс емес","Invalid hotel details"],["Нет кода отеля","Қонақүй коды жоқ","Missing hotel code"],["Нет предложения для бронирования","Брондауға ұсыныс жоқ","No booking offer available"],["Некорректная дата календаря.","Күнтізбе күні дұрыс емес.","Invalid calendar date."],["Некорректная длительность проживания.","Тұру ұзақтығы дұрыс емес.","Invalid stay duration."],["Укажите аэропорты.","Әуежайларды енгізіңіз.","Enter airports."],["Укажите город отеля.","Қонақүй орналасқан қаланы енгізіңіз.","Enter the hotel city."],["Неизвестный запрос.","Белгісіз сұрау.","Unknown request."],["Ошибка сервера поиска. Попробуйте позднее.","Іздеу серверінде қате пайда болды. Кейінірек қайталап көріңіз.","Search server error. Please try again later."],["Поиск временно недоступен.","Іздеу уақытша қолжетімсіз.","Search is temporarily unavailable."],["Цена найдена для запроса с указанным числом взрослых; итоговую стоимость всей группы подтвердит продавец.","Баға көрсетілген ересектер санына табылды; топтың түпкілікті құнын сатушы растайды.","The price is for the requested number of adults; the seller confirms the final group total."],["Показана предварительная цена туда-обратно для запроса с указанным числом взрослых. Выберите обратный рейс; итоговую стоимость группы подтвердит продавец.","Көрсетілген ересектер санына барып-қайтудың алдын ала бағасы берілген. Кері рейсті таңдаңыз; топтың түпкілікті құнын сатушы растайды.","This is a preliminary round-trip price for the requested adults. Choose the return flight; the seller confirms the final group total."],["Цена получена для выбранной пары рейсов и указанного числа взрослых; окончательная стоимость и доступность подтверждаются у продавца.","Баға таңдалған екі рейс пен ересектер санына арналған; түпкілікті құн мен қолжетімділікті сатушы растайды.","The price covers the selected flights and adults; the seller confirms the final cost and availability."],["Цена за один номер; категорию уточните у поставщика","Бір бөлменің бағасы; санатын қызмет көрсетушіден нақтылаңыз","Price per room; confirm the category with the provider"],["Цену и условия номера необходимо подтвердить у поставщика.","Бөлме бағасы мен шарттарын қызмет көрсетушіден растаңыз.","Confirm the room price and conditions with the provider."],["Цена на компанию рассчитана как стоимость одного номера × число номеров. Google Hotels не подтвердил наличие нескольких одинаковых номеров; перепроверьте размещение и итоговую цену перед оплатой.","Топтың бағасы бір бөлме құнын бөлмелер санына көбейту арқылы есептелді. Google Hotels бірнеше бірдей бөлменің барын растаған жоқ; төлем алдында орналасу мен түпкілікті бағаны тексеріңіз.","The group total is the room price multiplied by the number of rooms. Google Hotels has not confirmed availability of multiple identical rooms; verify accommodation and the final price before paying."],["Стоимость относится к поиску","Баға іздеуге арналған:","The price is for a search for"],["номеров. Возможны дополнительные налоги и сборы; итоговую сумму и наличие подтвердит продавец.","бөлме. Қосымша салықтар мен алымдар болуы мүмкін; түпкілікті соманы және қолжетімділікті сатушы растайды.","rooms. Additional taxes and fees may apply; the seller confirms the total and availability."],["Сравнение двух поставщиков по выбранным датам. Цены могут различаться по налогам, категориям номера и условиям размещения. Для дополнительных результатов откройте источник по отдельности.","Таңдалған күндерге екі қызмет көрсетушінің ұсыныстарын салыстыру. Бағалар салықтарға, бөлме санатына және тұру шарттарына қарай өзгереді. Қосымша нәтижелер үшін дереккөзді бөлек ашыңыз.","Compare two providers for your dates. Prices may differ by taxes, room category and stay conditions. Open each provider separately for more results."],["Это минимальная найденная цена в одну сторону на одного взрослого; не билет туда-обратно.","Бұл бір ересекке бір бағытқа табылған ең төмен баға; барып-қайту билеті емес.","This is the lowest one-way price found for one adult, not a round-trip ticket."],["Это найденная стоимость одного номера за всю поездку; наличие нужно подтвердить.","Бұл бүкіл сапарға бір бөлменің табылған құны; қолжетімділікті растау қажет.","This is the price found for one room for the entire trip; availability must be confirmed."],["дат","күн","dates"],["гостей и","қонақ және","guests and"],["Язык изменён. Повторите поиск, чтобы получить предложения на выбранном языке.","Тіл өзгерді. Таңдалған тілде ұсыныстар алу үшін іздеуді қайталаңыз.","Language changed. Search again for offers in the selected language."]]);
+ entries.push(...[["Qansha? Главная","Qansha? Басты бет","Qansha? Home"],["Планирование путешествия","Сапарды жоспарлау","Trip planning"],["Разделы Qansha?","Qansha? бөлімдері","Qansha? sections"],["Валюта билетов","Билет валютасы","Flight currency"],["Уровень проживания","Тұру деңгейі","Accommodation level"],["Категория отеля","Қонақүй санаты","Hotel category"],["Три сценария путешествия","Үш сапар нұсқасы","Three travel options"],["Сколько стоит жизнь в выбранной стране","Таңдалған елдегі өмір сүру құны","Cost of living in the selected country"],["Сайт тілі / Язык / Language","Сайт тілі","Site language"],["Сравнивайте предложения авиабилетов, выбирайте отели и планируйте бюджет путешествия в Qansha?.","Qansha? сайтында әуе билеттерін салыстырып, қонақүй таңдап, сапар бюджетін жоспарлаңыз.","Compare flights, choose hotels and plan your travel budget with Qansha?."],["Сколько? Один ответ","Қанша? Бір жауап","How much? One answer"],["авиабилеты и отели","әуе билеттері мен қонақүйлер","flights and hotels"]]);
+ entries.push(...[["Фото отеля","Қонақүй фотосы","Hotel photo"],["Бесплатный Wi-Fi","Тегін Wi-Fi","Free Wi-Fi"],["Wi-Fi","Wi-Fi","Wi-Fi"],["Бесплатная парковка","Тегін тұрақ","Free parking"],["Парковка","Тұрақ","Parking"],["Кондиционер","Кондиционер","Air conditioning"],["Бассейн","Бассейн","Pool"],["Открытый бассейн","Ашық бассейн","Outdoor pool"],["Крытый бассейн","Жабық бассейн","Indoor pool"],["Ресторан","Мейрамхана","Restaurant"],["Завтрак включён","Таңғы ас кіреді","Breakfast included"],["Бесплатный завтрак","Тегін таңғы ас","Free breakfast"],["Фитнес-центр","Фитнес орталығы","Fitness center"],["Спа","Спа","Spa"],["Трансфер до аэропорта","Әуежайға тасымал","Airport shuttle"],["Можно с домашними животными","Үй жануарларымен кіруге болады","Pet-friendly"],["Подходит для детей","Балаларға қолайлы","Kid-friendly"],["Номера для некурящих","Темекі шекпейтіндерге арналған бөлмелер","Non-smoking rooms"],["Обслуживание номеров","Бөлмеге қызмет көрсету","Room service"],["Прачечная","Кір жуу қызметі","Laundry service"],["Кухня","Асүй","Kitchen"],["Двухместный номер","Екі адамдық бөлме","Double room"],["Эконом-класс","Үнемді класс","Economy"],["Премиум-эконом-класс","Премиум үнемді класс","Premium economy"]]);
+ const regionNames=['ru','kk','en'].map(l=>new Intl.DisplayNames([l],{type:'region',fallback:'none'}));
+ for(let a=65;a<=90;a++)for(let b=65;b<=90;b++){const code=String.fromCharCode(a,b);try{const ru=regionNames[0].of(code);if(ru)entries.push([ru,regionNames[1].of(code)||ru,regionNames[2].of(code)||ru]);}catch{}}
  const dict={kk:Object.create(null),en:Object.create(null)};
  entries.forEach(([ru,kk,en])=>{dict.kk[ru]=kk;dict.en[ru]=en});
  const cities={
@@ -187,36 +1494,76 @@
  };
  const locale=()=>({kk:'kk-KZ',ru:'ru-RU',en:'en-US'})[lang];
  let lang='ru';try{const saved=localStorage.getItem('qansha-language');if(['ru','kk','en'].includes(saved))lang=saved}catch{}
- let originals=new WeakMap(),last=new WeakMap(),queued=false;
- const isExempt=n=>n.parentElement?.closest('script,style,textarea,[data-no-translate]');
- function t(text){let s=String(text??'');if(lang==='ru')return s;
-  if(dict[lang][s])return dict[lang][s];
-  // Translate stable phrases inside computed summaries; do not touch prices or numeric values.
-  for(const [source,translation] of Object.entries(dict[lang]).sort((a,b)=>b[0].length-a[0].length)){
-   if(s.includes(source))s=s.split(source).join(translation);
-  }
-  if(lang==='en')s=s.replace(/\b(\d+)\s+д(е|н)(нь|ня|ней)\b/g,'$1 days').replace(/\b(\d+)\s+гост(ь|я|ей)\b/g,'$1 guests');
-  return s;
+ const sourceSet=new Set(entries.map(row=>row[0]));
+ const reverse=Object.create(null);
+ // Recover canonical source for dynamic content. Match complete words in one pass.
+ entries.forEach(([ru,kk,en])=>{for(const value of [kk,en])if(value&&/[\p{L}]/u.test(value)&&!sourceSet.has(value)&&value!==ru)reverse[value]=ru});
+ const escapeRE=s=>s.replace(/[.*+?^$()|[\]\\{}]/g,'\\$&');
+ function matcher(map){
+  const keys=Object.keys(map).filter(Boolean).sort((a,b)=>b.length-a.length);
+  return new RegExp(keys.map(key=>(/^[\p{L}\p{N}_]/u.test(key)?'(?<![\\p{L}\\p{N}_])':'')+escapeRE(key)+(/[\p{L}\p{N}_]$/u.test(key)?'(?![\\p{L}\\p{N}_])':'')).join('|'),'gu');
  }
- function transNode(node){if(isExempt(node))return;const current=node.nodeValue;if(!current||!current.trim())return;
-  const before=last.get(node);
-  if(!originals.has(node)||before!==undefined&&before!==current)originals.set(node,current);
-  const original=originals.get(node);const trimmed=original.trim();
-  const translated=t(trimmed);
-  const target=translated===trimmed?original:original.replace(trimmed,translated);
-  if(node.nodeValue!==target)node.nodeValue=target;
+ const canonicalMap={...reverse};sourceSet.forEach(source=>{canonicalMap[source]=source});canonicalMap['Qansha?']='Qansha?';
+ const reverseRE=matcher(canonicalMap), patterns={kk:matcher(dict.kk),en:matcher(dict.en)};
+ function replaceCopy(value,regex,map){
+  // Email addresses and URLs are data, not interface copy.
+  return value.split(/((?:https?:\/\/[^\s]+)|(?:[^\s@]+@[^\s@]+\.[^\s@]+))/g)
+    .map((part,i)=>i%2?part:part.replace(regex,match=>map[match])).join('');
+ }
+ const canonical=value=>replaceCopy(String(value??''),reverseRE,canonicalMap);
+ function t(value){
+  const source=canonical(value);
+  return lang==='ru'?source:replaceCopy(source,patterns[lang],dict[lang]);
+ }
+ const originals=new WeakMap(),last=new WeakMap(),attributes=new WeakMap();
+ let queued=false,observer=null;
+ const isExempt=n=>n.parentElement?.closest('script,style,textarea,[data-no-translate],[data-lang]');
+ function transNode(node){
+  if(isExempt(node))return;
+  const current=node.nodeValue;if(!current||!current.trim())return;
+  if(!originals.has(node)||last.get(node)!==current)originals.set(node,canonical(current));
+  const source=originals.get(node),trimmed=source.trim(),translated=t(trimmed);
+  const target=source.replace(trimmed,translated);
+  if(current!==target)node.nodeValue=target;
   last.set(node,target);
  }
- function translateAll(){if(!document.body)return;const walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;while((node=walk.nextNode()))transNode(node);
-  document.querySelectorAll('input[placeholder], [title], [aria-label]').forEach(el=>{for(const key of ['placeholder','title','aria-label']){if(!el.hasAttribute(key))continue;const normalizedKey=key.replace(/[^A-Za-z]/g,'');const base='i18nOrig'+normalizedKey;const prior='i18nLast'+normalizedKey;let val=el.getAttribute(key);if(el.dataset[prior]!==val)el.dataset[base]=val;const translated=t(el.dataset[base]||val);if(val!==translated)el.setAttribute(key,translated);el.dataset[prior]=translated}});
-  document.querySelectorAll('[data-lang]').forEach(b=>{b.classList.toggle('active',b.dataset.lang===lang);b.setAttribute('aria-pressed',String(b.dataset.lang===lang))});
-  document.documentElement.lang=lang;
-  document.title=lang==='kk'?'Qansha? — Бір жауап · Әуе билеттері және қонақүйлер':lang==='en'?'How much? — One answer · Flights and hotels':'Сколько? — Один ответ · Авиабилеты и отели';
+ const observedAttributes=['placeholder','title','aria-label','alt'];
+ function translateAll(){
+  if(!document.body)return;
+  observer?.disconnect();
+  try{
+   const walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;while((node=walk.nextNode()))transNode(node);
+   document.querySelectorAll('[placeholder],[title],[aria-label],[alt]').forEach(el=>{
+    if(el.closest('[data-no-translate],[data-lang]'))return;
+    let saved=attributes.get(el);if(!saved){saved={};attributes.set(el,saved)}
+    for(const key of observedAttributes){
+     if(!el.hasAttribute(key))continue;
+     const value=el.getAttribute(key);
+     if(!saved[key]||saved[key].last!==value)saved[key]={source:canonical(value)};
+     const target=t(saved[key].source);
+     if(value!==target)el.setAttribute(key,target);
+     saved[key].last=target;
+    }
+   });
+   document.querySelectorAll('[data-lang]').forEach(b=>{b.classList.toggle('active',b.dataset.lang===lang);b.setAttribute('aria-pressed',String(b.dataset.lang===lang))});
+   document.documentElement.lang=lang;
+   const description=document.querySelector?.('meta[name="description"]');if(description)description.content=t('Сравнивайте предложения авиабилетов, выбирайте отели и планируйте бюджет путешествия в Qansha?.');
+   document.title=lang==='kk'?'Qansha? — Бір жауап · Әуе билеттері және қонақүйлер':lang==='en'?'Qansha? — One answer · Flights and hotels':'Qansha? — Один ответ · Авиабилеты и отели';
+  }finally{observer?.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:observedAttributes})}
  }
  function refresh(){translateAll()}
  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;translateAll()})}
- function setLang(next){if(!['ru','kk','en'].includes(next))return;lang=next;try{localStorage.setItem('qansha-language',next)}catch{};window.QANSHA_BUDGET?.refresh();translateAll();}
- window.QANSHA_I18N={t,city:(code,fallback)=>{const pair=Object.entries(cities).find(([k,v])=>k===code||v[0]===fallback);return pair?pair[1][lang==='kk'?1:lang==='en'?2:0]:fallback},idea:(country,i,fallback)=>lang==='ru'?fallback:(ideas[country]?.[i]?.[lang==='kk'?0:1]||fallback),locale,language:()=>lang,refresh,setLanguage:setLang};
- document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));translateAll();const observer=new MutationObserver(schedule);observer.observe(document.body,{childList:true,subtree:true,characterData:true});window.QANSHA_BUDGET?.refresh();translateAll();});
+ function setLang(next){
+  if(!['ru','kk','en'].includes(next))return;
+  lang=next;try{localStorage.setItem('qansha-language',next)}catch{}
+  window.QANSHA_BUDGET?.refresh();
+  window.QANSHA_UI?.refreshLocale();
+  translateAll();
+ }
+ window.QANSHA_I18N={t,city:(code,fallback)=>t(fallback),idea:(country,i,fallback)=>t(fallback),locale,language:()=>lang,refresh,setLanguage:setLang};
+ document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+  observer=new MutationObserver(schedule);
+  window.QANSHA_BUDGET?.refresh();window.QANSHA_UI?.refreshLocale();translateAll();
+ });
 })();
-// Extra API status copy uses the same localization dictionary via the live DOM translator.

@@ -95,3 +95,15 @@ test('combined hotel search returns Google and Booking.com offers using two API 
  assert.equal(result.body.offers[1].source,'Google Hotels');
  assert.equal(result.body.nextPageToken,null);
 });
+
+test('search forwards the selected language and caches languages separately',async()=>{
+ const query={...params,kind:'flights',origin:'ALA',destination:'BER'};
+ for(const lang of ['kk','en','ru']){
+  const result=await call({...query,lang},{best_flights:[]});
+  assert.equal(result.statusCode,200);
+  assert.equal(result.calls.length,1);
+  assert.equal(result.calls[0].searchParams.get('hl'),lang);
+ }
+ const cached=await call({...query,lang:'en'},{best_flights:[]});
+ assert.equal(cached.calls.length,0);
+});
