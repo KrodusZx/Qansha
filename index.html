@@ -14,6 +14,7 @@
  <link rel="stylesheet" href="world.css">
  <link rel="stylesheet" href="qansha7.css">
  <link rel="stylesheet" href="compare-cities.css">
+ <link rel="stylesheet" href="auth.css">
  <script src="config.js" defer></script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
  <script src="app.js" defer></script>
@@ -126,7 +127,30 @@
   </main>
  </div>
  <div class="modal-backdrop" id="calendarModal" hidden><div class="modal-sheet calendar-sheet" role="dialog" aria-modal="true" aria-label="Выбор даты"><div class="modal-head"><div><h2 id="calendarTitle">Дата вылета</h2><p id="calendarSubtitle">Цены показываются только после онлайн-проверки</p></div><button type="button" class="icon-button modal-close" data-close="calendarModal" aria-label="Закрыть">×</button></div><div class="calendar-month"><button type="button" id="monthPrev" aria-label="Предыдущий месяц">‹</button><strong id="monthName"></strong><button type="button" id="monthNext" aria-label="Следующий месяц">›</button></div><div class="calendar-week"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div><div class="calendar-grid" id="calendarGrid"></div><div class="calendar-bottom"><p id="calendarHelp">Чтобы увидеть минимальные цены на дни, запроси их у поискового сервиса. Пустая цена — не отсутствие билетов.</p><button id="loadCalendar" type="button" class="outline-btn">Узнать цены на 7 дат</button></div></div></div>
- <div class="modal-backdrop" id="accountModal" hidden><div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Вход в аккаунт"><div class="modal-head"><div><h2>Личный кабинет</h2><p>Вход по ссылке на почту</p></div><button type="button" class="icon-button modal-close" data-close="accountModal" aria-label="Закрыть">×</button></div><div class="account-form"><input type="email" id="authEmail" placeholder="Ваш email" autocomplete="email"><button class="primary-btn" type="button" id="sendLink">Отправить ссылку</button><button class="outline-btn" id="logOut" type="button" hidden>Выйти</button><p class="modal-message" id="authMessage">Авторизация требует подключения Supabase.</p></div></div></div>
+ <div class="modal-backdrop" id="accountModal" hidden>
+  <div class="modal-sheet auth-sheet" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+   <div class="modal-head"><div><h2 id="authTitle">Личный кабинет Qansha</h2><p id="authSubtitle">Сохраняйте избранные билеты и отели в своём аккаунте</p></div><button type="button" class="icon-button modal-close" data-close="accountModal" aria-label="Закрыть">×</button></div>
+   <div id="authUnavailable" class="auth-unavailable" hidden><strong>Регистрация пока недоступна</strong><p>Сервис аккаунтов настраивается. Поиск билетов и отелей работает без регистрации.</p></div>
+   <div id="authGuest">
+    <div class="auth-mode-tabs" role="group" aria-label="Режим аккаунта">
+     <button type="button" data-auth-mode="signin" class="is-active" aria-pressed="true">Войти</button>
+     <button type="button" data-auth-mode="signup" aria-pressed="false">Зарегистрироваться</button>
+    </div>
+    <form class="account-form" id="authForm" autocomplete="on" novalidate>
+     <div class="auth-field" id="authNameField" hidden><label for="authName">Имя (необязательно)</label><input type="text" id="authName" autocomplete="name" maxlength="70" placeholder="Ваше имя"></div>
+     <div class="auth-field" id="authEmailField"><label for="authEmail">Электронная почта</label><input type="email" id="authEmail" autocomplete="username" inputmode="email" maxlength="254" placeholder="example@email.com" required></div>
+     <div class="auth-field" id="authPasswordField"><label for="authPassword">Пароль</label><input type="password" id="authPassword" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Не менее 8 символов" required></div>
+     <div class="auth-field" id="authConfirmField" hidden><label for="authConfirm">Повторите пароль</label><input type="password" id="authConfirm" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Повторите пароль"></div>
+     <button type="submit" class="primary-btn" id="authSubmit">Войти</button>
+     <button type="button" class="auth-text-button" id="authForgot">Забыли пароль?</button>
+     <button type="button" class="auth-text-button" id="authBack" hidden>← Вернуться ко входу</button>
+    </form>
+   </div>
+   <div id="authUser" class="auth-user" hidden><div class="auth-avatar" aria-hidden="true">✓</div><strong>Вы вошли в Qansha</strong><p id="authUserEmail"></p><p>Ваше избранное будет доступно после входа с другого устройства.</p><button type="button" class="outline-btn" id="logOut">Выйти из аккаунта</button></div>
+   <p class="modal-message auth-status" id="authMessage" role="status" aria-live="polite">Подключение аккаунта…</p>
+   <p class="auth-note">Мы используем email для входа и подтверждения регистрации. Никогда не отправляйте пароль в чат.</p>
+  </div>
+ </div>
  <div class="modal-backdrop" id="favoritesModal" hidden><div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Избранное"><div class="modal-head"><div><h2>Избранное</h2><p>Сохранённые предложения</p></div><button type="button" class="icon-button modal-close" data-close="favoritesModal" aria-label="Закрыть">×</button></div><div class="favorites-list" id="favoritesList"></div></div></div>
  <div class="modal-backdrop" id="offerDetailsModal" hidden><div class="modal-sheet details-sheet" role="dialog" aria-modal="true" aria-labelledby="offerDetailsTitle"><div class="modal-head"><div><h2 id="offerDetailsTitle">Подробнее</h2><p id="offerDetailsSubtitle">Данные поставщика</p></div><button type="button" class="icon-button modal-close" data-close="offerDetailsModal" aria-label="Закрыть">×</button></div><div class="details-body" id="offerDetailsBody" aria-live="polite"></div></div></div><div class="toast" id="toast" aria-live="polite" hidden></div>
 </body>
