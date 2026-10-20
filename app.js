@@ -259,7 +259,7 @@
    const r=await fetch('/api/cities?mode=countries',{signal:AbortSignal.timeout(15000)});
    if(!r.ok)throw Error('countries');
    const d=await r.json();if(!Array.isArray(d.countries)||d.countries.length<150)throw Error('countries list');
-   countrySelectOptions(d.countries);worldCountryCodes=d.countries;initCompareLocale();if(state.tab==='compare')renderCompare();
+   countrySelectOptions(d.countries);worldCountryCodes=d.countries;compareCityTotal=d.totalCities||34163;initCompareLocale();if(state.tab==='compare')renderCompare();
    $('worldCityCount').textContent=new Intl.NumberFormat(window.QANSHA_I18N?.locale()||'ru-RU').format(d.totalCities||34163)+' городов · '+d.countries.length+' стран';
   }catch{$('worldCityStatus').textContent='Не удалось загрузить полный список стран. Попробуйте обновить страницу.';}
  }
@@ -330,6 +330,7 @@
 
 
 
+ let compareCityTotal=34163;
  const compareSelected={
   Left:{country:'TR',city:'Istanbul',code:'IST'},
   Right:{country:'FR',city:'Paris',code:'PAR'}
@@ -440,10 +441,12 @@
   $('compareMore').textContent=tr(compareShowAll?'Свернуть список':'Показать все города с оценкой')+' ('+ranked.length+')';
  }
  function initCompareLocale(){
+  $('compareCityCount').textContent=new Intl.NumberFormat(window.QANSHA_I18N?.locale()||'ru-RU').format(compareCityTotal)+' '+tr('городов');
   for(const side of ['Left','Right'])$('compare'+side).value=compareCityLabel(compareSelected[side]);
   if(state.tab==='compare')renderCompare();
  }
  function initCompare(){
+  initCompareLocale();
   for(const side of ['Left','Right']){
    const input=$('compare'+side),list=$('compare'+side+'List'),stateSearch=compareSearch[side];
    input.value=compareCityLabel(compareSelected[side]);
