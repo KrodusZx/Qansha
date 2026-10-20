@@ -1,0 +1,8 @@
+{
+  "name": "qansha-travel-planner",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Qansha travel budget planner, date-based flights/hotels search and favorites",
+  "scripts": {"test": "node --check api/search.js && node --check qansha-live.js"},
+  "engines": {"node": ">=20"}
+}
