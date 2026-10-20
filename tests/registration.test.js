@@ -29,6 +29,13 @@ test('Service-role and secret keys are never leaked',()=>{
   assert.ok(!JSON.stringify(r.body).includes(key));
  }
 });
+test('Legacy JWT is exposed only with anon role, never service_role',()=>{
+ const jwt=role=>[Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'),
+  Buffer.from(JSON.stringify({role,iss:'supabase',sub:'test',iat:123456})).toString('base64url'),'signatureexample123456789'].join('.');
+ const url='https://demo-project.supabase.co';
+ assert.equal(request({SUPABASE_URL:url,SUPABASE_ANON_KEY:jwt('anon')}).body.configured,true);
+ assert.deepEqual(request({SUPABASE_URL:url,SUPABASE_ANON_KEY:jwt('service_role')}).body,{configured:false});
+});
 test('Invalid domains and non-GET requests are rejected',()=>{
  assert.deepEqual(request({SUPABASE_URL:'http://bad.example',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_'+'x'.repeat(38)}).body,{configured:false});
  const r=request({},'POST');assert.equal(r.status,405);
