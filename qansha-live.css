@@ -50,3 +50,5 @@
 .live-hotel-note strong{font-size:.8rem;color:#bdeafe;line-height:1.35}.live-hotel-note span{font-size:.7rem;color:#90a8c3;line-height:1.5}
 
 .q-maplink{font-size:.78rem;color:#85d7ff;text-decoration:none}.q-maplink:hover{text-decoration:underline}
+
+.q-hotel-image{width:100%;max-height:155px;object-fit:cover;border-radius:12px;margin:8px 0;display:block}
