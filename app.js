@@ -330,18 +330,155 @@
 
 
 
- function compareOptions(){return (worldCountryCodes||TRAVEL_PLACES.map(p=>p.id)).map(cc=>{const p=TRAVEL_PLACES.find(x=>x.id===cc);return '<option value="'+esc(cc)+'">'+esc(countryName(cc)+(p?' · '+(window.QANSHA_I18N?.city(p.code,p.city)||p.city):''))+'</option>'}).join('')}
- function initCompare(){for(const id of ['compareLeft','compareRight'])$(id).innerHTML=compareOptions();$('compareLeft').value='TR';$('compareRight').value='FR';for(const id of ['compareLeft','compareRight','compareDays'])$(id).addEventListener('change',renderCompare)}
- function initCompareLocale(){for(const id of ['compareLeft','compareRight']){const el=$(id),selected=el.value;el.innerHTML=compareOptions();el.value=selected}}
-
-
+ const compareSelected={
+  Left:{country:'TR',city:'Istanbul',code:'IST'},
+  Right:{country:'FR',city:'Paris',code:'PAR'}
+ };
+ const comparePlans=new Map();
+ const compareSearch={Left:{timer:null,seq:0,items:[],active:-1},Right:{timer:null,seq:0,items:[],active:-1}};
+ let compareShowAll=false;
+ function compareCityKey(city){return city?.country+'|'+cityNormalized(city?.city)}
+ function compareCityLabel(city){
+  if(!city)return '';
+  const known=modelForWorldCity(city);
+  return countryName(city.country)+' · '+(known?(window.QANSHA_I18N?.city(known.code,known.city)||known.city):city.city);
+ }
+ function compareClose(side){
+  const input=$('compare'+side),list=$('compare'+side+'List');
+  list.hidden=true;input.setAttribute('aria-expanded','false');
+ }
+ function compareCloseAll(){for(const side of ['Left','Right'])compareClose(side)}
+ function compareSetCity(side,city){
+  if(!city?.country||!city.city)return;
+  compareSelected[side]={country:city.country,city:city.city,code:city.code||'',region:city.region||''};
+  compareSearch[side].seq++;
+  compareClose(side);
+  $('compare'+side).value=compareCityLabel(compareSelected[side]);
+  $('compareCityStatus').textContent=tr('Город выбран. Сравнение обновлено.');
+  renderCompare();
+ }
+ function compareCountryFor(term){
+  if(term.length<3||!worldCountryCodes)return null;
+  const matches=worldCountryCodes.filter(cc=>cityNormalized(countryName(cc)).startsWith(cityNormalized(term)));
+  return matches.length===1?matches[0]:null;
+ }
+ async function compareFindCities(side){
+  const query=$('compare'+side).value.trim(),stateSearch=compareSearch[side],seq=++stateSearch.seq;
+  const list=$('compare'+side+'List');
+  $('compareCityStatus').textContent=tr('Ищем города…');
+  try{
+   const country=compareCountryFor(query);
+   const r=await fetch('/api/cities?'+q(country?{q:'',country}:{q:query}),{signal:AbortSignal.timeout(12000)});
+   if(!r.ok)throw Error('cities');
+   const data=await r.json();
+   if(seq!==stateSearch.seq||document.activeElement!==$('compare'+side))return;
+   const cities=Array.isArray(data.results)?data.results:[];
+   stateSearch.items=cities;stateSearch.active=-1;
+   list.innerHTML=cities.length?cities.map((city,i)=>
+    '<button type="button" class="compare-city-option" role="option" data-compare-city-index="'+i+'" aria-selected="false">'+
+    '<strong>'+esc(city.city)+'</strong><small>'+esc(countryName(city.country))+(city.region?' · '+esc(city.region):'')+'</small></button>'
+   ).join(''):'<p class="compare-city-empty">'+esc(tr('Ничего не найдено. Попробуйте другое написание города.'))+'</p>';
+   list.hidden=false;$('compare'+side).setAttribute('aria-expanded','true');
+   $('compareCityStatus').textContent=cities.length?tr('Выберите город из списка — тогда обновим расчёт.'):tr('Нет результатов: проверьте название или страну.');
+  }catch{
+   if(seq===stateSearch.seq){compareClose(side);$('compareCityStatus').textContent=tr('Справочник городов временно недоступен. Попробуйте ещё раз.')}
+  }
+ }
+ function compareCost(city,days,guests,f){
+  if(!city)return null;
+  const known=modelForWorldCity(city),plan=comparePlans.get(compareCityKey(city));
+  const daily=known?known.daily:Number(plan?.daily||0),hotel=known?known.hotel:Number(plan?.hotel||0);
+  if(!(daily>0&&hotel>0))return {known,needsPlan:true};
+  const local=Math.round(daily*days*guests*f);
+  const stay=Math.round(hotel*Math.max(0,days-1)*Math.ceil(guests/2)*f);
+  const food=Math.round(local*.42),transport=Math.round(local*.17),activities=Math.round(local*.28);
+  const other=local-food-transport-activities;
+  return {known,needsPlan:false,local,stay,food,transport,activities,other,total:local+stay,daily,hotel};
+ }
+ function compareBreakdown(cost,days,guests){
+  const entries=[['Проживание',cost.stay],['Еда и кафе',cost.food],['Транспорт',cost.transport],['Прогулки и развлечения',cost.activities],['Резерв на мелочи',cost.other]];
+  return '<details class="compare-breakdown"><summary>'+esc(tr('Как рассчитана стоимость'))+'</summary>'+
+   '<div class="compare-breakdown-list">'+entries.map(([name,value])=>'<div><span>'+esc(tr(name))+'</span><strong>'+curr(value)+'</strong></div>').join('')+
+   '<div class="compare-total-row"><span>'+esc(tr('Вся поездка'))+'</span><strong>'+curr(cost.total)+'</strong></div>'+
+   '<div><span>'+esc(tr('В день на группу'))+'</span><strong>'+curr(cost.total/days)+'</strong></div>'+
+   '<div><span>'+esc(tr('На человека в день'))+'</span><strong>'+curr(cost.total/days/guests)+'</strong></div>'+
+   '<p class="compare-formula">'+esc(tr('Расчёт: дневные расходы × дни × путешественники + номер за ночь × ночи × число номеров; с учётом стиля поездки.'))+'</p></div></details>';
+ }
+ function comparePlanInputs(side,city){
+  const plan=comparePlans.get(compareCityKey(city))||{};
+  return '<div class="compare-plan"><strong>'+esc(tr('Для города нет подготовленных местных цен. Задайте плановые расходы в евро:'))+'</strong>'+
+   '<div class="compare-plan-grid"><label>'+esc(tr('На человека в день (EUR)'))+
+   '<input type="number" min="1" max="3000" step="1" inputmode="numeric" placeholder="60" data-compare-plan="'+side+'" data-compare-field="daily" value="'+esc(plan.daily||'')+'"></label>'+
+   '<label>'+esc(tr('Номер за ночь (EUR)'))+
+   '<input type="number" min="1" max="10000" step="1" inputmode="numeric" placeholder="85" data-compare-plan="'+side+'" data-compare-field="hotel" value="'+esc(plan.hotel||'')+'"></label></div>'+
+   '<small>'+esc(tr('Это ваши плановые суммы, не проверенные цены в городе.'))+'</small></div>';
+ }
  function renderCompare(){
-  const codes=[$('compareLeft').value,$('compareRight').value],places=codes.map(cc=>TRAVEL_PLACES.find(x=>x.id===cc)||null),days=Number($('compareDays').value||5),guests=state.budgetTravelers,f=tierFactor[state.tier],entries=places.map((place,i)=>({place,code:codes[i],cost:place?Math.round((place.daily*days*f*guests+place.hotel*(days-1)*f*Math.ceil(guests/2))):null}));
-  const existing=entries.filter(x=>x.cost!=null),max=Math.max(1,...existing.map(x=>x.cost));
-  $('compareResults').innerHTML=entries.map(({place,code,cost})=>'<article class="compare-card"><div class="compare-country"><b>'+esc(countryName(code))+'</b><span>'+esc(place?(window.QANSHA_I18N?.city(place.code,place.city)||place.city):'Стоимость поездки не исследована')+'</span></div><strong class="compare-price">'+(cost!=null?curr(cost):'—')+'</strong><div class="compare-track"><span style="width:'+(cost!=null?Math.round(cost/max*100):0)+'%"></span></div><small>'+(cost!=null?days+' дней · '+guests+' чел. · '+esc(tierNames[state.tier]):'Для страны пока нет модельных цен')+'</small></article>').join('');
-  const both=entries.every(x=>x.cost!=null);
-  $('compareResults').innerHTML+='<div class="compare-winner">'+(both?(entries[0].cost===entries[1].cost?'По этой модели расходы одинаковы.':'В этой модели <strong>'+esc(countryName(entries[0].cost<entries[1].cost?codes[0]:codes[1]))+'</strong> дешевле на <strong>'+curr(Math.abs(entries[0].cost-entries[1].cost))+'</strong>.'):'Для выбранной страны нет сопоставимых данных о ценах. Откройте «Сколько?» и задайте бюджет вручную для любого города.')+' Билеты и сезонные изменения не включены.</div>';
-  $('compareRanking').innerHTML=[...TRAVEL_PLACES].sort((x,y)=>(x.daily*days*guests+x.hotel*(days-1)*Math.ceil(guests/2))-(y.daily*days*guests+y.hotel*(days-1)*Math.ceil(guests/2))).slice(0,8).map((p,i)=>'<div class="rank-item"><span>'+(i+1)+'</span><b>'+esc(countryName(p.id))+' · '+esc(window.QANSHA_I18N?.city(p.code,p.city)||p.city)+'</b><strong>'+curr((p.daily*days*guests+p.hotel*(days-1)*Math.ceil(guests/2))*f)+'</strong></div>').join('');
+  const days=Number($('compareDays').value)||5,guests=state.budgetTravelers,f=tierFactor[state.tier];
+  const entries=['Left','Right'].map(side=>({side,city:compareSelected[side],cost:compareCost(compareSelected[side],days,guests,f)}));
+  const max=Math.max(1,...entries.map(e=>e.cost?.total||0));
+  $('compareResults').innerHTML=entries.map(({side,city,cost})=>{
+   const cityLabel=compareCityLabel(city),complete=cost&&!cost.needsPlan;
+   return '<article class="compare-card compare-city-card"><div class="compare-country"><b>'+esc(countryName(city.country))+'</b><span>'+esc(cityLabel.split(' · ').slice(1).join(' · '))+'</span></div>'+
+   '<strong class="compare-price">'+(complete?curr(cost.total):'—')+'</strong>'+
+   '<div class="compare-track"><span style="width:'+(complete?Math.round(cost.total/max*100):0)+'%"></span></div>'+
+   '<small>'+(complete?days+' '+esc(tr('дней'))+' · '+guests+' '+esc(tr('чел.'))+' · '+esc(tr(tierNames[state.tier])):'')+'</small>'+
+   (complete?'<p class="compare-estimate-kind">'+esc(tr(cost.known?'Модельная оценка для города':'Ваш плановый бюджет'))+'</p>'+compareBreakdown(cost,days,guests):comparePlanInputs(side,city))+
+   '</article>';
+  }).join('');
+  const a=entries[0],b=entries[1],both=a.cost?.total!=null&&b.cost?.total!=null;
+  const result=both?(a.cost.total===b.cost.total?tr('По этой модели расходы одинаковы.'):
+   tr('По выбранным параметрам дешевле:')+' '+compareCityLabel(a.cost.total<b.cost.total?a.city:b.city)+' · '+curr(Math.abs(a.cost.total-b.cost.total))):
+   tr('Чтобы сравнить любой город, укажите свои плановые расходы на день и проживание.');
+  $('compareResults').innerHTML+='<div class="compare-winner">'+esc(result)+' '+esc(tr('Билеты и сезонные изменения не включены.'))+'</div>';
+  const ranked=[...TRAVEL_PLACES].sort((x,y)=>(x.daily*days*guests+x.hotel*(days-1)*Math.ceil(guests/2))-(y.daily*days*guests+y.hotel*(days-1)*Math.ceil(guests/2)));
+  $('compareRanking').innerHTML=(compareShowAll?ranked:ranked.slice(0,8)).map((p,i)=>
+   '<button type="button" class="rank-item compare-rank-choice" data-compare-ranked="'+esc(p.code)+'"><span>'+(i+1)+'</span><b>'+esc(countryName(p.id))+' · '+esc(window.QANSHA_I18N?.city(p.code,p.city)||p.city)+'</b><strong>'+
+   curr(Math.round((p.daily*days*guests+p.hotel*(days-1)*Math.ceil(guests/2))*f))+'</strong></button>'
+  ).join('');
+  $('compareMore').hidden=ranked.length<=8;
+  $('compareMore').textContent=tr(compareShowAll?'Свернуть список':'Показать все города с оценкой')+' ('+ranked.length+')';
+ }
+ function initCompareLocale(){
+  for(const side of ['Left','Right'])$('compare'+side).value=compareCityLabel(compareSelected[side]);
+  if(state.tab==='compare')renderCompare();
+ }
+ function initCompare(){
+  for(const side of ['Left','Right']){
+   const input=$('compare'+side),list=$('compare'+side+'List'),stateSearch=compareSearch[side];
+   input.value=compareCityLabel(compareSelected[side]);
+   input.addEventListener('focus',()=>{input.select();compareFindCities(side)});
+   input.addEventListener('input',()=>{
+    clearTimeout(stateSearch.timer);
+    stateSearch.seq++;
+    if(input.value.trim().length===1){list.hidden=true;return}
+    stateSearch.timer=setTimeout(()=>compareFindCities(side),220);
+   });
+   input.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){compareClose(side);input.value=compareCityLabel(compareSelected[side]);return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+     if(!stateSearch.items.length||list.hidden)return;
+     e.preventDefault();stateSearch.active=(stateSearch.active+(e.key==='ArrowDown'?1:-1)+stateSearch.items.length)%stateSearch.items.length;
+     list.querySelectorAll('[data-compare-city-index]').forEach((b,i)=>{b.classList.toggle('is-highlighted',i===stateSearch.active);b.setAttribute('aria-selected',String(i===stateSearch.active))});
+     list.querySelector('[data-compare-city-index="'+stateSearch.active+'"]')?.scrollIntoView({block:'nearest'});
+    }
+    if(e.key==='Enter'&&!list.hidden&&stateSearch.items.length){e.preventDefault();compareSetCity(side,stateSearch.items[stateSearch.active<0?0:stateSearch.active])}
+   });
+   list.addEventListener('click',e=>{const b=e.target.closest('[data-compare-city-index]');if(b)compareSetCity(side,stateSearch.items[Number(b.dataset.compareCityIndex)])});
+   input.addEventListener('blur',()=>setTimeout(()=>{compareClose(side);input.value=compareCityLabel(compareSelected[side])},170));
+  }
+  document.addEventListener('click',e=>{if(!e.target.closest('.compare-city-field'))compareCloseAll()});
+  $('compareDays').addEventListener('change',renderCompare);
+  $('compareMore').addEventListener('click',()=>{compareShowAll=!compareShowAll;renderCompare()});
+  $('compareRanking').addEventListener('click',e=>{const b=e.target.closest('[data-compare-ranked]');if(!b)return;const known=TRAVEL_PLACES.find(p=>p.code===b.dataset.compareRanked);if(known)compareSetCity('Right',{country:known.id,city:known.city,code:known.code})});
+  $('compareResults').addEventListener('change',e=>{
+   const input=e.target.closest('[data-compare-plan]');if(!input)return;
+   const side=input.dataset.comparePlan,city=compareSelected[side];if(!city)return;
+   const key=compareCityKey(city),plan={...(comparePlans.get(key)||{})},value=Number(input.value);
+   plan[input.dataset.compareField]=value>=1&&value<=10000?value:'';
+   comparePlans.set(key,plan);renderCompare();
+  });
+  renderCompare();
  }
 
  function loadFav(){try{state.faves=JSON.parse(localStorage.getItem('qansha_guest_favorites_v1')||'[]')}catch{state.faves=[]}updateFavCount()}
