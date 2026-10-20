@@ -13,6 +13,7 @@
  <link rel="stylesheet" href="v6.css">
  <link rel="stylesheet" href="world.css">
  <link rel="stylesheet" href="qansha7.css">
+ <link rel="stylesheet" href="compare-cities.css">
  <script src="config.js" defer></script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
  <script src="app.js" defer></script>
@@ -106,12 +107,18 @@
     <div class="budget-shortcuts"><button type="button" data-goto="flights">Выбрать рейс →</button><button type="button" data-goto="hotels">Выбрать отель →</button></div>
    </section>
    <section class="panel" id="panel-compare" aria-labelledby="heading-compare" hidden>
-     <div class="panel-heading"><div><h2 id="heading-compare">Где дешевле отдохнуть?</h2><p>Сравни две страны через примерные расходы на поездку</p></div><span class="hint-chip">Сравнение стран</span></div>
-     <div class="compare-intro">Сравнение рассчитано по модельным расходам на жильё и жизнь в городе. <strong>Билеты не включены</strong> — они зависят от места вылета и даты.</div>
-     <div class="compare-controls"><div><label for="compareLeft">Страна №1</label><select id="compareLeft"></select></div><div><label for="compareRight">Страна №2</label><select id="compareRight"></select></div><div><label for="compareDays">Дней</label><select id="compareDays"><option value="3">3 дня</option><option value="5" selected>5 дней</option><option value="7">7 дней</option><option value="10">10 дней</option><option value="14">14 дней</option><option value="21">21 день</option><option value="30">30 дней</option></select></div></div>
-     <div id="compareResults" class="compare-results" aria-live="polite"></div>
-     <div class="compare-rank-heading"><h3>Ещё недорогие направления</h3><p>Оценка поездки на одного человека, без авиабилетов</p></div>
-     <div id="compareRanking" class="compare-ranking"></div>
+    <div class="panel-heading"><div><h2 id="heading-compare">Где дешевле отдохнуть?</h2><p>Сравни расходы в любых двух городах мира</p></div><span class="hint-chip" id="compareCityCount">34 163 города</span></div>
+    <div class="compare-intro">Для отдельных городов есть модельные ориентиры. Для остальных укажи свои плановые расходы — это не рыночные цены. <strong>Билеты не включены</strong>.</div>
+    <div class="compare-city-grid">
+     <div class="compare-city-field" id="compareCityFieldLeft"><label for="compareLeft">Город №1</label><input type="search" id="compareLeft" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="compareLeftList" aria-expanded="false" placeholder="Начните писать город или страну"><div class="compare-city-list" id="compareLeftList" role="listbox" hidden></div></div>
+     <div class="compare-city-field" id="compareCityFieldRight"><label for="compareRight">Город №2</label><input type="search" id="compareRight" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="compareRightList" aria-expanded="false" placeholder="Начните писать город или страну"><div class="compare-city-list" id="compareRightList" role="listbox" hidden></div></div>
+     <div class="compare-days-field"><label for="compareDays">Дней</label><select id="compareDays"><option value="3">3 дня</option><option value="5" selected>5 дней</option><option value="7">7 дней</option><option value="10">10 дней</option><option value="14">14 дней</option><option value="21">21 день</option><option value="30">30 дней</option></select></div>
+    </div>
+    <p class="compare-location-status" id="compareCityStatus" aria-live="polite">Выбирай из подсказок: города доступны по всему миру.</p>
+    <div id="compareResults" class="compare-results" aria-live="polite"></div>
+    <div class="compare-rank-heading"><h3>Ещё недорогие направления</h3><p>Модельные расходы в городах с подготовленными ориентирами, без авиабилетов</p></div>
+    <div id="compareRanking" class="compare-ranking"></div>
+    <button type="button" id="compareMore" class="outline-btn compare-more">Показать все города с оценкой</button>
    </section>
    <footer>Qansha? · Бронируемые цены и наличие мест подтверждаются у поставщика. Мы не продаём билеты и не бронируем номера. <span>Поиск работает на данных партнёра, когда API подключён.</span></footer>
   </main>
