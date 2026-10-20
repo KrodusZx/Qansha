@@ -131,6 +131,60 @@ async function hotels(q){
   guestAllocationNote:rooms>1?'Цена на компанию рассчитана как стоимость одного номера × число номеров. Google Hotels не подтвердил наличие нескольких одинаковых номеров; перепроверьте размещение и итоговую цену перед оплатой.':'Цену и условия номера необходимо подтвердить у поставщика.'};
 }
 
+
+/** Alternative property search using the same SerpApi account.
+ * This is an experimental data source, NOT official Booking.com partner access.
+ * Do not enable commercial redistribution without confirming provider terms.
+ */
+async function bookingHotels(q){
+ const city=safe(txt(q.cityName)||txt(q.city));
+ const checkIn=txt(q.checkIn),checkOut=txt(q.checkOut),travelers=Number(q.travelers||1);
+ if(!city||city.length>100)bad('Укажите город проживания.');
+ if(!checkDate(checkIn)||!checkDate(checkOut)||!inRange(checkIn)||!inRange(checkOut)||checkOut<=checkIn)bad('Укажите корректные даты проживания.');
+ if(!Number.isInteger(travelers)||travelers<1||travelers>9)bad('Можно искать для 1–9 гостей.');
+ const nights=(Date.parse(checkOut)-Date.parse(checkIn))/86400000;
+ if(nights>30)bad('Максимальная длительность проживания — 30 ночей.');
+ const rooms=Math.ceil(travelers/2);
+ const raw=txt(q.pageToken);
+ let offset=0,sessionToken='';
+ if(raw){
+  const match=/^bk:(\d{1,4}):([A-Za-z0-9_+=:/.\-]{6,2000})$/.exec(raw);
+  if(!match)bad('Некорректная страница поиска.');
+  offset=Number(match[1]);sessionToken=match[2];
+  if(!Number.isInteger(offset)||offset>1000||offset%25!==0)bad('Некорректный номер страницы.');
+ }
+ const data=await serp({engine:'booking',q:city,check_in_date:checkIn,check_out_date:checkOut,
+  adults:String(travelers),rooms:String(rooms),currency:'EUR',hl:'en-us',sort_by:'price',
+  limit:'25',offset:String(offset),...(sessionToken?{session_token:sessionToken}:{})});
+ const items=(data.properties||[]).filter(h=>h?.name&&!h.sold_out);
+ const offers=items.map(h=>{
+  const price=Number(h.extracted_price);
+  if(!Number.isFinite(price)||price<=0||h.currency!=='EUR')return null;
+  const lat=Number(h.gps_coordinates?.latitude),lon=Number(h.gps_coordinates?.longitude);
+  const image=String(h.thumbnail||'');
+  const link=String(h.link||'');
+  return {id:'booking-'+safe(h.property_id||h.name),kind:'hotel',
+   name:safe(h.name),stars:Number(h.hotel_class)||null,
+   rating:Number(h.rating)?Number(h.rating)/2:null,rawRating:Number(h.rating)||null,ratingScale:10,
+   price,roomPrice:null,currency:'EUR',roomCount:rooms,
+   checkInDate:checkIn,checkOutDate:checkOut,room:safe(h.rooms?.[0]?.name||'Номер уточняется у продавца'),
+   address:safe(h.address||h.location),latitude:Number.isFinite(lat)?lat:null,longitude:Number.isFinite(lon)?lon:null,
+   thumbnail:/^https:\/\//.test(image)?image.slice(0,1800):'',
+   images:/^https:\/\//.test(image)?[image.slice(0,1800)]:[],
+   propertyToken:null,amenities:[],source:'Booking.com',
+   estimatedGroupPrice:false,propertyType:safe(h.type||'hotel'),
+   freeCancellation:h.free_cancellation===true?true:null,
+   taxesAndFees:safe(h.taxes_and_fees||''),
+   bookingUrl:/^https:\/\/(www\.)?booking\.com\//i.test(link)?link.slice(0,1800):null};
+ }).filter(Boolean);
+ const nextSession=String(data.serpapi_pagination?.session_token||sessionToken||'');
+ const hasNext=Boolean(data.serpapi_pagination?.next)&&offset<1000&&/^[A-Za-z0-9_+=:/.\-]{6,2000}$/.test(nextSession);
+ return {kind:'hotels',offers,nextPageToken:hasNext?'bk:'+(offset+25)+':'+nextSession:null,
+  nights,rooms,source:'Booking.com',searchedAt:new Date().toISOString(),
+  environment:env,guestAllocationNote:'Стоимость относится к поиску '+travelers+' гостей и '+rooms+
+   ' номеров. Возможны дополнительные налоги и сборы; итоговую сумму и наличие подтвердит продавец.'};
+}
+
 const cleanUrl=x=>typeof x==='string'&&/^https:\/\//i.test(x)&&x.length<3500?x:null;
 const imageList=items=>(Array.isArray(items)?items:[]).map(x=>typeof x==='string'?x:x?.original_image||x?.photo_url||x?.thumbnail_url||x?.thumbnail).filter(cleanUrl).slice(0,24);
 const validToken=x=>typeof x==='string'&&x.length>5&&x.length<2000&&/^[A-Za-z0-9_\-=+:/]+$/.test(x);
@@ -181,6 +235,6 @@ module.exports=async(req,res)=>{
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');
  const k=txt(req.query?.kind);const weight=k==='calendar'?9:k==='flights'?2:k==='flightReturns'?2:k==='hotelPhotos'||k==='hotelDetails'||k==='flightBooking'?2:1;
  if(!charge(req,res,{scope:'search',weight}))return;
- try{const data=k==='flights'?await flights(req.query):k==='flightReturns'?await flightReturns(req.query):k==='hotels'?await hotels(req.query):k==='calendar'?await calendar(req.query):k==='hotelDetails'?await hotelDetails(req.query):k==='hotelPhotos'?await hotelPhotos(req.query):k==='flightBooking'?await flightBooking(req.query):bad('Неизвестный запрос.');return res.status(200).json(data)}
+ try{const data=k==='flights'?await flights(req.query):k==='flightReturns'?await flightReturns(req.query):k==='hotels'?(txt(req.query?.source)==='booking'?await bookingHotels(req.query):await hotels(req.query)):k==='calendar'?await calendar(req.query):k==='hotelDetails'?await hotelDetails(req.query):k==='hotelPhotos'?await hotelPhotos(req.query):k==='flightBooking'?await flightBooking(req.query):bad('Неизвестный запрос.');return res.status(200).json(data)}
  catch(e){const code=Number(e.status)||500;return res.status(code).json({error:code===500?'Ошибка сервера поиска. Попробуйте позднее.':String(e.message||'Поиск временно недоступен.').replaceAll(process.env.SERPAPI_API_KEY||'__none__','[hidden]')})}
 };
