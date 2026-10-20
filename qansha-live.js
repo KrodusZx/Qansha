@@ -19,7 +19,7 @@
   const getCityIata = id => (typeof cityToIata!=='undefined' ? cityToIata[id] : null);
   const codeCityHotel = id => {
     const code = getCityIata(id);
-    // Amadeus hotel list requires city IATA codes; KEF is the airport for Reykjavík (REK).
+    // Keep the city IATA code for validation; a readable city name is sent to Google Hotels.
     return id==='reykjavik'?'REK':code;
   };
   const guestCount = () => Number(el('liveTravelers').value||1);
@@ -122,9 +122,10 @@
     searching=true;const id=++currentSearchId;
     el('liveSearchBtn').disabled=true;el('liveSearchBtn').textContent='Ищем предложения…';
     status('Запрашиваем доступные авиарейсы и номера на выбранные даты…');
+    const destinationName=cities.find(c=>c.id===el('liveDest').value)?.name||el('liveDest').value;
     const searches=await Promise.allSettled([
       fetchAPI({kind:'flights',origin:from,destination:to,depart:input.fly,returnDate:input.back,adults}),
-      fetchAPI({kind:'hotels',city:hotelCity,checkIn:input.ci,checkOut:input.co,travelers:adults})
+      fetchAPI({kind:'hotels',city:hotelCity,cityName:destinationName,checkIn:input.ci,checkOut:input.co,travelers:adults})
     ]);
     searching=false;el('liveSearchBtn').disabled=false;el('liveSearchBtn').textContent='Найти рейсы и отели';
     if(id!==currentSearchId)return;
@@ -143,8 +144,7 @@
     } else {hotelResults=[];hotelRecs=[];selectedHotel=null;failed.push(`отели: ${hotels.reason?.message||'ошибка'}`)}
     renderFlights();renderHotels();renderTierHotelNames();renderSummary();
     if(failed.length)status(failed.join(' · '),'warn');
-    else if(environment==='test')status('Показаны данные ТЕСТОВОЙ среды Amadeus. Они не подтверждают наличие бронируемых мест и реальные рыночные цены.','warn');
-    else status('Найденные предложения получены из Amadeus Production. Перед оплатой тариф нужно проверить повторно.','good');
+    else status('Поиск через Google Flights / Hotels. Перелёт — два отдельных билета, цена на группу ориентировочная; наличие мест и багажа проверьте перед покупкой.','good');
   }
   function recommendHotels(offers){
     if(!offers.length)return [];
@@ -169,12 +169,12 @@
     return `<div>${i===0?'Туда':'Обратно'}: ${esc(first.from)} → ${esc(last.to)} · ${seg.length-1} пересадок<br>${esc(dep)} — ${esc(arr)} · ${esc(leg.duration)}</div>`;
   }).join('')}
   function renderFlights(){
-    el('liveFlightsMeta').textContent=flightResults.length?`${flightResults.length} вариантов · EUR · ${environment==='test'?'ТЕСТ':'онлайн'}`:'Нет предложений';
-    if(!flightResults.length){el('liveFlights').innerHTML='<div class="offer-empty">Рейсы не найдены или API не подключён. Попробуй другие даты или проверь настройки сервера.</div>';return}
+    el('liveFlightsMeta').textContent=flightResults.length?`${flightResults.length} вариантов · EUR · онлайн · оценка для компании`:'Нет предложений';
+    if(!flightResults.length){el('liveFlights').innerHTML='<div class="offer-empty">Дешёвые рейсы не найдены или SerpApi ещё не подключён. Попробуй другие даты или проверь настройки сервера.</div>';return}
     el('liveFlights').innerHTML=flightResults.slice(0,9).map((f,i)=>`<article class="offer-card ${selectedFlight?.id===f.id?'active':''}">
-      <span class="offer-tier">${i===0?'✦ Самый дешёвый':'Рейс '+(i+1)}</span>
+      <span class="offer-tier">${i===0?'✦ Самый дешёвый из найденных':'Рейс '+(i+1)}</span>
       <div class="offer-name">${esc(flightName(f))}</div><div class="offer-price">${moneyEUR(f.price)}</div>
-      <div class="offer-muted">За всех ${guestCount()} пассажиров, весь маршрут</div>
+      <div class="offer-muted">Ориентир для ${guestCount()} пассажиров · ${moneyEUR(f.perAdultPrice||f.price/guestCount())} на человека · два отдельных билета</div>
       <div class="offer-muted">${flightDetails(f)}</div>
       <div class="offer-muted">Багаж: ${f.checkedBags==null?'уточнить в условиях тарифа':`${Number(f.checkedBags)} мест(а) по данным тарифа`}</div>
       <div class="offer-buttons"><button class="q-btn compact" onclick="QanshaLive.pickFlight(${i})">${selectedFlight?.id===f.id?'✓ Выбран':'Выбрать'}</button>
@@ -188,14 +188,14 @@
       <span class="offer-tier">${displayTier?esc({budget:'🎒 Эконом',mid:'☕ Средний',luxury:'💎 Комфорт'}[displayTier]):'Другой доступный отель'}</span>
       <div class="offer-name">${hotelName(h)}</div><div class="offer-muted">${h.stars?'★ '+Number(h.stars)+' · ':''}${esc(h.address||'Адрес уточняется у поставщика')}</div>
       <div class="offer-price">${moneyEUR(h.price)}</div>
-      <div class="offer-muted">${h.roomCount} номер(а), ${nights} ночей, все путешественники<br>≈ ${moneyEUR(h.price/guestCount())} на человека<br>${esc(h.room||'Категория номера уточняется')}</div>
-      <a class="q-maplink" href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent((h.name||'')+' '+(h.address||''))}" target="_blank" rel="noopener noreferrer">Посмотреть расположение ↗</a>
+      ${h.thumbnail?`<img class="q-hotel-image" src="${esc(h.thumbnail)}" loading="lazy" alt="${esc(h.name)}">`:''}<div class="offer-muted">${h.roomCount} номер(а), ${nights} ночей, ориентировочно на группу<br>≈ ${moneyEUR(h.price/guestCount())} на человека<br>${esc(h.room||'Категория номера уточняется')}</div>
+      ${h.estimatedGroupPrice?'<div class="offer-muted">Несколько номеров: цена ориентировочная, наличие нужно проверить.</div>':''}<a class="q-maplink" href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent((h.name||'')+' '+(h.address||''))}" target="_blank" rel="noopener noreferrer">Посмотреть расположение ↗</a>
       <div class="offer-buttons"><button class="q-btn compact" onclick="QanshaLive.pickHotel(${i})">${selectedHotel?.id===h.id?'✓ Выбран':'Выбрать'}</button>
       <button class="q-btn compact ghost" onclick="QanshaLive.favorite('hotel',${i})">♡ Сохранить</button></div></article>`;
   }
   function renderHotels(){
-    el('liveHotelsMeta').textContent=hotelResults.length?`${hotelResults.length} с ценой · EUR · ${environment==='test'?'ТЕСТ':'онлайн'}`:'Нет предложений';
-    if(!hotelResults.length){el('liveHotels').innerHTML='<div class="offer-empty">Доступные номера не найдены. Проверь даты, город или подключение Amadeus.</div>';return;}
+    el('liveHotelsMeta').textContent=hotelResults.length?`${hotelResults.length} с ценой · EUR · онлайн · оценка для компании`:'Нет предложений';
+    if(!hotelResults.length){el('liveHotels').innerHTML='<div class="offer-empty">Отели с ценами не найдены. Проверь даты, город или подключение SerpApi.</div>';return;}
     const recs=hotelRecs.map(({tier,hotel})=>renderHotelCard(hotel,tier)).join('');
     const seen=new Set(hotelRecs.map(x=>x.hotel.id));
     const more=hotelResults.filter(h=>!seen.has(h.id)).slice(0,6);
@@ -221,17 +221,17 @@
   }
   function renderSummary(){
     const box=el('liveSummary');if(!box)return;
-    if(!selectedHotel||!selectedFlight){box.innerHTML='<span class="offer-tier">Итоговый бюджет из реальных предложений</span><span class="large">Выбери рейс и отель</span><div class="meta">После онлайн-поиска мы автоматически выберем самый дешёвый рейс и отель выбранного стиля. Ты сможешь заменить их вручную.</div>';return;}
+    if(!selectedHotel||!selectedFlight){box.innerHTML='<span class="offer-tier">Итоговый ориентир по найденным предложениям</span><span class="large">Выбери рейс и отель</span><div class="meta">После онлайн-поиска мы автоматически выберем самый дешёвый рейс и отель выбранного стиля. Ты сможешь заменить их вручную.</div>';return;}
     const p=guestCount();
     const nights=Math.round((dateUTC(el('liveCheckOut').value)-dateUTC(el('liveCheckIn').value))/86400000);
     const tripDays=Math.round((dateUTC(el('liveReturn').value)-dateUTC(el('liveLeave').value))/86400000)+1;
     const expenses=Number(plannerDailyUSD||0)*0.92*tripDays*p;
     const total=Number(selectedHotel.price)+Number(selectedFlight.price)+expenses;
-    box.innerHTML=`<span class="offer-tier">${environment==='test'?'ТЕСТОВЫЙ расчёт':'Расчёт на основе онлайн-предложений'} · ${esc(el('liveLeave').value)} — ${esc(el('liveReturn').value)}</span>
-       <span class="large">${moneyEUR(total/p)} / человек</span><div class="meta">На всю компанию: <strong>${moneyEUR(total)}</strong> ·
+    box.innerHTML=`<span class="offer-tier">Онлайн-цены · оценка на компанию · ${esc(el('liveLeave').value)} — ${esc(el('liveReturn').value)}</span>
+       <span class="large">${moneyEUR(total/p)} / человек</span><div class="meta">Ориентир на компанию: <strong>${moneyEUR(total)}</strong> ·
        ✈️ рейсы ${moneyEUR(selectedFlight.price)} · 🏨 ${esc(selectedHotel.name)} ${moneyEUR(selectedHotel.price)} (${nights} ночей) ·
        🍜 ежедневные расходы ${moneyEUR(expenses)} (${tripDays} дней × ${moneyEUR(Number(plannerDailyUSD||0)*.92)} × ${p} чел.).</div>
-       <p class="q-subline">Рейсы и номера могут измениться до покупки. Валюта живых предложений — EUR. Ежедневный бюджет берётся из ползунка выше (демонстрационный курс USD → EUR). Визы, багаж и туристические сборы — отдельно.</p>`;
+       <p class="q-subline">Два отдельных авиабилета (туда и обратно), цена на 1 взрослого × число путешественников. Многоместное бронирование номеров не подтверждено. Рейсы и цены могут измениться. Валюта поиска — EUR. Ежедневный бюджет берётся из ползунка выше (демонстрационный курс USD → EUR). Визы, багаж и туристические сборы — отдельно.</p>`;
   }
   function openDrawer(id){el(id).classList.add('open');document.body.style.overflow='hidden'}
   function closeDrawer(id){el(id).classList.remove('open');if(!document.querySelector('.q-drawer.open'))document.body.style.overflow=''}
