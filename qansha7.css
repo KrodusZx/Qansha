@@ -1,0 +1,15 @@
+/* Qansha 7 — optional advanced flight search and return-leg selector */
+.flight-search-advanced{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0 8px}
+.flight-search-advanced .field{min-width:0}
+.flight-search-advanced label{display:block;margin-bottom:7px;color:var(--muted);font-size:.85rem;font-weight:650}
+.flight-search-advanced select{width:100%;min-height:49px;border:1px solid var(--border);border-radius:12px;background:var(--panel);padding:10px 12px;color:var(--text)}
+.flight-offer .offer-price .fare-from{font-size:.7em;color:var(--muted);font-weight:500}
+.flight-offer .small-action{padding:9px 13px;min-height:39px;font-size:.88rem}
+.return-options{display:grid;gap:10px;margin:16px 0}
+.return-option{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;background:#fff;border:1px solid var(--border);border-radius:12px;padding:15px;cursor:pointer;color:var(--text)}
+.return-option:hover,.return-option:focus-visible{border-color:var(--accent);background:var(--accent-pale)}
+.return-option span{display:grid;gap:5px;min-width:0}
+.return-option strong{font-size:.95rem}
+.return-option small{color:var(--muted);line-height:1.35}
+.return-option b{white-space:nowrap;font-size:1.05rem;color:var(--accent-dark)}
+@media(max-width:560px){.flight-search-advanced{grid-template-columns:1fr}.return-option{align-items:flex-start}.return-option strong{font-size:.85rem}.return-option b{font-size:.92rem}}

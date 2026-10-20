@@ -12,6 +12,7 @@
  <link rel="stylesheet" href="v5.css">
  <link rel="stylesheet" href="v6.css">
  <link rel="stylesheet" href="world.css">
+ <link rel="stylesheet" href="qansha7.css">
  <script src="config.js" defer></script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
  <script src="app.js" defer></script>
@@ -27,7 +28,7 @@
    <section class="headline" aria-label="Планирование путешествия"><p class="small-label">QANSHA? · ПУТЕШЕСТВУЙ БОЛЬШЕ</p><h1>Сколько? <span>— Один ответ.</span></h1><p>Дешёвые авиабилеты, конкретные отели и бюджет поездки. Всё в одном месте.</p></section>
    <nav class="tabs" aria-label="Разделы Qansha?"><button class="tab is-active" data-tab="flights" type="button" aria-current="page">✈ <span>Авиабилеты</span></button><button class="tab" data-tab="hotels" type="button">▦ <span>Отели</span></button><button class="tab" data-tab="budget" type="button">◉ <span>Сколько?</span></button><button class="tab" data-tab="compare" type="button">⇄ <span>Сравнить</span></button></nav>
    <section class="panel" id="panel-flights" aria-labelledby="heading-flights">
-    <div class="panel-heading"><div><h2 id="heading-flights">Авиабилеты</h2><p>Самые дешёвые из доступных предложений</p></div><span class="hint-chip">Google Flights</span></div>
+    <div class="panel-heading"><div><h2 id="heading-flights">Авиабилеты</h2><p>Международный поиск: выбирайте маршрут и сравнивайте доступные тарифы</p></div><span class="hint-chip">Google Flights</span></div>
     <form id="flightForm" autocomplete="off">
      <div class="fields two">
       <div class="field airport-field"><label for="flightOrigin">Откуда</label><div class="input-wrap"><span class="field-symbol">↗</span><input type="text" id="flightOrigin" placeholder="Город или аэропорт" role="combobox" aria-expanded="false" aria-autocomplete="list" spellcheck="false" required></div><div id="flightOriginList" class="suggestions" hidden role="listbox"></div></div>
@@ -40,14 +41,20 @@
       <div class="field" id="returnField"><label>Обратно</label><button class="date-button" data-date="return" type="button"><span id="returnText">Выбрать дату</span><span>▦</span></button></div>
       <div class="field"><label for="passengers">Пассажиры</label><select id="passengers"><option value="1">1 взрослый</option><option value="2">2 взрослых</option><option value="3">3 взрослых</option><option value="4">4 взрослых</option><option value="5">5 взрослых</option><option value="6">6 взрослых</option><option value="7">7 взрослых</option><option value="8">8 взрослых</option><option value="9">9 взрослых</option></select></div>
      </div>
+     <div class="flight-search-advanced">
+      <div class="field"><label for="flightTravelClass">Класс обслуживания</label><select id="flightTravelClass"><option value="1">Эконом</option><option value="2">Премиум-эконом</option><option value="3">Бизнес</option><option value="4">Первый класс</option></select></div>
+      <div class="field"><label for="flightSearchStops">Пересадки при поиске</label><select id="flightSearchStops"><option value="0">Любые — больше вариантов</option><option value="1">Только прямые</option><option value="2">Максимум одна</option><option value="3">Максимум две</option></select></div>
+     </div>
+     <p class="fx-caption">Поиск показывает тарифы для выбранного числа взрослых. Для маршрута туда-обратно обратный рейс выбирается отдельно. Багаж и итоговую цену подтвердит продавец.</p>
      <div class="form-bottom"><button class="primary-btn" id="searchFlights" type="submit">Найти авиабилеты <span>→</span></button><span class="form-note">Цены и багаж уточняйте перед покупкой</span></div>
     </form>
     <div id="flightFilterPanel" class="advanced-filters flight-filter-panel" hidden><div class="filters-intro"><strong>Фильтры авиабилетов</strong><small>По найденным предложениям</small></div><div class="hotel-filter-grid"><div><label for="flightSort">Сортировка</label><select id="flightSort"><option value="price">Сначала дешёвые</option><option value="duration">Самый быстрый</option><option value="stops">Меньше пересадок</option></select></div><div><label for="flightStops">Пересадки</label><select id="flightStops"><option value="all">Любые</option><option value="0">Прямой рейс</option><option value="1">Не более 1 пересадки</option></select></div><div><label for="flightAirline">Авиакомпания</label><select id="flightAirline"><option value="all">Все авиакомпании</option></select></div><div><label for="flightTime">Время вылета</label><select id="flightTime"><option value="all">Любое время</option><option value="morning">Утро 06–12</option><option value="day">День 12–18</option><option value="evening">Вечер 18–24</option><option value="night">Ночь 00–06</option></select></div><div><label for="flightMaxPrice">Цена до (EUR)</label><input id="flightMaxPrice" type="number" inputmode="numeric" min="1" placeholder="Без ограничения"></div><div><label for="flightMaxDuration">Перелёт до (часов)</label><input id="flightMaxDuration" type="number" inputmode="numeric" min="1" placeholder="Без ограничения"></div></div></div><div class="results" id="flightResults"><div class="empty-state"><span class="empty-icon">✈</span><strong>Начни с направления</strong><p>Выбери города и даты — мы покажем найденные предложения по цене.</p></div></div>
    </section>
    <section class="panel" id="panel-hotels" aria-labelledby="heading-hotels" hidden>
-    <div class="panel-heading"><div><h2 id="heading-hotels">Отели</h2><p>Конкретные варианты на ваши даты</p></div><span class="hint-chip">Google Hotels</span></div>
+    <div class="panel-heading"><div><h2 id="heading-hotels">Отели</h2><p>Конкретные варианты на ваши даты</p></div><span class="hint-chip">Google Hotels · Booking.com</span></div>
     <form id="hotelForm" autocomplete="off">
      <div class="fields"><div class="field airport-field"><label for="hotelCity">Город проживания</label><div class="input-wrap"><span class="field-symbol">⌖</span><input type="text" id="hotelCity" placeholder="Найти город или страну" role="combobox" aria-expanded="false" aria-autocomplete="list" spellcheck="false" required></div><div id="hotelCityList" class="suggestions" hidden role="listbox"></div></div></div>
+     <div class="hotel-search-source field"><label for="hotelSource">Где искать отели?</label><select id="hotelSource"><option value="google">Google Hotels — основная выдача</option><option value="booking">Booking.com — дополнительные варианты (тест)</option><option value="all">Все источники вместе (2 API-запроса, тест)</option></select><small>Выбор другого источника требует нового запроса к SerpApi. Условия и цены подтвердит продавец.</small></div>
      <div class="fields three">
       <div class="field"><label>Заезд</label><button class="date-button" data-date="checkin" type="button"><span id="checkinText">Дата заезда</span><span>▦</span></button></div>
       <div class="field"><label>Выезд</label><button class="date-button" data-date="checkout" type="button"><span id="checkoutText">Дата выезда</span><span>▦</span></button></div>
