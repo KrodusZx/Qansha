@@ -504,6 +504,7 @@
  function authShowMode(mode){
   if(!['signin','signup','reset','update'].includes(mode))mode='signin';
   authMode=mode;
+  if(authReady&&state.supa)updateAuth();
   const signing=mode==='signup',reset=mode==='reset',update=mode==='update';
   $('authNameField').hidden=!signing;
   $('authEmailField').hidden=update;
@@ -525,8 +526,8 @@
  function updateAuth(){
   const signed=!!state.user;
   $('accountOpen').textContent=tr(signed?'Аккаунт':'Войти / регистрация');
-  $('authUser').hidden=!signed;
-  $('authGuest').hidden=signed||!authReady;
+  $('authUser').hidden=!signed||authMode==='update';
+  $('authGuest').hidden=(signed&&authMode!=='update')||!authReady;
   $('authUnavailable').hidden=authReady;
   if(signed){
    $('authUserEmail').textContent=state.user.email||'';
