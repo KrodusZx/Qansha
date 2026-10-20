@@ -26,7 +26,7 @@ async function serp(params){
   const response=await fetch('https://serpapi.com/search.json?'+p.toString(),{signal:c.signal});
   if(!response.ok){const n=response.status;bad(n===429?'Лимит запросов API исчерпан. Попробуйте позже.':`Поисковый сервис недоступен (${n}).`,n===429?429:502)}
   const data=await response.json();
-  if(data.error)bad('Поиск поставщика: '+safe(data.error),502);
+  if(data.error){if(/hasn't returned any results|no results for this query|no results found/i.test(data.error))return {best_flights:[],other_flights:[],properties:[]};bad('Поиск поставщика: '+safe(data.error),502);}
   if(cache.size>250)cache.clear();cache.set(key,{exp:Date.now()+120000,data});
   return data;
  }catch(e){if(e.name==='AbortError')bad('Поиск занимает слишком много времени. Попробуйте снова.',504);throw e}
@@ -98,9 +98,31 @@ async function hotels(q){
  return {kind:'hotels',offers:result,nights,rooms,environment:env,source:'Google Hotels',searchedAt:new Date().toISOString(),
   guestAllocationNote:rooms>1?'Цена на компанию рассчитана как стоимость одного номера × число номеров. Google Hotels не подтвердил наличие нескольких одинаковых номеров; перепроверьте размещение и итоговую цену перед оплатой.':'Цену и условия номера необходимо подтвердить у поставщика.'};
 }
+/** Optional real-price date comparison. Seven provider searches per press (uses API quota).
+ * Flight figures are one-way fares for ONE adult, not complete round-trip tickets.
+ * Hotel figures are estimated for ONE room for the same stay duration.
+ */
+async function calendar(q){
+ const mode=txt(q.mode),start=txt(q.start),nights=Number(q.nights||3);
+ if(!['flight','hotel'].includes(mode)||!checkDate(start)||!inRange(start))bad('Некорректная дата календаря.');
+ if(!Number.isInteger(nights)||nights<1||nights>30)bad('Некорректная длительность проживания.');
+ const origin=txt(q.origin).toUpperCase(),destination=txt(q.destination).toUpperCase(),city=safe(txt(q.cityName));
+ if(mode==='flight'&&(!VALID_CODE.test(origin)||!VALID_CODE.test(destination)||origin===destination))bad('Укажите аэропорты.');
+ if(mode==='hotel'&&!city)bad('Укажите город отеля.');
+ const dates=Array.from({length:7},(_,i)=>new Date(Date.parse(start+'T12:00:00Z')+i*86400000).toISOString().slice(0,10)).filter(inRange);
+ const prices={};let cursor=0;
+ async function next(){while(cursor<dates.length){const date=dates[cursor++];try{
+  const data=mode==='flight'?await serp({engine:'google_flights',type:'2',departure_id:origin,arrival_id:destination,outbound_date:date,currency:'EUR',hl:'ru',gl:'kz',sort_by:'2',adults:'1'}):await serp({engine:'google_hotels',q:`Hotels in ${city}`,check_in_date:date,check_out_date:new Date(Date.parse(date+'T12:00:00Z')+nights*86400000).toISOString().slice(0,10),adults:'2',currency:'EUR',hl:'ru',gl:'kz',sort_by:'3'});
+  const numbers=mode==='flight'?offers(data).map(f=>Number(f.price)):(data.properties||[]).map(h=>Number(h.total_rate?.extracted_lowest)||Number(h.rate_per_night?.extracted_lowest)*nights).filter(n=>n>0);
+  const found=Math.min(...numbers);if(Number.isFinite(found)&&found>0)prices[date]=found;
+ }catch(e){if(e.status===503)throw e;/* missing fare, timeout or rate-limited: never invent data */}}
+ }
+ await Promise.all([next(),next()]);
+ return {kind:'calendar',mode,prices,checked:dates.length,note:mode==='flight'?'Это минимальная найденная цена в одну сторону на одного взрослого; не билет туда-обратно.':'Это найденная стоимость одного номера за всю поездку; наличие нужно подтвердить.'};
+}
 module.exports=async(req,res)=>{
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');
  if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
- try{const k=txt(req.query.kind);const data=k==='flights'?await flights(req.query):k==='hotels'?await hotels(req.query):bad('Укажите kind=flights или kind=hotels.');return res.status(200).json(data)}
+ try{const k=txt(req.query.kind);const data=k==='flights'?await flights(req.query):k==='hotels'?await hotels(req.query):k==='calendar'?await calendar(req.query):bad('Укажите kind=flights, hotels или calendar.');return res.status(200).json(data)}
  catch(e){const code=Number(e.status)||500;return res.status(code).json({error:code===500?'Ошибка сервера поиска. Попробуйте позднее.':e.message})}
 };
