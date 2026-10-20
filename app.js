@@ -84,6 +84,41 @@
   showDetails('Рейс · '+flightTitle(o),book?'Переход к продавцу':'Информация о рейсе',body);
   if(book&&o.bookingToken)request('flightBooking',{bookingToken:o.bookingToken}).then(d=>{if(!$('offerDetailsModal').hidden&&$('offerDetailsTitle').textContent==='Рейс · '+flightTitle(o)&&d.options?.length){const links=d.options.filter(x=>safeUrl(x.url));if(links.length)$('flightBookingLinks').innerHTML=links.map(x=>'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">'+esc(x.name)+' ↗</a>').join('')}}).catch(()=>{});
  }
+ async function openReturnChoices(i){
+  const outbound=state.flights[i];
+  if(!outbound?.departureToken||state.tripType!=='roundtrip')return;
+  const origin=state.origin?.code,destination=state.destination?.code;
+  const token=outbound.departureToken,depart=state.depart,returnDate=state.return,adults=state.passengers;
+  const travelClass=$('flightTravelClass').value,stops=$('flightSearchStops').value;
+  state.returnParentIndex=i;state.returnOptions=[];
+  showDetails('Выберите обратный рейс',origin+' → '+destination+' · '+dateText(returnDate),
+    '<p class="detail-message">После выбора рейса обратно покажем тариф за весь маршрут для '+adults+' взрослых.</p><div id="returnOptionsList" class="return-options"><p>Загружаем обратные рейсы…</p></div>');
+  try{
+   const data=await request('flightReturns',{origin,destination,depart,returnDate,adults,tripType:'roundtrip',travelClass,stops,departureToken:token});
+   if($('offerDetailsModal').hidden||state.returnParentIndex!==i||state.flights[i]?.departureToken!==token||
+      state.depart!==depart||state.return!==returnDate||state.passengers!==adults||state.origin?.code!==origin||
+      state.destination?.code!==destination||$('flightTravelClass').value!==travelClass||$('flightSearchStops').value!==stops)return;
+   state.returnOptions=data.offers||[];
+   $('returnOptionsList').innerHTML=state.returnOptions.length?state.returnOptions.map((o,j)=>{
+    const leg=o.legs?.[0],p=leg?.segments||[],a=p[0],z=p.at(-1);
+    return '<button type="button" class="return-option" data-return-option="'+j+'"><span><strong>'+
+     esc((a?.from||destination)+' '+(a?.departure?.slice(11,16)||'')+' → '+(z?.to||origin)+' '+(z?.arrival?.slice(11,16)||''))+
+     '</strong><small>'+esc((o.airlines||[]).join(', '))+' · '+(p.length===1?'Без пересадок':Math.max(0,p.length-1)+' пересад.')+'</small></span><b>'+curr(o.price)+'</b></button>';
+   }).join(''):'<p class="detail-message">Поставщик не вернул обратные рейсы для этого варианта. Выберите другой вылет или даты.</p>';
+  }catch(err){if(!$('offerDetailsModal').hidden&&state.returnParentIndex===i){const el=$('returnOptionsList');if(el)el.textContent='Не удалось загрузить обратные рейсы: '+err.message;}}
+ }
+ function chooseReturn(j){
+  const i=state.returnParentIndex,outbound=state.flights[i],returning=state.returnOptions[j];
+  if(!outbound?.departureToken||!returning?.legs?.[0]||state.tripType!=='roundtrip')return;
+  const chosen={...returning,id:'roundtrip-'+outbound.id+'-'+returning.id,
+    fareType:'roundtrip',legs:[outbound.legs[0],returning.legs[0]],
+    airlines:[...new Set([...(outbound.airlines||[]),...(returning.airlines||[])])],
+    durations:(outbound.durations||0)+(returning.durations||0),
+    stopCount:(outbound.stopCount||0)+(returning.stopCount||0),departureToken:outbound.departureToken};
+  state.flights[i]=chosen;state.flight=chosen;state.returnParentIndex=null;state.returnOptions=[];
+  modal('offerDetailsModal',false);alignBudget('flight');renderFlights();renderBudget();
+  toast('Оба рейса выбраны и добавлены в бюджет');
+ }
  function gallery(images){const arr=[...new Set((images||[]).filter(safeUrl))].slice(0,16);return arr.length?'<img id="galleryMain" class="details-main-photo" src="'+esc(arr[0])+'" alt="Фото отеля"><div class="details-gallery">'+arr.slice(0,12).map((u,i)=>'<button type="button" class="'+(i===0?'is-active':'')+'" data-gallery="'+i+'" data-img="'+esc(u)+'"><img src="'+esc(u)+'" alt="Фото '+(i+1)+'" loading="lazy"></button>').join('')+'</div>':'<p class="detail-message">Фотографии пока недоступны у поставщика.</p>'}
  async function openHotel(i){const o=state.hotels[i];if(!o)return;const initial=o.images?.length?o.images:[o.thumbnail],book=safeUrl(o.bookingUrl)?o.bookingUrl:googleHotelsLink();showDetails(o.name,'Фотографии, удобства и бронирование','<div id="galleryWrap">'+gallery(initial)+'</div><p>'+esc(o.address||'Адрес уточняется')+' · '+curr(o.price)+' за всё проживание</p><div class="details-amenities" id="amenitiesWrap">'+(o.amenities||[]).map(a=>'<span>✓ '+esc(a)+'</span>').join('')+'</div><div class="details-providers" id="hotelProviders"><a href="'+esc(book)+'" target="_blank" rel="noopener noreferrer">Смотреть цены и бронировать ↗</a></div><p class="detail-message" id="hotelDetailsStatus">Загружаем дополнительную информацию… Для группы стоимость может быть приблизительной.</p>');
   if(!o.propertyToken){$('hotelDetailsStatus').textContent='Подробности не переданы поставщиком. Проверьте условия на странице бронирования.';return}
