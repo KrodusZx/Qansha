@@ -17,7 +17,7 @@ function search(text,country){const q=normalize(text),alias=aliases[q]||(/[а-я
  for(const p of records){if(country&&p.country!==country)continue;
  const priority=favorites.indexOf(p.city+'|'+p.country);let score=priority>=0?500-priority:0;
  if(q){if(p.n===q||alias&&p.n===alias)score+=5000;else if(p.n.startsWith(q)||alias&&p.n.startsWith(alias))score+=2900;else if(p.n.includes(q)||alias&&p.n.includes(alias))score+=1600;else continue;}
- else if(priority<0)continue;
+ else if(priority<0&&!country)continue;
  matches.push({id:p.id,city:p.city,country:p.country,region:p.region,score});
  }
  matches.sort((a,b)=>b.score-a.score||a.city.localeCompare(b.city));
