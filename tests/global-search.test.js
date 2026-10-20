@@ -81,7 +81,7 @@ test('Booking.com hotel source normalizes price and links without inventing avai
 });
 
 test('combined hotel search returns Google and Booking.com offers using two API calls',async()=>{
- const result=await call({kind:'hotels',source:'all',city:'PAR',cityName:'Paris',checkIn:iso(10),checkOut:iso(13),travelers:'2'},qs=>
+ const result=await call({kind:'hotels',source:'all',city:'FCO',cityName:'Rome',checkIn:iso(20),checkOut:iso(24),travelers:'2'},qs=>
   qs.get('engine')==='booking'
    ? {properties:[{property_id:999,name:'Booking Example Hotel',currency:'EUR',extracted_price:285,
       link:'https://www.booking.com/hotel/fr/example2.html'}]}
