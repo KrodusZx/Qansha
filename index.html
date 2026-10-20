@@ -3,11 +3,12 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
- <meta name="theme-color" content="#fff9f4">
+ <meta name="theme-color" content="#fff6ed">
  <title>Qansha? Бір жауап — авиабилеты, отели, бюджет</title>
  <meta name="description" content="Сравнивайте предложения авиабилетов, выбирайте отели и планируйте бюджет путешествия в Qansha?.">
  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23121828' rx='24'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='67' font-weight='bold' fill='%237ac7fe'%3EQ%3C/text%3E%3C/svg%3E">
  <link rel="stylesheet" href="styles.css">
+ <link rel="stylesheet" href="v4.css">
  <script src="config.js" defer></script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
  <script src="app.js" defer></script>
@@ -20,7 +21,7 @@
   </header>
   <main>
    <section class="headline" aria-label="Планирование путешествия"><p class="small-label">QANSHA? · ПУТЕШЕСТВУЙ БОЛЬШЕ</p><h1>Бір жауап <span>— один ответ.</span></h1><p>Дешёвые авиабилеты, конкретные отели и бюджет поездки. Всё в одном месте.</p></section>
-   <nav class="tabs" aria-label="Разделы Qansha?"><button class="tab is-active" data-tab="flights" type="button" aria-current="page">✈ <span>Авиабилеты</span></button><button class="tab" data-tab="hotels" type="button">▦ <span>Отели</span></button><button class="tab" data-tab="budget" type="button">◉ <span>Бюджет</span></button></nav>
+   <nav class="tabs" aria-label="Разделы Qansha?"><button class="tab is-active" data-tab="flights" type="button" aria-current="page">✈ <span>Авиабилеты</span></button><button class="tab" data-tab="hotels" type="button">▦ <span>Отели</span></button><button class="tab" data-tab="budget" type="button">◉ <span>Сколько уйдёт?</span></button><button class="tab" data-tab="compare" type="button">⇄ <span>Сравнить</span></button></nav>
    <section class="panel" id="panel-flights" aria-labelledby="heading-flights">
     <div class="panel-heading"><div><h2 id="heading-flights">Авиабилеты</h2><p>Самые дешёвые из доступных предложений</p></div><span class="hint-chip">Google Flights</span></div>
     <form id="flightForm" autocomplete="off">
@@ -28,9 +29,11 @@
       <div class="field airport-field"><label for="flightOrigin">Откуда</label><div class="input-wrap"><span class="field-symbol">↗</span><input type="text" id="flightOrigin" placeholder="Город или аэропорт" role="combobox" aria-expanded="false" aria-autocomplete="list" spellcheck="false" required></div><div id="flightOriginList" class="suggestions" hidden role="listbox"></div></div>
       <div class="field airport-field"><label for="flightDest">Куда</label><div class="input-wrap"><span class="field-symbol">⌖</span><input type="text" id="flightDest" placeholder="Поиск по всему миру" role="combobox" aria-expanded="false" aria-autocomplete="list" spellcheck="false" required></div><div id="flightDestList" class="suggestions" hidden role="listbox"></div></div>
      </div>
+     <div class="flight-prefs"><div class="trip-switch" role="group" aria-label="Тип перелёта"><button type="button" class="trip-option is-active" data-trip="roundtrip" aria-pressed="true">⇄ Туда-обратно</button><button type="button" class="trip-option" data-trip="oneway" aria-pressed="false">→ В одну сторону</button></div><div class="compact-select"><label for="flightCurrency">Валюта</label><select id="flightCurrency" aria-label="Валюта билетов"><option value="EUR">EUR €</option><option value="KZT">KZT ₸</option><option value="USD">USD $</option><option value="GBP">GBP £</option></select></div></div>
+     <p class="fx-caption">Конвертация ориентировочная. Стоимость у перевозчика может отличаться.</p>
      <div class="fields three">
       <div class="field"><label>Туда</label><button class="date-button" data-date="depart" type="button"><span id="departText">Выбрать дату</span><span>▦</span></button></div>
-      <div class="field"><label>Обратно</label><button class="date-button" data-date="return" type="button"><span id="returnText">Выбрать дату</span><span>▦</span></button></div>
+      <div class="field" id="returnField"><label>Обратно</label><button class="date-button" data-date="return" type="button"><span id="returnText">Выбрать дату</span><span>▦</span></button></div>
       <div class="field"><label for="passengers">Пассажиры</label><select id="passengers"><option value="1">1 взрослый</option><option value="2">2 взрослых</option><option value="3">3 взрослых</option><option value="4">4 взрослых</option><option value="5">5 взрослых</option><option value="6">6 взрослых</option><option value="7">7 взрослых</option><option value="8">8 взрослых</option><option value="9">9 взрослых</option></select></div>
      </div>
      <div class="form-bottom"><button class="primary-btn" id="searchFlights" type="submit">Найти авиабилеты <span>→</span></button><span class="form-note">Цены и багаж уточняйте перед покупкой</span></div>
@@ -47,20 +50,40 @@
       <div class="field"><label for="hotelGuests">Гости</label><select id="hotelGuests"><option value="1">1 гость</option><option value="2">2 гостя</option><option value="3">3 гостя</option><option value="4">4 гостя</option><option value="5">5 гостей</option><option value="6">6 гостей</option><option value="7">7 гостей</option><option value="8">8 гостей</option><option value="9">9 гостей</option></select></div>
      </div>
      <div class="hotel-preferences" aria-label="Уровень проживания"><div class="hotel-preferences-heading"><strong>Какой отель подобрать?</strong><span>Выбери категорию — мы сразу начнём поиск</span></div><div class="tier-pills" role="group" aria-label="Категория отеля"><button type="button" class="tier-pill" data-hotel-tier="economy">Эконом</button><button type="button" class="tier-pill is-active" data-hotel-tier="standard">Средний</button><button type="button" class="tier-pill" data-hotel-tier="comfort">Комфорт</button></div></div>
+    <div class="advanced-filters"><div class="filters-intro"><strong>Фильтры как в сервисе бронирования</strong><small>Применяются к найденным вариантам</small></div><div class="hotel-filter-grid">
+      <div><label for="hotelSort">Сортировка</label><select id="hotelSort"><option value="price">Сначала дешёвые</option><option value="rating">Лучший рейтинг</option><option value="stars">Больше звёзд</option></select></div>
+      <div><label for="hotelStars">Звёзды отеля</label><select id="hotelStars"><option value="0">Любые</option><option value="2">2★ и выше</option><option value="3">3★ и выше</option><option value="4">4★ и выше</option><option value="5">Только 5★</option></select></div>
+      <div><label for="hotelRating">Оценка гостей</label><select id="hotelRating"><option value="0">Любая</option><option value="3.5">От 3,5</option><option value="4">От 4,0</option><option value="4.5">От 4,5</option></select></div>
+      <div><label for="hotelMaxPrice">Макс. цена за поездку (EUR)</label><input id="hotelMaxPrice" inputmode="numeric" type="number" min="1" step="10" placeholder="Без ограничения"></div>
+      <div><label for="hotelType">Тип жилья</label><select id="hotelType"><option value="all">Все варианты</option><option value="hotel">Отели</option><option value="other">Апартаменты / другое</option></select></div>
+      <label class="check-filter"><input id="hotelFreeCancel" type="checkbox"> Бесплатная отмена <small>Если подтверждено поставщиком</small></label>
+    </div></div>
     <div class="form-bottom"><button class="primary-btn" id="searchHotels" type="submit">Найти отели <span>→</span></button><span class="form-note">Эконом · Средний · Комфорт</span></div>
     </form>
     <div class="recommendation-slot" id="hotelRecommendation" aria-live="polite" hidden></div>
     <div class="results" id="hotelResults"><div class="empty-state"><span class="empty-icon">▦</span><strong>Найди свой отель</strong><p>Покажем названия гостиниц, цены за поездку и подберём варианты под бюджет.</p></div></div>
    </section>
    <section class="panel" id="panel-budget" aria-labelledby="heading-budget" hidden>
-    <div class="panel-heading"><div><h2 id="heading-budget">Бюджет поездки</h2><p>Собери поездку из выбранных предложений</p></div><span class="hint-chip">Расчёт</span></div>
+    <div class="panel-heading"><div><h2 id="heading-budget">Сколько уйдёт на поездку?</h2><p>Выбери стиль — рассчитаем жильё, еду, транспорт и впечатления</p></div><span class="hint-chip">Главная идея Qansha?</span></div>
+    <div class="trip-scenarios" id="budgetScenarios" role="group" aria-label="Три сценария путешествия"></div>
     <div class="budget-summary-route"><span id="budgetRoute">Астана → Париж</span><span id="budgetNights">— ночей</span></div>
     <div class="budget-options"><div><label for="budgetTier">Стиль путешествия</label><select id="budgetTier"><option value="economy">Эконом</option><option value="standard" selected>Средний</option><option value="comfort">Комфорт</option></select></div><div><label for="budgetCurrency">Валюта</label><select id="budgetCurrency"><option value="EUR">EUR €</option><option value="KZT">KZT ₸</option><option value="USD">USD $</option></select></div></div>
     <div class="recommendation-slot budget-recommendation" id="budgetRecommendation" aria-live="polite"></div>
+    <div class="budget-estimate-hero" id="budgetScenarioTotal" aria-live="polite"></div>
+    <div class="budget-spend-guide"><div class="section-title"><h3>Куда уйдут деньги?</h3><span>Оценка на человека / день</span></div><div id="budgetBreakdown" class="spend-grid"></div></div>
+    <div class="activity-guide"><div class="section-title"><h3>Куда можно сходить?</h3><span>Идеи для города и стиля</span></div><div id="budgetIdeas" class="ideas-grid"></div></div>
     <div class="range-card"><div class="range-label"><label for="dailyBudget">Расходы на месте / человек / день</label><strong id="dailyValue">65 €</strong></div><input type="range" id="dailyBudget" min="10" max="250" value="65" step="5"><div class="range-ends"><span>Экономно</span><span>С комфортом</span></div></div>
     <div class="totals"><div><span>Авиабилеты</span><strong id="totalFlights">Выбери рейс</strong></div><div><span>Проживание</span><strong id="totalHotel">Выбери отель</strong></div><div><span>Расходы на месте</span><strong id="totalDaily">—</strong></div><div class="total-line"><span>Вся поездка</span><strong id="totalTrip">—</strong></div></div>
     <div class="budget-callout" id="budgetNote">Найди авиабилеты и отель в соседних вкладках — мы подставим их стоимость сюда. Без них итог не будет выдаваться за реальную цену.</div>
     <div class="budget-shortcuts"><button type="button" data-goto="flights">Выбрать рейс →</button><button type="button" data-goto="hotels">Выбрать отель →</button></div>
+   </section>
+   <section class="panel" id="panel-compare" aria-labelledby="heading-compare" hidden>
+     <div class="panel-heading"><div><h2 id="heading-compare">Где дешевле отдохнуть?</h2><p>Сравни две страны через примерные расходы на поездку</p></div><span class="hint-chip">Сравнение стран</span></div>
+     <div class="compare-intro">Сравнение рассчитано по модельным расходам на жильё и жизнь в городе. <strong>Билеты не включены</strong> — они зависят от места вылета и даты.</div>
+     <div class="compare-controls"><div><label for="compareLeft">Страна №1</label><select id="compareLeft"></select></div><div><label for="compareRight">Страна №2</label><select id="compareRight"></select></div><div><label for="compareDays">Дней</label><select id="compareDays"><option value="3">3 дня</option><option value="5" selected>5 дней</option><option value="7">7 дней</option><option value="10">10 дней</option><option value="14">14 дней</option></select></div></div>
+     <div id="compareResults" class="compare-results" aria-live="polite"></div>
+     <div class="compare-rank-heading"><h3>Ещё недорогие направления</h3><p>Оценка поездки на одного человека, без авиабилетов</p></div>
+     <div id="compareRanking" class="compare-ranking"></div>
    </section>
    <footer>Qansha? · Бронируемые цены и наличие мест подтверждаются у поставщика. Мы не продаём билеты и не бронируем номера. <span>Поиск работает на данных партнёра, когда API подключён.</span></footer>
   </main>
