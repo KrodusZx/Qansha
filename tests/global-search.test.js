@@ -14,7 +14,7 @@ async function call(query,fixture){
  process.env.SERPAPI_API_KEY='test-placeholder-not-a-real-key';
  global.fetch=async url=>{
   calls.push(new URL(url));
-  return {ok:true,json:async()=>fixture};
+  return {ok:true,json:async()=>(typeof fixture==='function'?fixture(new URL(url).searchParams):fixture)};
  };
  let statusCode=200,body=null;
  const req={method:'GET',query,url:'/api/search?'+new URLSearchParams(query),headers:{'x-real-ip':'192.0.2.77'}};
@@ -78,4 +78,20 @@ test('Booking.com hotel source normalizes price and links without inventing avai
  assert.equal(result.body.offers[0].rawRating,9);
  assert.equal(result.body.offers[0].bookingUrl.includes('booking.com'),true);
  assert.equal(result.body.offers[0].propertyToken,null);
+});
+
+test('combined hotel search returns Google and Booking.com offers using two API calls',async()=>{
+ const result=await call({kind:'hotels',source:'all',city:'PAR',cityName:'Paris',checkIn:iso(10),checkOut:iso(13),travelers:'2'},qs=>
+  qs.get('engine')==='booking'
+   ? {properties:[{property_id:999,name:'Booking Example Hotel',currency:'EUR',extracted_price:285,
+      link:'https://www.booking.com/hotel/fr/example2.html'}]}
+   : {properties:[{name:'Google Example Hotel',total_rate:{extracted_lowest:315},
+      property_token:'Google_demo_token'}]}
+ );
+ assert.equal(result.statusCode,200);
+ assert.equal(result.calls.length,2);
+ assert.equal(result.body.offers.length,2);
+ assert.equal(result.body.offers[0].source,'Booking.com');
+ assert.equal(result.body.offers[1].source,'Google Hotels');
+ assert.equal(result.body.nextPageToken,null);
 });
