@@ -1,0 +1,52 @@
+/* Qansha? live search, hotel choice, accounts and favorites */
+:root{--q-line:rgba(255,255,255,.10);--q-muted:#98a9c0;--q-blue:#38bdf8}
+.live-section{margin:0 0 72px;padding:30px;border-radius:24px;border:1px solid rgba(56,189,248,.24);background:linear-gradient(145deg,rgba(21,39,60,.95),rgba(13,18,33,.98));box-shadow:0 12px 60px rgba(0,0,0,.18)}
+.live-section h2{font-size:clamp(1.55rem,3vw,2.3rem);color:#f4faff;letter-spacing:-1px}
+.live-lead{color:#99aabe;margin:10px 0 26px;max-width:840px;line-height:1.65;font-size:.91rem}
+.live-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:0 0 15px}
+.live-grid .field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.live-grid label,.travel-mode-label{color:#aec0d6;font-size:.78rem;font-weight:700}
+.live-input,.live-select{background:#141e30;border:1px solid rgba(255,255,255,.15);color:#edf6ff;padding:13px 12px;border-radius:11px;font:inherit;width:100%;min-height:46px;min-width:0;outline:none;color-scheme:dark}
+.live-input:focus,.live-select:focus{border-color:var(--q-blue);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+.live-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.q-btn{background:linear-gradient(135deg,#38bdf8,#a78bfa);border:0;border-radius:11px;color:#07111e;padding:12px 17px;font-weight:850;cursor:pointer;font-size:.88rem;transition:opacity .2s,transform .2s}
+.q-btn:hover{transform:translateY(-1px)}.q-btn:disabled{cursor:wait;opacity:.58;transform:none}
+.q-btn.secondary{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#e9f1ff}
+.q-btn.compact{padding:9px 12px;font-size:.8rem}
+.q-btn.ghost{background:transparent;border:1px solid rgba(56,189,248,.3);color:#7dd3fc}
+.live-help{font-size:.74rem;color:#8398b2;line-height:1.6;margin-top:12px}
+.live-status{font-size:.8rem;color:#8aa3bd;line-height:1.5}.live-status.good{color:#6ee7b7}.live-status.warn{color:#fcd34d}
+.live-titles{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:30px 0 12px}
+.live-titles h3{color:#eff6ff;font-size:1.15rem;letter-spacing:-.4px}.live-titles small{color:#8498b4;font-size:.76rem}
+.offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.offer-card{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);border-radius:15px;padding:18px;min-width:0;position:relative;display:flex;flex-direction:column;gap:8px}
+.offer-card.active{border-color:#38bdf8;box-shadow:0 0 0 1px rgba(56,189,248,.2) inset}
+.offer-tier{display:inline-block;color:#a9bde1;font-size:.73rem;letter-spacing:.4px;text-transform:uppercase;font-weight:800}
+.offer-name{font-size:1.02rem;line-height:1.35;color:#fff;font-weight:800;overflow-wrap:anywhere}
+.offer-price{font-size:1.37rem;font-weight:900;letter-spacing:-.8px;color:#7dd3fc}
+.offer-muted{color:#94a9c2;font-size:.77rem;line-height:1.6;overflow-wrap:anywhere}
+.offer-buttons{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:9px}
+.offer-empty{border:1px dashed rgba(255,255,255,.16);border-radius:14px;color:#9eb1cc;padding:25px 18px;line-height:1.55;grid-column:1/-1;font-size:.85rem}
+.live-summary{border:1px solid rgba(56,189,248,.25);border-radius:15px;background:rgba(56,189,248,.07);padding:18px 20px;margin-top:22px}
+.live-summary .large{display:block;color:#fff;font-size:1.85rem;font-weight:900;margin:6px 0}
+.live-summary .meta{font-size:.8rem;color:#a0bad1;line-height:1.6}
+.live-summary strong{color:white}
+.q-account{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.q-auth-panel{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 17px}
+.q-auth-panel input{flex:1;min-width:170px}
+.q-drawer{display:none;background:rgba(4,9,19,.94);position:fixed;inset:0;z-index:150;padding:22px;overflow:auto;backdrop-filter:blur(7px)}
+.q-drawer.open{display:flex;align-items:flex-start;justify-content:center}
+.q-panel{margin:35px auto 0;max-width:650px;width:100%;background:#111929;border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:25px;box-shadow:0 25px 90px rgba(0,0,0,.4)}
+.q-panel-header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}
+.q-panel h2{font-size:1.3rem;color:#f6fbff}
+.q-account-status{font-size:.79rem;color:#92a9c8;line-height:1.55}
+.fave-item{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px;margin:8px 0;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.fave-title{font-size:.89rem;color:#f1f7ff;font-weight:750}.fave-meta{color:#8195af;font-size:.75rem;margin-top:6px;line-height:1.5}
+.q-subline{color:#8ba2bc;font-size:.74rem;line-height:1.6;margin-top:10px}
+@media(max-width:960px){.live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.offer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.live-section{padding:18px 13px}.live-grid{grid-template-columns:1fr 1fr;gap:9px}.offer-grid{grid-template-columns:1fr}.live-input,.live-select{font-size:.82rem;padding:11px 9px}.live-actions .q-btn{flex:1}.q-panel{padding:17px}.q-account{justify-content:center} .live-summary .large{font-size:1.45rem}}
+
+.live-hotel-note{margin-top:13px;padding:12px 10px;border-radius:10px;border:1px solid rgba(56,189,248,.22);background:rgba(56,189,248,.06);display:flex;flex-direction:column;gap:6px}
+.live-hotel-note strong{font-size:.8rem;color:#bdeafe;line-height:1.35}.live-hotel-note span{font-size:.7rem;color:#90a8c3;line-height:1.5}
+
+.q-maplink{font-size:.78rem;color:#85d7ff;text-decoration:none}.q-maplink:hover{text-decoration:underline}
