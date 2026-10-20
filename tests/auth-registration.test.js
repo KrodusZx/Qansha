@@ -29,6 +29,6 @@ test('account markup exposes required fields and recovery affordances',()=>{
  for(const fn of ['signUp','signInWithPassword','resetPasswordForEmail','updateUser','signOut'])
   assert.ok(js.includes('auth.'+fn),fn);
  assert.match(js,/detectSessionInUrl:true/);
- assert.match(js,/if\(!authReady\|\|!state\.supa\)/);
+ assert.ok(js.includes('authBusy||!authReady||!state.supa'));
  assert.ok(!html.includes('id="sendLink"'));
 });
