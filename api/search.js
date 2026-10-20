@@ -10,6 +10,7 @@ const VALID_DATE=/^\d{4}-\d{2}-\d{2}$/;
 const cache=new Map();
 const safe=s=>String(s??'').slice(0,180);
 const txt=v=>Array.isArray(v)?v[0]:String(v??'');
+const providerLanguage=q=>['ru','kk','en'].includes(txt(q.lang))?txt(q.lang):'ru';
 function bad(message,status=400){const e=new Error(message);e.status=status;throw e}
 function checkDate(x){
  if(!VALID_DATE.test(x))return false;
@@ -57,7 +58,7 @@ function flightParams(q){
  if(!Number.isInteger(adults)||adults<1||adults>9)bad('Можно искать для 1–9 взрослых.');
  if(![1,2,3,4].includes(travelClass)||![0,1,2,3].includes(stops))bad('Некорректные фильтры перелёта.');
  return {origin,destination,depart,back,adults,oneWay,travelClass,stops,
-  shared:{engine:'google_flights',type:oneWay?'2':'1',currency:'EUR',hl:'ru',gl:'kz',sort_by:'2',
+  shared:{engine:'google_flights',type:oneWay?'2':'1',currency:'EUR',hl:providerLanguage(q),gl:'kz',sort_by:'2',
    adults:String(adults),travel_class:String(travelClass),stops:String(stops),show_hidden:'true',
    departure_id:origin,arrival_id:destination,outbound_date:depart,
    ...(!oneWay?{return_date:back}:{})}};
@@ -113,7 +114,7 @@ async function hotels(q){
  const rooms=Math.ceil(travelers/2),perRoomAdults=travelers===1?1:2;
  const pageToken=txt(q.pageToken);if(pageToken&&(pageToken.length>2600||!/^[A-Za-z0-9_+=:/-]+$/.test(pageToken)))bad('Некорректная страница поиска.');
  const data=await serp({engine:'google_hotels',q:`Hotels in ${city}`,check_in_date:checkIn,check_out_date:checkOut,
-  adults:String(perRoomAdults),currency:'EUR',hl:'ru',gl:'kz',sort_by:'3',...(pageToken?{next_page_token:pageToken}:{})});
+  adults:String(perRoomAdults),currency:'EUR',hl:providerLanguage(q),gl:'kz',sort_by:'3',...(pageToken?{next_page_token:pageToken}:{})});
  const items=[...(data.properties||[]),...(data.non_matching_properties||[])].filter(h=>h?.name);
  const result=items.map((h,i)=>{
   // Total rate is per room for selected adult count; multiply only as a disclosed estimate.
@@ -154,7 +155,7 @@ async function bookingHotels(q){
   if(!Number.isInteger(offset)||offset>1000||offset%25!==0)bad('Некорректный номер страницы.');
  }
  const data=await serp({engine:'booking',q:city,check_in_date:checkIn,check_out_date:checkOut,
-  adults:String(travelers),rooms:String(rooms),currency:'EUR',hl:'en-us',sort_by:'price',
+  adults:String(travelers),rooms:String(rooms),currency:'EUR',hl:providerLanguage(q)==='ru'?'ru':'en-us',sort_by:'price',
   limit:'25',offset:String(offset),...(sessionToken?{session_token:sessionToken}:{})});
  const items=(data.properties||[]).filter(h=>h?.name&&!h.sold_out);
  const offers=items.map(h=>{
@@ -205,7 +206,7 @@ const validToken=x=>typeof x==='string'&&x.length>5&&x.length<2000&&/^[A-Za-z0-9
 async function hotelDetails(q){
  const token=txt(q.propertyToken),city=safe(txt(q.cityName)),checkIn=txt(q.checkIn),checkOut=txt(q.checkOut);
  if(!validToken(token)||!city||!checkDate(checkIn)||!checkDate(checkOut)||checkOut<=checkIn)bad('Неправильные данные отеля');
- const d=await serp({engine:'google_hotels',q:'Hotels in '+city,property_token:token,check_in_date:checkIn,check_out_date:checkOut,adults:String(Math.min(2,Math.max(1,Number(q.travelers)||2))),currency:'EUR',hl:'ru',gl:'kz'});
+ const d=await serp({engine:'google_hotels',q:'Hotels in '+city,property_token:token,check_in_date:checkIn,check_out_date:checkOut,adults:String(Math.min(2,Math.max(1,Number(q.travelers)||2))),currency:'EUR',hl:providerLanguage(q),gl:'kz'});
  const source=[...(d.prices||[]),...(d.featured_prices||[])];
  return {kind:'hotelDetails',name:safe(d.name),description:String(d.description||'').slice(0,800),amenities:(d.amenities||[]).slice(0,28).map(safe),images:imageList(d.images),options:source.filter(x=>cleanUrl(x.link)).slice(0,9).map(x=>({name:safe(x.source||'Поставщик'),url:cleanUrl(x.link),price:Number(x.total_rate?.extracted_lowest)||null}))}
 }
@@ -217,7 +218,7 @@ async function hotelPhotos(q){
 }
 async function flightBooking(q){
  const token=txt(q.bookingToken);if(!validToken(token))bad('Нет предложения для бронирования');
- const d=await serp({engine:'google_flights',booking_token:token,hl:'ru',gl:'kz',currency:'EUR'});
+ const d=await serp({engine:'google_flights',booking_token:token,hl:providerLanguage(q),gl:'kz',currency:'EUR'});
  const src=[...(Array.isArray(d.booking_options)?d.booking_options:[]),...(Array.isArray(d.booking_options?.together)?d.booking_options.together:[]),...(Array.isArray(d.booking_options?.separate)?d.booking_options.separate:[])];
  const options=src.flatMap(x=>[x,...(x?.options||[])]).filter(x=>x&&typeof x==='object').map(x=>({name:safe(x.book_with||x.airline||x.name||'Сайт бронирования'),url:cleanUrl(x.booking_link||x.link||x.url)})).filter(x=>x.url).slice(0,10);
  return {kind:'flightBooking',options}
@@ -237,7 +238,7 @@ async function calendar(q){
  const dates=Array.from({length:7},(_,i)=>new Date(Date.parse(start+'T12:00:00Z')+i*86400000).toISOString().slice(0,10)).filter(inRange);
  const prices={};let cursor=0;
  async function next(){while(cursor<dates.length){const date=dates[cursor++];try{
-  const data=mode==='flight'?await serp({engine:'google_flights',type:'2',departure_id:origin,arrival_id:destination,outbound_date:date,currency:'EUR',hl:'ru',gl:'kz',sort_by:'2',adults:'1'}):await serp({engine:'google_hotels',q:`Hotels in ${city}`,check_in_date:date,check_out_date:new Date(Date.parse(date+'T12:00:00Z')+nights*86400000).toISOString().slice(0,10),adults:'2',currency:'EUR',hl:'ru',gl:'kz',sort_by:'3'});
+  const data=mode==='flight'?await serp({engine:'google_flights',type:'2',departure_id:origin,arrival_id:destination,outbound_date:date,currency:'EUR',hl:providerLanguage(q),gl:'kz',sort_by:'2',adults:'1'}):await serp({engine:'google_hotels',q:`Hotels in ${city}`,check_in_date:date,check_out_date:new Date(Date.parse(date+'T12:00:00Z')+nights*86400000).toISOString().slice(0,10),adults:'2',currency:'EUR',hl:providerLanguage(q),gl:'kz',sort_by:'3'});
   const numbers=mode==='flight'?offers(data).map(f=>Number(f.price)):(data.properties||[]).map(h=>Number(h.total_rate?.extracted_lowest)||Number(h.rate_per_night?.extracted_lowest)*nights).filter(n=>n>0);
   const found=Math.min(...numbers);if(Number.isFinite(found)&&found>0)prices[date]=found;
  }catch(e){if(e.status===503)throw e;/* missing fare, timeout or rate-limited: never invent data */}}
