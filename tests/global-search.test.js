@@ -61,3 +61,21 @@ test('invalid cabin class is rejected before an external request',async()=>{
  assert.equal(result.statusCode,400);
  assert.equal(result.calls.length,0);
 });
+
+test('Booking.com hotel source normalizes price and links without inventing availability',async()=>{
+ const result=await call({kind:'hotels',source:'booking',city:'PAR',cityName:'Paris',checkIn:iso(10),checkOut:iso(13),travelers:'2'},{
+  properties:[{property_id:12345,name:'Example Paris Hotel',type:'Hotel',hotel_class:4,rating:9.0,
+   currency:'EUR',extracted_price:456.78,free_cancellation:true,thumbnail:'https://cf.bstatic.com/image.jpg',
+   link:'https://www.booking.com/hotel/fr/example.html?checkin=2026-11-01',
+   rooms:[{name:'Double room'}]}]
+ });
+ assert.equal(result.statusCode,200);
+ assert.equal(result.calls[0].searchParams.get('engine'),'booking');
+ assert.equal(result.calls[0].searchParams.get('currency'),'EUR');
+ assert.equal(result.body.offers.length,1);
+ assert.equal(result.body.offers[0].price,456.78);
+ assert.equal(result.body.offers[0].rating,4.5);
+ assert.equal(result.body.offers[0].rawRating,9);
+ assert.equal(result.body.offers[0].bookingUrl.includes('booking.com'),true);
+ assert.equal(result.body.offers[0].propertyToken,null);
+});
