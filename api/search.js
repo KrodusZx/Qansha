@@ -69,8 +69,8 @@ function normalizeFlight(item,adults,index,stage){
  if(!parts.length)return null;
  return {
   id:stage+'-'+index+'-'+String(item.departure_token||item.booking_token||'').slice(0,24),
-  kind:'flight',price:fare,currency:'EUR',perAdultPrice:fare/adults,
-  groupPriceIsEstimate:false,priceNeedsConfirmation:true,
+  kind:'flight',price:fare,currency:'EUR',perAdultPrice:null,
+  groupPriceIsEstimate:true,priceNeedsConfirmation:true,
   fareType:stage,source:'Google Flights',legs:[leg(item)],
   airlines:[...new Set(parts.map(f=>safe(f.airline)).filter(Boolean))],
   checkedBags:null,seats:null,durations:Number(item.total_duration||0),
@@ -88,8 +88,8 @@ async function flights(q){
  return {kind:'flights',source:'Google Flights',offers:result,searchedAt:new Date().toISOString(),
   environment:env,adults:p.adults,
   pricingNote:p.oneWay
-   ?'Цена получена для указанного числа взрослых; проверьте итог у продавца.'
-   :'Показана предварительная цена полного маршрута для указанного числа взрослых. Сначала выберите обратный рейс, чтобы уточнить тариф и добавить его в бюджет.'};
+   ?'Цена найдена для запроса с указанным числом взрослых; итоговую стоимость всей группы подтвердит продавец.'
+   :'Показана предварительная цена туда-обратно для запроса с указанным числом взрослых. Выберите обратный рейс; итоговую стоимость группы подтвердит продавец.'};
 }
 // Fetch returning choices only when a visitor selects a specific outbound flight.
 // This avoids N extra SerpApi requests for every search and yields a real paired itinerary.
