@@ -162,6 +162,90 @@
   {id:'IS',country:'Исландия',city:'Рейкьявик',code:'KEF',daily:101,hotel:142,ideas:['Набережная','Городские музеи','Геотермальные бассейны','Природные маршруты']},
   {id:'SG',country:'Сингапур',city:'Сингапур',code:'SIN',daily:75,hotel:114,ideas:['Marina Bay','Gardens by the Bay','Hawker centres','Ботанический сад']}
  ];
+
+ const BUDGET_CITY_ALIASES={TR:['istanbul','стамбул'],TH:['bangkok','бангкок','банкок'],FR:['paris','париж'],GE:['tbilisi','тбилиси'],KZ:['almaty','алматы'],UZ:['tashkent','ташкент'],AZ:['baku','баку'],AE:['dubai','дубай'],IT:['rome','roma','рим'],ES:['barcelona','барселона'],CZ:['prague','praha','прага'],MY:['kuala lumpur','куала лумпур'],VN:['da nang','danang','дананг'],JP:['tokyo','токио'],CH:['zurich','цюрих'],IS:['reykjavik','рейкьявик'],SG:['singapore','сингапур']};
+ let worldSearchTimer=null,worldSearchSeq=0,worldCandidates=[],worldActive=-1;
+ const cityNormalized=x=>norm(x).replace(/ё/g,'е');
+ function modelForWorldCity(city){
+  return TRAVEL_PLACES.find(p=>p.id===city.country&&(p.code===city.code||BUDGET_CITY_ALIASES[p.id]?.includes(cityNormalized(city.city))))||null;
+ }
+ function budgetCityLabel(){const p=placeForBudget();return state.budgetCustomCity?p.city:(window.QANSHA_I18N?.city(p.code,p.city)||p.city)}
+ function setBudgetCity(city){
+  if(!city?.country)return;
+  const known=modelForWorldCity(city),prior=state.budgetCustomCity,same=prior&&prior.country===city.country&&cityNormalized(prior.city)===cityNormalized(city.city);
+  state.budgetPlace=city.country;
+  state.budgetCustomCity=known?null:{id:city.id||'',code:city.code||'',country:city.country,city:city.city||'',region:city.region||'',daily:same?prior.daily:60,hotel:same?prior.hotel:85};
+  state.daily=Math.round(placeForBudget().daily*tierFactor[state.tier]);
+  $('budgetCountry').value=city.country;
+  $('budgetCitySearch').value=known?(window.QANSHA_I18N?.city(known.code,known.city)||known.city):(city.city||'');
+  $('budgetCustomNotice').hidden=!state.budgetCustomCity;
+  $('budgetHotelNight').value=state.budgetCustomCity?.hotel||85;
+  $('worldCityStatus').textContent=city.city?countryName(city.country)+' · '+(city.region?city.region+' · ':'')+city.city:'Введите название города в выбранной стране.';
+  hideWorldCities();renderBudget();
+ }
+ function countrySelectOptions(codes){
+  const select=$('budgetCountry'),old=state.budgetPlace;
+  select.innerHTML=[...new Set(codes)].sort((a,b)=>countryName(a).localeCompare(countryName(b),window.QANSHA_I18N?.locale()||'ru-RU')).map(cc=>'<option value="'+esc(cc)+'">'+esc(flag(cc)+' '+countryName(cc))+'</option>').join('');
+  if(codes.includes(old))select.value=old;
+ }
+ function hideWorldCities(){
+  $('budgetCityResults').hidden=true;$('budgetCitySearch').setAttribute('aria-expanded','false');
+  worldCandidates=[];worldActive=-1;
+ }
+ function renderWorldChoices(cities){
+  worldCandidates=cities;worldActive=-1;
+  const box=$('budgetCityResults');
+  box.innerHTML=cities.length?cities.map((p,i)=>'<button type="button" class="world-city-option" role="option" data-city-index="'+i+'" aria-selected="false"><span><strong>'+esc(p.city)+'</strong><small>'+esc(p.region||'')+'</small></span><small>'+esc(flag(p.country))+'</small></button>').join(''):'<div class="world-city-status" style="padding:10px">Ничего не найдено. Попробуйте другое написание города.</div>';
+  box.hidden=false;$('budgetCitySearch').setAttribute('aria-expanded','true');
+ }
+ function chooseWorldCity(i){const c=worldCandidates[i];if(c)setBudgetCity(c)}
+ async function loadWorldCountries(){
+  const select=$('budgetCountry');
+  const defaults=[...new Set(TRAVEL_PLACES.map(p=>p.id))];
+  countrySelectOptions(defaults);
+  try{
+   const r=await fetch('/api/cities?mode=countries',{signal:AbortSignal.timeout(15000)});
+   if(!r.ok)throw Error('countries');
+   const d=await r.json();if(!Array.isArray(d.countries)||d.countries.length<150)throw Error('countries list');
+   countrySelectOptions(d.countries);
+   $('worldCityCount').textContent=new Intl.NumberFormat(window.QANSHA_I18N?.locale()||'ru-RU').format(d.totalCities||34163)+' городов · '+d.countries.length+' стран';
+  }catch{$('worldCityStatus').textContent='Не удалось загрузить полный список стран. Попробуйте обновить страницу.';}
+ }
+ async function fetchWorldCities(text){
+  const seq=++worldSearchSeq,cc=$('budgetCountry').value;
+  $('worldCityStatus').textContent='Ищем города…';
+  try{
+   const r=await fetch('/api/cities?'+q({q:text,country:cc}),{signal:AbortSignal.timeout(12000)});
+   if(!r.ok)throw Error('city search');
+   const d=await r.json();if(seq!==worldSearchSeq||cc!==$('budgetCountry').value)return;
+   const cities=Array.isArray(d.results)?d.results:[];renderWorldChoices(cities);
+   $('worldCityStatus').textContent=cities.length?cities.length+' вариантов · выберите нужный город':'Нет результатов: проверьте название или страну.';
+  }catch{if(seq===worldSearchSeq){hideWorldCities();$('worldCityStatus').textContent='Справочник городов временно недоступен. Попробуйте ещё раз.';}}
+ }
+ function scheduleWorldSearch(text,delay=250){clearTimeout(worldSearchTimer);const seq=++worldSearchSeq;worldSearchTimer=setTimeout(()=>{if(seq===worldSearchSeq)fetchWorldCities(text)},delay)}
+ function initWorldCityPicker(){
+  const city=$('budgetCitySearch');
+  $('budgetCountry').addEventListener('change',e=>{
+   const cc=e.target.value;setBudgetCity({country:cc,city:''});city.value='';city.focus();scheduleWorldSearch('',0);
+  });
+  city.addEventListener('focus',()=>{city.select();scheduleWorldSearch(city.value,50)});
+  city.addEventListener('input',()=>{scheduleWorldSearch(city.value);$('worldCityStatus').textContent='Выберите город из списка — тогда обновим расчёт.'});
+  city.addEventListener('keydown',e=>{
+   if(e.key==='Escape'){hideWorldCities();city.value=budgetCityLabel();return;}
+   if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    if(!worldCandidates.length)return;e.preventDefault();
+    worldActive=(worldActive+(e.key==='ArrowDown'?1:-1)+worldCandidates.length)%worldCandidates.length;
+    $('budgetCityResults').querySelectorAll('[data-city-index]').forEach((el,i)=>{el.classList.toggle('is-highlighted',i===worldActive);el.setAttribute('aria-selected',String(i===worldActive))});
+    $('budgetCityResults').querySelector('[data-city-index="'+worldActive+'"]')?.scrollIntoView({block:'nearest'});
+   }
+   if(e.key==='Enter'&&!$('budgetCityResults').hidden&&worldCandidates.length){e.preventDefault();chooseWorldCity(worldActive>=0?worldActive:0)}
+  });
+  $('budgetCityResults').addEventListener('click',e=>{const b=e.target.closest('[data-city-index]');if(b)chooseWorldCity(Number(b.dataset.cityIndex))});
+  document.addEventListener('click',e=>{if(!e.target.closest('#worldCityField'))hideWorldCities()});
+  $('budgetHotelNight').addEventListener('input',e=>{if(state.budgetCustomCity){state.budgetCustomCity.hotel=Math.max(10,Math.min(3000,Number(e.target.value)||85));renderBudget()}});
+  loadWorldCountries();
+ }
+
  const tierFactor={economy:.72,standard:1,comfort:1.55};
  function placeForBudget(){const c=state.budgetCustomCity;return c?{id:c.country,city:c.city||countryName(c.country),country:countryName(c.country),code:c.id||'',daily:c.daily||60,hotel:c.hotel||85,ideas:[],isAssumption:true}:TRAVEL_PLACES.find(x=>x.id===state.budgetPlace)||TRAVEL_PLACES.find(x=>x.code==='FR')}
  const costExamples={TR:[35,16,2],TH:[23,14,1],FR:[72,28,2.5],GE:[32,13,0.6],KZ:[28,14,0.9],UZ:[21,10,0.5],AZ:[34,15,0.5],AE:[74,35,1.8],IT:[66,28,1.7],ES:[57,25,2.5],CZ:[49,22,1.6],MY:[26,13,0.6],VN:[22,11,0.4],JP:[64,29,1.5],CH:[122,48,4.2],IS:[118,44,4.2],SG:[73,33,1.6]};
