@@ -10,7 +10,16 @@ const publicUrl=x=>{
 };
 const publicKey=x=>{
  const key=String(x||'');
- return /^(sb_publishable_[a-zA-Z0-9_-]{10,}|eyJ[a-zA-Z0-9_.=-]{50,})$/.test(key)?key:null
+ if(/^sb_publishable_[a-zA-Z0-9_-]{10,}$/.test(key))return key;
+ // Legacy anon JWT is public only if the signed payload identifies the anon role.
+ // In particular, never expose service_role JWTs accidentally supplied as env vars.
+ if(!/^eyJ[a-zA-Z0-9_.-]{50,}$/.test(key))return null;
+ try{
+  const parts=key.split('.');
+  if(parts.length!==3)return null;
+  const payload=JSON.parse(Buffer.from(parts[1],'base64url').toString('utf8'));
+  return payload.role==='anon'?key:null;
+ }catch{return null}
 };
 module.exports=(req,res)=>{
  res.setHeader('Content-Type','application/json; charset=utf-8');
