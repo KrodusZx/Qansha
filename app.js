@@ -19,14 +19,15 @@
   if(/invalid.*email|email.*invalid/i.test(message))return 'Укажи правильный email';
   if(/fetch|network/i.test(message))return 'Проверьте подключение к интернету.';
   if(/abort|timeout/i.test(error?.name||''))return 'Поиск занимает слишком много времени. Попробуйте снова.';
-  return /[А-Яа-яЁё]/.test(message)?message:'Не удалось выполнить запрос. Повторите попытку позже.';
+  // Never expose untranslated supplier or server errors (including technical details).
+  return 'Не удалось выполнить запрос. Повторите попытку позже.';
  }
 
  function toast(msg){const el=$('toast');el.textContent=msg;el.hidden=false;clearTimeout(toast.timeout);toast.timeout=setTimeout(()=>el.hidden=true,3500)}
  function tab(name){state.tab=name;document.querySelectorAll('.tab').forEach(b=>{const active=b.dataset.tab===name;b.classList.toggle('is-active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});['flights','hotels','budget','compare'].forEach(x=>$('panel-'+x).hidden=x!==name);if(name==='budget'){renderBudget()}if(name==='hotels'){renderHotelRecommendation();ensureRecommendedHotel()}if(name==='compare')renderCompare()}
  function labelPlace(p){return p?`${flag(p.country)} ${window.QANSHA_I18N?.city(p.code,p.city)||p.city} · ${p.code}`:''}
  function countryName(c){try{return new Intl.DisplayNames([window.QANSHA_I18N?.locale()||'ru-RU'],{type:'region'}).of(c)||c}catch{return c}}
- function matchesPlace(a,term){const needle=norm(term);return [a.city,a.code,a.airport,countryName(a.country)].some(v=>norm(v).includes(needle));}
+ function matchesPlace(a,term){const needle=norm(term);return [a.city,a.code,a.airport,countryName(a.country),window.QANSHA_I18N?.city(a.code,a.city),...(window.QANSHA_I18N?.cityAliases(a.code)||[])].some(v=>norm(v).includes(needle));}
  const norm=s=>String(s||'').normalize('NFKD').toLowerCase().replace(/[\u0300-\u036f]/g,'').trim();
  const airportInputs={flightOrigin:'origin',flightDest:'destination',hotelCity:'hotelCity'};
  const pending={};
@@ -35,7 +36,7 @@
   if(!search)return fallback;
   try{const r=await fetch('/api/locations?q='+encodeURIComponent(search),{signal:AbortSignal.timeout(16000)});if(!r.ok)throw Error('api');const data=await r.json();const seen=new Set();return [...fallback,...(data.results||[])].filter(x=>{if(!x.code||seen.has(x.code))return false;seen.add(x.code);return true}).slice(0,15)}catch{return fallback}
  }
- function showSuggestions(id,arr,term){const list=$(id+'List'),input=$(id);if(document.activeElement!==input)return;list.hidden=false;input.setAttribute('aria-expanded','true');list.innerHTML=arr.length?arr.map(p=>`<button type="button" class="suggestion" role="option" data-airport="${esc(id)}" data-code="${esc(p.code)}" data-name="${esc(p.city)}" data-country="${esc(p.country)}" data-airportname="${esc(p.airport||'')}"><span>${flag(p.country)}</span><span><strong>${esc(p.city)}</strong><small>${esc(countryName(p.country))} · ${esc(p.airport||'Аэропорт')}</small></span><strong class="code">${esc(p.code)}</strong></button>`).join(''):`<div class="suggestions-info">Совпадений нет. Попробуй название на английском или код аэропорта.</div>`;
+ function showSuggestions(id,arr,term){const list=$(id+'List'),input=$(id);if(document.activeElement!==input)return;list.hidden=false;input.setAttribute('aria-expanded','true');list.innerHTML=arr.length?arr.map(p=>`<button type="button" class="suggestion" role="option" data-airport="${esc(id)}" data-code="${esc(p.code)}" data-name="${esc(p.city)}" data-country="${esc(p.country)}" data-airportname="${esc(p.airport||'')}"><span>${flag(p.country)}</span><span><strong>${esc(window.QANSHA_I18N?.city(p.code,p.city)||p.city)}</strong><small>${esc(countryName(p.country))} · ${esc(p.airport===p.city?'Аэропорт':window.QANSHA_I18N?.city(p.code,p.airport||'Аэропорт')||p.airport||'Аэропорт')}</small></span><strong class="code">${esc(p.code)}</strong></button>`).join(''):`<div class="suggestions-info">Совпадений нет. Попробуй название на английском или код аэропорта.</div>`;
  }
  function selectPlace(id,item){const key=airportInputs[id];state[key]=item;$(id).value=labelPlace(item);$(id).setAttribute('aria-expanded','false');$(id+'List').hidden=true;if(key==='destination'){state.hotelCity=item;$('hotelCity').value=labelPlace(item)}if(key==='hotelCity'){state.destination=item;$('flightDest').value=labelPlace(item)}state.calendarPrices={flight:{},hotel:{}};state.calendarRequests.clear();state.flight=null;state.hotel=null;state.flights=[];invalidateHotelSearch();renderBudget()}
  function initAirport(id){const input=$(id);input.addEventListener('focus',()=>{if(state[airportInputs[id]])input.value='';locations('').then(items=>showSuggestions(id,items,''))});input.addEventListener('input',()=>{state[airportInputs[id]]=null;clearTimeout(pending[id]);const search=input.value;pending[id]=setTimeout(async()=>{let data=await locations(search);if(input.value===search)showSuggestions(id,data,search)},240)});input.addEventListener('keydown',e=>{if(e.key==='Escape'){input.blur();$(id+'List').hidden=true}if(e.key==='Enter'){const first=$(id+'List').querySelector('button');if(first&&!$(id+'List').hidden){e.preventDefault();first.click()}}});input.addEventListener('blur',()=>setTimeout(()=>{$(id+'List').hidden=true;input.setAttribute('aria-expanded','false');if(state[airportInputs[id]])input.value=labelPlace(state[airportInputs[id]]);else input.value=''},180));}
@@ -254,10 +255,11 @@
   $('budgetCityResults').hidden=true;$('budgetCitySearch').setAttribute('aria-expanded','false');
   worldCandidates=[];worldActive=-1;
  }
+ function localizedWorldCity(p){const known=modelForWorldCity(p);return known?(window.QANSHA_I18N?.city(known.code,known.city)||known.city):tr(p.city)}
  function renderWorldChoices(cities){
   worldCandidates=cities;worldActive=-1;
   const box=$('budgetCityResults');
-  box.innerHTML=cities.length?cities.map((p,i)=>'<button type="button" class="world-city-option" role="option" data-city-index="'+i+'" aria-selected="false"><span><strong>'+esc(p.city)+'</strong><small>'+esc(p.region||'')+'</small></span><small>'+esc(flag(p.country))+'</small></button>').join(''):'<div class="world-city-status" style="padding:10px">Ничего не найдено. Попробуйте другое написание города.</div>';
+  box.innerHTML=cities.length?cities.map((p,i)=>'<button type="button" class="world-city-option" role="option" data-city-index="'+i+'" aria-selected="false"><span><strong>'+esc(localizedWorldCity(p))+'</strong><small>'+esc(tr(p.region||''))+'</small></span><small>'+esc(flag(p.country))+'</small></button>').join(''):'<div class="world-city-status" style="padding:10px">Ничего не найдено. Попробуйте другое написание города.</div>';
   box.hidden=false;$('budgetCitySearch').setAttribute('aria-expanded','true');
  }
  function chooseWorldCity(i){const c=worldCandidates[i];if(c)setBudgetCity(c)}
@@ -331,7 +333,7 @@
  const budgetMatchesLocation=loc=>{if(!loc?.country)return false;if(city.isAssumption)return loc.country===city.id&&cityNormalized(loc.city)===cityNormalized(city.city);const exemplar=modelForWorldCity(loc);return exemplar?.code===city.code};
  const hotelMatches=state.hotel&&state.guests===g&&dateDiff(state.checkin,state.checkout)===n&&budgetMatchesLocation(state.hotelCity),flightMatches=state.flight&&state.passengers===g&&budgetMatchesLocation(state.destination);
  const local=Math.round(state.daily*days*g),lodging=hotelMatches?state.hotel.price:tripEstimate(city,state.tier,days,g).hotel,flight=flightMatches?state.flight.price:null,full=local+lodging+(flight||0);
- $('budgetRoute').textContent=flightMatches?((state.origin?.city||'Вылет')+' → '+(state.destination?.city||city.city)):localizedPlace(city).replace(/<[^>]+>/g,'');$('budgetNights').textContent=n+' '+tr('ночей');$('dailyValue').textContent=curr(state.daily);$('budgetDaysValue').textContent=days+' '+tr('дней');$('budgetTravelersValue').textContent=g+' '+tr('чел.');
+ $('budgetRoute').textContent=flightMatches?((state.origin?window.QANSHA_I18N?.city(state.origin.code,state.origin.city):tr('Вылет'))+' → '+(state.destination?window.QANSHA_I18N?.city(state.destination.code,state.destination.city):localizedWorldCity(city))):localizedPlace(city).replace(/<[^>]+>/g,'');$('budgetNights').textContent=n+' '+tr('ночей');$('dailyValue').textContent=curr(state.daily);$('budgetDaysValue').textContent=days+' '+tr('дней');$('budgetTravelersValue').textContent=g+' '+tr('чел.');
  $('totalDaily').textContent=curr(local);$('totalFlights').textContent=flight?curr(flight):state.flight?'Другое число пассажиров или направление':'Не выбран';$('totalHotel').textContent=curr(lodging)+(hotelMatches?' · выбранный отель':' · модельная оценка');$('totalTrip').textContent=curr(full)+(flight?'':'*');
  $('selectedOffersSummary').innerHTML=(state.flight?'<div class="selected-summary"><span>✈ <strong>'+esc(flightTitle(state.flight))+'</strong> · '+esc(state.origin?.code||'')+' → '+esc(state.destination?.code||'')+' · '+state.passengers+' пассажиров · '+(flightMatches?curr(state.flight.price):'число путешественников изменено')+'</span><button type="button" data-budget-clear="flight">Отменить выбор</button></div>':'')+(state.hotel?'<div class="selected-summary"><span>⌂ <strong>'+esc(state.hotel.name)+'</strong> · '+dateDiff(state.checkin,state.checkout)+' ночей · '+state.guests+' гостей · '+(hotelMatches?curr(state.hotel.price):'даты/гости не совпадают')+'</span><button type="button" data-budget-clear="hotel">Отменить выбор</button></div>':'');
  const accurateCity=!city.isAssumption;
@@ -528,7 +530,14 @@ function setTripType(kind){state.tripType=kind==='oneway'?'oneway':'roundtrip';d
  let renderedLanguage=window.QANSHA_I18N?.language()||'ru';
  window.QANSHA_UI={refreshLocale:()=>{
   const next=window.QANSHA_I18N?.language()||'ru',changed=next!==renderedLanguage;renderedLanguage=next;
-  for(const [id,key] of Object.entries(airportInputs))if(state[key])$(id).value=labelPlace(state[key]);
+  for(const [id,key] of Object.entries(airportInputs))if(state[key]&&document.activeElement!==$(id))$(id).value=labelPlace(state[key]);
+  if(worldCountryCodes?.length)countrySelectOptions(worldCountryCodes);
+  else countrySelectOptions([...new Set(TRAVEL_PLACES.map(p=>p.id))]);
+  if(document.activeElement!==$('budgetCitySearch'))$('budgetCitySearch').value=budgetCityLabel();
+  if(!$('budgetCityResults').hidden&&worldCandidates.length)renderWorldChoices(worldCandidates);
+  if(worldCountryCodes?.length)$('worldCityCount').textContent=new Intl.NumberFormat(window.QANSHA_I18N?.locale()||'ru-RU').format(compareCityTotal)+' '+tr('городов')+' · '+worldCountryCodes.length+' '+tr('стран');
+  initCompareLocale();
+  if(state.supa)updateAuth();
   if(!$('calendarModal').hidden)renderCalendar();
   if(!$('favoritesModal').hidden)renderFavs();
   // Keep chosen offers/budget, but do not reuse supplier prose from another locale
