@@ -1,7 +1,22 @@
 {
   "version": 2,
-  "functions": {"api/search.js": {"maxDuration": 30}},
+  "functions": {
+    "api/search.js": {
+      "maxDuration": 30
+    },
+    "api/cities.js": {
+      "includeFiles": "data/world-cities.tsv"
+    }
+  },
   "headers": [
-    {"source": "/api/(.*)", "headers": [{"key":"Cache-Control","value":"no-store"}]}
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
   ]
 }
