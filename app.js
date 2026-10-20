@@ -498,9 +498,139 @@
  function renderFavs(){const list=$('favoritesList');list.innerHTML=state.faves.length?state.faves.map((f,i)=>`<div class="fav-entry"><div><strong>${esc(f.payload?.name||f.kind)}</strong><p>${esc(f.payload?.dates||'')} · ${fmt(f.payload?.price||0)} · сохранённая, не подтверждённая цена</p></div><button class="outline-btn" data-remove="${i}">Удалить</button></div>`).join(''):'<div class="empty-state"><p>Сохрани авиабилет или отель, и они появятся здесь.</p></div>'}
  async function syncFavs(){if(state.user&&state.supa){const {data,error}=await state.supa.from('favorites').select('id,kind,offer_key,payload').order('created_at',{ascending:false}).limit(100);if(error){toast('Избранное недоступно: '+error.message);return}state.faves=data||[]}else loadFav();updateFavCount()}
  async function removeFav(index){const item=state.faves[index];if(!item)return;if(state.user&&state.supa){const {error}=await state.supa.from('favorites').delete().eq('id',item.id);if(error){toast('Не удалось удалить');return}await syncFavs()}else{state.faves.splice(index,1);localStorage.setItem('qansha_guest_favorites_v1',JSON.stringify(state.faves));updateFavCount()}renderFavs();if(state.flights.length)renderFlights();if(state.hotels.length)renderHotels()}
- async function initAuth(){const cfg=window.QANSHA_CONFIG||{};if(!cfg.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase?.createClient){$('authMessage').textContent='Регистрация станет доступна после настройки Supabase в проекте.';return}try{state.supa=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);const {data}=await state.supa.auth.getSession();state.user=data?.session?.user||null;state.supa.auth.onAuthStateChange((_event,session)=>{state.user=session?.user||null;updateAuth();syncFavs()});updateAuth();await syncFavs()}catch(e){$('authMessage').textContent='Пока не удалось подключить аккаунт: '+e.message}}
- function updateAuth(){$('accountOpen').textContent=state.user?'Аккаунт':'Войти';$('logOut').hidden=!state.user;$('sendLink').hidden=!!state.user;$('authEmail').hidden=!!state.user;$('authMessage').textContent=state.user?`Вы вошли как ${state.user.email}`:'Введите email — мы пришлём ссылку для входа или регистрации.'}
- async function sendLink(){if(!state.supa){toast('Подключи Supabase');return}const email=$('authEmail').value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Укажи правильный email');return}const btn=$('sendLink');btn.disabled=true;try{const {error}=await state.supa.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});if(error)throw error;$('authMessage').textContent='Проверь почту: ссылка для входа отправлена.'}catch(e){$('authMessage').textContent=e.message}finally{btn.disabled=false}}
+ let authMode='signin',authBusy=false,authReady=false;
+ function authStatus(message,kind=''){const el=$('authMessage');el.textContent=message;el.dataset.kind=kind}
+ function authRedirectUrl(){return location.origin+'/'}
+ function authShowMode(mode){
+  if(!['signin','signup','reset','update'].includes(mode))mode='signin';
+  authMode=mode;
+  const signing=mode==='signup',reset=mode==='reset',update=mode==='update';
+  $('authNameField').hidden=!signing;
+  $('authEmailField').hidden=update;
+  $('authPasswordField').hidden=reset;
+  $('authConfirmField').hidden=!(signing||update);
+  $('authForgot').hidden=mode!=='signin';
+  $('authBack').hidden=!(reset||update);
+  document.querySelector('.auth-mode-tabs').hidden=reset||update;
+  document.querySelectorAll('[data-auth-mode]').forEach(button=>{
+   const active=button.dataset.authMode===mode;button.classList.toggle('is-active',active);
+   button.setAttribute('aria-pressed',String(active));
+  });
+  $('authPassword').autocomplete=signing||update?'new-password':'current-password';
+  $('authPassword').value='';$('authConfirm').value='';
+  $('authSubmit').textContent=tr(signing?'Зарегистрироваться':reset?'Отправить письмо':update?'Сохранить новый пароль':'Войти');
+  $('authSubtitle').textContent=tr(reset?'Восстановление доступа к аккаунту':update?'Введите новый пароль':'Сохраняйте избранные билеты и отели в своём аккаунте');
+  authStatus(reset?tr('Укажите email, чтобы получить письмо для восстановления.'):update?tr('Придумайте новый пароль длиной не менее 8 символов.'):signing?tr('Создайте аккаунт — подтвердить email нужно по ссылке в письме.'):tr('Введите email и пароль для входа.'));
+ }
+ function updateAuth(){
+  const signed=!!state.user;
+  $('accountOpen').textContent=tr(signed?'Аккаунт':'Войти / регистрация');
+  $('authUser').hidden=!signed;
+  $('authGuest').hidden=signed||!authReady;
+  $('authUnavailable').hidden=authReady;
+  if(signed){
+   $('authUserEmail').textContent=state.user.email||'';
+   if(authMode!=='update')authStatus(tr('Вы вошли в Qansha.'),'success');
+  }
+ }
+ async function migrateGuestFavorites(){
+  if(!state.user||!state.supa)return;
+  let guest=[];try{guest=JSON.parse(localStorage.getItem('qansha_guest_favorites_v1')||'[]')}catch{}
+  if(!Array.isArray(guest)||!guest.length)return;
+  const rows=guest.filter(item=>item&&['flight','hotel'].includes(item.kind)&&typeof item.offer_key==='string'
+   &&item.offer_key.length<700&&item.payload&&typeof item.payload==='object').slice(0,30)
+   .map(item=>({user_id:state.user.id,kind:item.kind,offer_key:item.offer_key,payload:item.payload}));
+  if(!rows.length)return;
+  const {error}=await state.supa.from('favorites').upsert(rows,{onConflict:'user_id,kind,offer_key',ignoreDuplicates:true});
+  if(!error)localStorage.removeItem('qansha_guest_favorites_v1');
+ }
+ async function initializeAccount(){
+  if(!state.user){loadFav();return}
+  try{await migrateGuestFavorites();await syncFavs()}catch{toast(tr('Не удалось синхронизировать избранное.'))}
+ }
+ async function initAuth(){
+  let cfg=window.QANSHA_CONFIG||{};
+  try{
+   if(!cfg.supabaseUrl||!cfg.supabaseAnonKey){
+    const response=await fetch('/api/auth-config',{cache:'no-store',signal:AbortSignal.timeout(9000)});
+    if(response.ok){const remote=await response.json();if(remote.configured)cfg={...cfg,...remote}}
+   }
+   if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(cfg.supabaseUrl||'')||
+      !/^(sb_publishable_[A-Za-z0-9_-]{10,}|eyJ[A-Za-z0-9_.=-]{50,})$/.test(cfg.supabaseAnonKey||'')||
+      !window.supabase?.createClient){
+    authReady=false;updateAuth();authStatus(tr('Регистрация станет доступна после подключения сервиса аккаунтов.'));
+    return;
+   }
+   state.supa=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}
+   });
+   authReady=true;
+   state.supa.auth.onAuthStateChange((event,session)=>{
+    const previous=state.user?.id;state.user=session?.user||null;updateAuth();
+    if(event==='PASSWORD_RECOVERY'){
+     authShowMode('update');modal('accountModal',true);authStatus(tr('Введите новый пароль и сохраните изменения.'));
+    }else if(event==='SIGNED_IN'&&state.user&&state.user.id!==previous){
+     setTimeout(()=>{initializeAccount()},0);
+     if(authMode!=='update')authStatus(tr('Вы успешно вошли!'),'success');
+    }else if(event==='SIGNED_OUT'){
+     setTimeout(()=>loadFav(),0);
+    }
+   });
+   const {data,error}=await state.supa.auth.getUser();
+   if(!error&&data?.user)state.user=data.user;
+   if(!state.user)authShowMode('signin');
+   updateAuth();
+   if(state.user)await initializeAccount();
+  }catch(err){authReady=false;updateAuth();authStatus(tr('Не удалось подключиться к сервису аккаунтов. Попробуйте обновить страницу.'),'error')}
+ }
+ async function submitAuth(event){
+  event?.preventDefault();
+  if(authBusy||!authReady||!state.supa)return;
+  const mode=authMode,email=$('authEmail').value.trim().toLowerCase(),
+   password=$('authPassword').value,confirm=$('authConfirm').value,name=$('authName').value.trim();
+  if(mode!=='update'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){authStatus(tr('Укажите корректный email.'),'error');return}
+  if(mode!=='reset'&&(password.length<8||password.length>128)){authStatus(tr('Пароль должен содержать от 8 до 128 символов.'),'error');return}
+  if((mode==='signup'||mode==='update')&&password!==confirm){authStatus(tr('Пароли не совпадают.'),'error');return}
+  authBusy=true;$('authSubmit').disabled=true;
+  authStatus(tr('Пожалуйста, подождите…'));
+  try{
+   if(mode==='signup'){
+    const {data,error}=await state.supa.auth.signUp({
+     email,password,options:{emailRedirectTo:authRedirectUrl(),data:{display_name:name.slice(0,70)}}
+    });if(error)throw error;
+    if(data.session){state.user=data.user;updateAuth();authStatus(tr('Аккаунт создан, вы вошли в Qansha.'),'success')}
+    else{authShowMode('signin');authStatus(tr('Если регистрация выполнена, проверьте почту и подтвердите email по ссылке в письме.'),'success')}
+   }else if(mode==='signin'){
+    const {data,error}=await state.supa.auth.signInWithPassword({email,password});
+    if(error)throw error;
+    state.user=data.user;updateAuth();authStatus(tr('Вы успешно вошли!'),'success');
+   }else if(mode==='reset'){
+    const {error}=await state.supa.auth.resetPasswordForEmail(email,{redirectTo:authRedirectUrl()});
+    if(error)throw error;
+    authShowMode('signin');authStatus(tr('Если аккаунт существует, ссылка для восстановления придёт на почту.'),'success');
+   }else if(mode==='update'){
+    const {error}=await state.supa.auth.updateUser({password});
+    if(error)throw error;
+    authShowMode('signin');updateAuth();authStatus(tr('Пароль обновлён.'),'success');
+   }
+  }catch(err){
+   const msg=String(err?.message||'').toLowerCase();
+   const generic=mode==='signin'?'Не удалось войти. Проверьте email, пароль и подтверждение почты.':
+    mode==='signup'?'Не удалось создать аккаунт. Попробуйте позже.':
+    mode==='reset'?'Не удалось отправить письмо. Попробуйте позже.':'Не удалось обновить пароль.';
+   authStatus(tr(msg.includes('rate limit')||msg.includes('too many')?'Слишком много попыток. Подождите и попробуйте снова.':generic),'error');
+  }finally{authBusy=false;$('authSubmit').disabled=false}
+ }
+ async function signOutAccount(){
+  if(!state.supa)return;
+  $('logOut').disabled=true;
+  try{
+   const {error}=await state.supa.auth.signOut();if(error)throw error;
+   state.user=null;authShowMode('signin');updateAuth();authStatus(tr('Вы вышли из аккаунта.'),'success');
+   await syncFavs();
+  }catch{authStatus(tr('Не удалось выйти из аккаунта. Повторите попытку.'),'error')}
+  finally{$('logOut').disabled=false}
+ }
  function resetFlightOffers(){
  state.flight=null;state.flights=[];state.returnOptions=[];state.returnParentIndex=null;
  $('flightFilterPanel').hidden=true;
@@ -510,7 +640,7 @@
 function setTripType(kind){state.tripType=kind==='oneway'?'oneway':'roundtrip';document.querySelectorAll('[data-trip]').forEach(b=>{const on=b.dataset.trip===state.tripType;b.classList.toggle('is-active',on);b.setAttribute('aria-pressed',String(on))});$('returnField').hidden=state.tripType==='oneway';resetFlightOffers()}
  function setCurrency(currency){if(!conversion[currency])return;const before=state.currency;for(const id of ['hotelMinPrice','hotelMaxPrice']){const el=$(id);const n=Number(el.value);if(el.value&&Number.isFinite(n))el.value=String(Math.round(n/conversion[before]*conversion[currency]))}state.currency=currency;$('hotelMinCurrency').textContent=currency;$('hotelMaxCurrency').textContent=currency;$('flightCurrency').value=currency;$('budgetCurrency').value=currency;renderBudget();if(state.flights.length)renderFlights();if(state.hotels.length)renderHotels();updateHotelFilters();renderHotelRecommendation();if(state.tab==='compare')renderCompare()}
  function updateHotelFilters(){state.hotelFilters={sort:$('hotelSort').value,stars:Number($('hotelStars').value),rating:Number($('hotelRating').value),min:Math.max(0,Number($('hotelMinPrice').value)||0)/conversion[state.currency],max:Math.max(0,Number($('hotelMaxPrice').value)||0)/conversion[state.currency],type:$('hotelType').value,freeCancel:$('hotelFreeCancel').checked};if(state.hotels.length)renderHotels()}
- function init(){document.addEventListener('error',event=>{if(event.target?.tagName==='IMG'&&(event.target.classList?.contains('hotel-image')||event.target.closest?.('.details-gallery')||event.target.id==='galleryMain'))event.target.hidden=true;},true);document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));Object.keys(airportInputs).forEach(initAirport);selectPlace('flightOrigin',popular.find(p=>p.code==='NQZ'));selectPlace('flightDest',popular.find(p=>p.code==='PAR'));document.querySelectorAll('[data-date]').forEach(b=>b.addEventListener('click',()=>openCalendar(b.dataset.date)));document.querySelectorAll('[data-trip]').forEach(b=>b.addEventListener('click',()=>setTripType(b.dataset.trip)));$('flightForm').addEventListener('submit',searchFlights);$('hotelForm').addEventListener('submit',searchHotels);['flightSort','flightStops','flightAirline','flightTime','flightMaxPrice','flightMaxDuration'].forEach(id=>$(id).addEventListener(['flightMaxPrice','flightMaxDuration'].includes(id)?'input':'change',()=>{if(state.flights.length)renderFlights()}));['hotelSort','hotelStars','hotelRating','hotelMinPrice','hotelMaxPrice','hotelType','hotelFreeCancel'].forEach(id=>$(id).addEventListener(['hotelMinPrice','hotelMaxPrice'].includes(id)?'input':'change',updateHotelFilters));document.querySelectorAll('[data-hotel-min-kzt]').forEach(b=>b.addEventListener('click',()=>{const value=Number(b.dataset.hotelMinKzt);$('hotelMinPrice').value=value?String(Math.round(value/conversion.KZT*conversion[state.currency])):'';document.querySelectorAll('[data-hotel-min-kzt]').forEach(x=>x.classList.toggle('is-active',x===b));updateHotelFilters()}));$('passengers').addEventListener('change',e=>{state.passengers=Number(e.target.value);resetFlightOffers()});['flightTravelClass','flightSearchStops'].forEach(id=>$(id).addEventListener('change',resetFlightOffers));$('hotelGuests').addEventListener('change',e=>{state.guests=Number(e.target.value);invalidateHotelSearch();renderBudget();ensureRecommendedHotel()});$('hotelSource').addEventListener('change',()=>{invalidateHotelSearch();$('hotelResults').innerHTML='<div class="empty-state"><strong>Источник отелей изменён</strong><p>Нажмите «Найти отели», чтобы запросить новые предложения.</p></div>';renderBudget()});$('budgetTier').addEventListener('change',e=>setTier(e.target.value));$('flightCurrency').addEventListener('change',e=>setCurrency(e.target.value));$('budgetCurrency').addEventListener('change',e=>setCurrency(e.target.value));$('dailyBudget').addEventListener('input',e=>{state.daily=Number(e.target.value);if(state.budgetCustomCity)state.budgetCustomCity.daily=state.daily/tierFactor[state.tier];renderBudget()});$('accountOpen').addEventListener('click',()=>modal('accountModal',true));$('favOpen').addEventListener('click',()=>{renderFavs();modal('favoritesModal',true)});$('favoritesList').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(b)removeFav(Number(b.dataset.remove))});$('sendLink').addEventListener('click',sendLink);$('logOut').addEventListener('click',async()=>{await state.supa?.auth.signOut();state.user=null;updateAuth();await syncFavs()});$('calendarGrid').addEventListener('click',()=>{});$('monthPrev').addEventListener('click',()=>{const d=new Date(state.calendarMonth+'-01T00:00:00Z');d.setUTCMonth(d.getUTCMonth()-1);state.calendarMonth=d.toISOString().slice(0,7);renderCalendar()});$('monthNext').addEventListener('click',()=>{const d=new Date(state.calendarMonth+'-01T00:00:00Z');d.setUTCMonth(d.getUTCMonth()+1);state.calendarMonth=d.toISOString().slice(0,7);renderCalendar()});$('loadCalendar').addEventListener('click',calendarPrices);document.querySelectorAll('.modal-backdrop').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)modal(el.id,false)}));document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-backdrop').forEach(m=>modal(m.id,false))});initWorldCityPicker();
+ function init(){document.addEventListener('error',event=>{if(event.target?.tagName==='IMG'&&(event.target.classList?.contains('hotel-image')||event.target.closest?.('.details-gallery')||event.target.id==='galleryMain'))event.target.hidden=true;},true);document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));Object.keys(airportInputs).forEach(initAirport);selectPlace('flightOrigin',popular.find(p=>p.code==='NQZ'));selectPlace('flightDest',popular.find(p=>p.code==='PAR'));document.querySelectorAll('[data-date]').forEach(b=>b.addEventListener('click',()=>openCalendar(b.dataset.date)));document.querySelectorAll('[data-trip]').forEach(b=>b.addEventListener('click',()=>setTripType(b.dataset.trip)));$('flightForm').addEventListener('submit',searchFlights);$('hotelForm').addEventListener('submit',searchHotels);['flightSort','flightStops','flightAirline','flightTime','flightMaxPrice','flightMaxDuration'].forEach(id=>$(id).addEventListener(['flightMaxPrice','flightMaxDuration'].includes(id)?'input':'change',()=>{if(state.flights.length)renderFlights()}));['hotelSort','hotelStars','hotelRating','hotelMinPrice','hotelMaxPrice','hotelType','hotelFreeCancel'].forEach(id=>$(id).addEventListener(['hotelMinPrice','hotelMaxPrice'].includes(id)?'input':'change',updateHotelFilters));document.querySelectorAll('[data-hotel-min-kzt]').forEach(b=>b.addEventListener('click',()=>{const value=Number(b.dataset.hotelMinKzt);$('hotelMinPrice').value=value?String(Math.round(value/conversion.KZT*conversion[state.currency])):'';document.querySelectorAll('[data-hotel-min-kzt]').forEach(x=>x.classList.toggle('is-active',x===b));updateHotelFilters()}));$('passengers').addEventListener('change',e=>{state.passengers=Number(e.target.value);resetFlightOffers()});['flightTravelClass','flightSearchStops'].forEach(id=>$(id).addEventListener('change',resetFlightOffers));$('hotelGuests').addEventListener('change',e=>{state.guests=Number(e.target.value);invalidateHotelSearch();renderBudget();ensureRecommendedHotel()});$('hotelSource').addEventListener('change',()=>{invalidateHotelSearch();$('hotelResults').innerHTML='<div class="empty-state"><strong>Источник отелей изменён</strong><p>Нажмите «Найти отели», чтобы запросить новые предложения.</p></div>';renderBudget()});$('budgetTier').addEventListener('change',e=>setTier(e.target.value));$('flightCurrency').addEventListener('change',e=>setCurrency(e.target.value));$('budgetCurrency').addEventListener('change',e=>setCurrency(e.target.value));$('dailyBudget').addEventListener('input',e=>{state.daily=Number(e.target.value);if(state.budgetCustomCity)state.budgetCustomCity.daily=state.daily/tierFactor[state.tier];renderBudget()});$('accountOpen').addEventListener('click',()=>{if(!state.user)authShowMode('signin');modal('accountModal',true)});$('favOpen').addEventListener('click',()=>{renderFavs();modal('favoritesModal',true)});$('favoritesList').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(b)removeFav(Number(b.dataset.remove))});$('authForm').addEventListener('submit',submitAuth);document.querySelectorAll('[data-auth-mode]').forEach(b=>b.addEventListener('click',()=>authShowMode(b.dataset.authMode)));$('authForgot').addEventListener('click',()=>authShowMode('reset'));$('authBack').addEventListener('click',()=>authShowMode('signin'));$('logOut').addEventListener('click',signOutAccount);$('calendarGrid').addEventListener('click',()=>{});$('monthPrev').addEventListener('click',()=>{const d=new Date(state.calendarMonth+'-01T00:00:00Z');d.setUTCMonth(d.getUTCMonth()-1);state.calendarMonth=d.toISOString().slice(0,7);renderCalendar()});$('monthNext').addEventListener('click',()=>{const d=new Date(state.calendarMonth+'-01T00:00:00Z');d.setUTCMonth(d.getUTCMonth()+1);state.calendarMonth=d.toISOString().slice(0,7);renderCalendar()});$('loadCalendar').addEventListener('click',calendarPrices);document.querySelectorAll('.modal-backdrop').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)modal(el.id,false)}));document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-backdrop').forEach(m=>modal(m.id,false))});initWorldCityPicker();
  for(const [id,prop] of [['budgetDays','budgetDays'],['budgetTravelers','budgetTravelers']])$(id).addEventListener('input',e=>{state[prop]=Number(e.target.value);renderBudget()});
  window.QANSHA_BUDGET={getState:()=>({days:state.budgetDays,travelers:state.budgetTravelers,tier:state.tier,place:state.budgetPlace}),refresh:()=>{const codes=[...$('budgetCountry').options].map(o=>o.value);countrySelectOptions(codes.length?codes:TRAVEL_PLACES.map(p=>p.id));$('budgetCitySearch').value=budgetCityLabel();syncDates();renderBudget();initCompareLocale();if(state.tab==='compare')renderCompare()}};
  syncDates();updateTierControls();renderHotelRecommendation();initCompare();setCurrency('EUR');loadFav();initAuth();tab('budget')}
