@@ -185,6 +185,20 @@ async function bookingHotels(q){
    ' номеров. Возможны дополнительные налоги и сборы; итоговую сумму и наличие подтвердит продавец.'};
 }
 
+
+async function combinedHotels(q){
+ if(txt(q.pageToken))bad('Для дополнительных страниц переключитесь на отдельный источник.');
+ const settled=await Promise.allSettled([hotels(q),bookingHotels(q)]);
+ const good=settled.filter(x=>x.status==='fulfilled').map(x=>x.value);
+ if(!good.length)throw settled[0].reason;
+ const offers=good.flatMap(x=>x.offers||[]).sort((a,b)=>a.price-b.price);
+ return {kind:'hotels',offers,nextPageToken:null,nights:good[0].nights,
+  rooms:good[0].rooms,source:good.map(x=>x.source).join(' + '),
+  searchedAt:new Date().toISOString(),environment:env,
+  guestAllocationNote:'Сравнение двух поставщиков по выбранным датам. Цены могут различаться по налогам, категориям номера и условиям размещения. Для дополнительных результатов откройте источник по отдельности.',
+  partialResults:good.length!==2};
+}
+
 const cleanUrl=x=>typeof x==='string'&&/^https:\/\//i.test(x)&&x.length<3500?x:null;
 const imageList=items=>(Array.isArray(items)?items:[]).map(x=>typeof x==='string'?x:x?.original_image||x?.photo_url||x?.thumbnail_url||x?.thumbnail).filter(cleanUrl).slice(0,24);
 const validToken=x=>typeof x==='string'&&x.length>5&&x.length<2000&&/^[A-Za-z0-9_\-=+:/]+$/.test(x);
@@ -233,8 +247,8 @@ async function calendar(q){
 }
 module.exports=async(req,res)=>{
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');
- const k=txt(req.query?.kind);const weight=k==='calendar'?9:k==='flights'?2:k==='flightReturns'?2:k==='hotelPhotos'||k==='hotelDetails'||k==='flightBooking'?2:1;
+ const k=txt(req.query?.kind);const weight=k==='calendar'?9:k==='flights'?2:k==='flightReturns'?2:k==='hotels'&&txt(req.query?.source)==='all'?2:k==='hotelPhotos'||k==='hotelDetails'||k==='flightBooking'?2:1;
  if(!charge(req,res,{scope:'search',weight}))return;
- try{const data=k==='flights'?await flights(req.query):k==='flightReturns'?await flightReturns(req.query):k==='hotels'?(txt(req.query?.source)==='booking'?await bookingHotels(req.query):await hotels(req.query)):k==='calendar'?await calendar(req.query):k==='hotelDetails'?await hotelDetails(req.query):k==='hotelPhotos'?await hotelPhotos(req.query):k==='flightBooking'?await flightBooking(req.query):bad('Неизвестный запрос.');return res.status(200).json(data)}
+ try{const data=k==='flights'?await flights(req.query):k==='flightReturns'?await flightReturns(req.query):k==='hotels'?(txt(req.query?.source)==='all'?await combinedHotels(req.query):txt(req.query?.source)==='booking'?await bookingHotels(req.query):await hotels(req.query)):k==='calendar'?await calendar(req.query):k==='hotelDetails'?await hotelDetails(req.query):k==='hotelPhotos'?await hotelPhotos(req.query):k==='flightBooking'?await flightBooking(req.query):bad('Неизвестный запрос.');return res.status(200).json(data)}
  catch(e){const code=Number(e.status)||500;return res.status(code).json({error:code===500?'Ошибка сервера поиска. Попробуйте позднее.':String(e.message||'Поиск временно недоступен.').replaceAll(process.env.SERPAPI_API_KEY||'__none__','[hidden]')})}
 };
