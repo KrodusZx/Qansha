@@ -53,3 +53,11 @@ test('search profile precedes planner, trip result, comparison, and city directo
  assert.ok(plannerSelection.includes('selectedCity=p'));
  assert.ok(!plannerSelection.includes('showProfile('));
 });
+
+test('search never schedules a later scroll after the traveler starts swiping',()=>{
+ const guide=fs.readFileSync(require('node:path').join(__dirname,'../cost-guide.js'),'utf8');
+ const choose=guide.slice(guide.indexOf(' function chooseCity('),guide.indexOf(" document.addEventListener('click'"));
+ assert.match(choose,/showProfile\(local,false\)/);
+ assert.match(choose,/showUnknown\([^;]+,false\)/);
+ assert.doesNotMatch(guide,/scrollTimer|scrollIntoView/);
+});
