@@ -45,3 +45,34 @@
 @media(max-width:800px){
   .search .suggestions{position:relative;top:auto;left:auto;right:auto;max-height:min(35vh,240px)}
 }
+
+/* Compact language and currency controls without clipping the brand slogan. */
+.header-controls{display:flex;align-items:center;gap:10px;flex:none}
+.currency-control{display:grid;gap:1px;color:var(--muted);font-size:9px;font-weight:700;line-height:1.1}
+.currency-control select{min-width:95px;max-width:110px;height:35px;border:1px solid var(--line);border-radius:11px;background:white;color:var(--ink);font-size:11px;font-weight:750;padding:4px}
+.source-note{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+.source-note a{color:var(--orange);font-weight:750}
+.planner-inputs .planner-field{align-content:start;grid-template-rows:minmax(44px,auto) 48px auto}
+.planner-inputs .planner-field>span{line-height:1.35}
+.planner-inputs .planner-field input{height:48px}
+.planner-inputs .planner-field small{min-height:32px}
+.stat-mark{flex:none}
+.hero-stat>div{min-width:0}
+@media(max-width:800px){
+ .topbar{gap:9px}.header-controls{gap:5px}.currency-control select{min-width:80px;max-width:94px}.main-nav{margin-left:0}
+}
+@media(max-width:600px){
+ .topbar{height:auto;min-height:84px;padding:9px 14px 7px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;gap:7px 8px}
+ .topbar .brand{grid-column:1;grid-row:1;min-width:0}
+ .topbar .brand small{display:block;font-size:9px;white-space:nowrap}
+ .header-controls{grid-column:2;grid-row:1}
+ .main-nav{grid-column:1/-1;grid-row:2;width:100%;gap:20px;min-width:0;overflow-x:auto;white-space:nowrap}
+ .main-nav a{font-size:12px;flex:none}
+ .currency-control span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ .currency-control select{min-width:78px;max-width:84px}
+ .planner-inputs .planner-field{grid-template-rows:minmax(63px,auto) 48px auto}
+ .planner-inputs .planner-field small{min-height:40px}
+ .hero-stat{padding:18px;gap:11px}
+ .hero-stat .stat-arrow{flex:none}
+}
+@media(max-width:360px){.topbar{padding-inline:10px}.language button{padding:6px 3px}.currency-control select{min-width:70px;max-width:70px}.topbar .brand b{font-size:15px}.topbar .brand small{font-size:8px}}
