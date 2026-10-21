@@ -17,14 +17,15 @@
  <title>Qansha — стоимость жизни и поездки по городам</title>
  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23df5425' rx='24'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='67' font-weight='bold' fill='white'%3EQ%3C/text%3E%3C/svg%3E">
  <link rel="stylesheet" href="cost-guide.css">
+ <script src="currency.js" defer></script>
  <script src="cost-guide.js" defer></script>
  <script src="trip-planner.js" defer></script>
 </head>
 <body>
  <header class="topbar">
-  <a class="brand" href="#top" aria-label="Qansha, наверх" data-i18n-aria="homeAria"><span class="brand-icon">Q</span><span><b>Qansha<span>?</span></b><small data-i18n="tagline">Цены городов мира</small></span></a>
+  <a class="brand" href="#top" aria-label="Qansha, наверх" data-i18n-aria="homeAria"><span class="brand-icon">Q</span><span><b>Qansha<span>?</span></b><small data-i18n="tagline">Сколько? — Один ответ</small></span></a>
   <nav class="main-nav" aria-label="Навигация" data-i18n-aria="navAria"><a href="#planner" data-i18n="navPlanner">План поездки</a><a href="#cities" data-i18n="navCities">Города</a><a href="#compare" data-i18n="navCompare">Сравнить</a><a href="#method" data-i18n="navMethod">Методика</a></nav>
-  <div class="language" role="group" aria-label="Язык" data-i18n-aria="langAria"><button data-lang="kk">ҚАЗ</button><button data-lang="ru" class="active">РУС</button><button data-lang="en">EN</button></div>
+  <div class="header-controls"><label class="currency-control"><span data-i18n="currencyLabel">Валюта</span><select id="currencySelect" aria-label="Валюта" data-i18n-aria="currencyLabel"><option value="KZT" selected>₸ KZT</option><option value="USD">$ USD</option><option value="RUB">₽ RUB</option><option value="CNY">¥ CNY</option><option value="UZS">сум UZS</option><option value="TJS">сомони TJS</option><option value="KGS">сом KGS</option><option value="EUR">€ EUR</option></select></label><div class="language" role="group" aria-label="Язык" data-i18n-aria="langAria"><button data-lang="kk">ҚАЗ</button><button data-lang="ru" class="active">РУС</button><button data-lang="en">EN</button></div></div>
  </header>
  <main id="top">
   <section class="hero">
@@ -34,13 +35,13 @@
    <div class="hero-stat"><span class="stat-mark">₸</span><div><b data-i18n="statTitle">Планируй расходы заранее</b><p data-i18n="statText">Еда · транспорт · жильё · повседневные покупки</p></div><span class="stat-arrow">↗</span></div>
   </section>
 
-  <section class="quick-facts" aria-label="Данные Qansha" data-i18n-aria="factsAria"><div><strong>17</strong><span data-i18n="factCities">городских профилей</span></div><div><strong>3</strong><span data-i18n="factLanguages">языка интерфейса</span></div><div><strong>0</strong><span data-i18n="factSearchCost">платных поисковых API</span></div></section>
+  <section class="quick-facts" aria-label="Данные Qansha" data-i18n-aria="factsAria"><div><strong id="profileCount">34</strong><span data-i18n="factCities">городских профиля</span></div><div><strong>3</strong><span data-i18n="factLanguages">языка интерфейса</span></div><div><strong>0</strong><span data-i18n="factSearchCost">платных поисковых API</span></div></section>
 
   <section id="cityProfile" class="profile-section" hidden>
    <div class="section-heading"><div><span class="eyebrow" data-i18n="profileEyebrow">ГОРОДСКОЙ ПРОФИЛЬ</span><h2 id="profileTitle"></h2><p id="profileSubtitle"></p></div><button id="closeProfile" class="close-btn" type="button" aria-label="Закрыть" data-i18n-aria="closeAria">×</button></div>
    <div class="tier-switch" role="group" aria-label="Уровень расходов" data-i18n-aria="styleAria"><button data-tier="economy" data-i18n="tierEconomy">Экономно</button><button class="active" data-tier="standard" data-i18n="tierStandard">Средне</button><button data-tier="comfort" data-i18n="tierComfort">Комфорт</button></div>
    <div id="priceGrid" class="price-grid"></div>
-   <p class="data-note" data-i18n="estimateNote">Ориентировочные оценки Qansha из планировщика поездки. Это не текущие цены магазинов и не средняя стоимость жизни.</p>
+   <p class="data-note" data-i18n="estimateNote">Ориентиры для планирования, не гарантированные цены. Методика и источник указаны ниже.</p><p id="profileSource" class="source-note"></p>
   </section>
   <section id="noData" class="no-data" hidden><div class="no-data-icon">⌖</div><h2 id="noDataTitle"></h2><p data-i18n="noDataText">Город найден в справочнике, но цены для него ещё не собраны. Мы не подставляем чужие или выдуманные цифры.</p></section>
 
@@ -51,17 +52,17 @@
      <label class="planner-field"><span data-i18n="destination">Город поездки</span><select id="plannerCity"></select></label>
      <a class="planner-world-link" href="#citySearchForm" data-i18n="otherCity">Не нашёл город? Найти среди городов мира ↑</a>
      <div class="planner-range"><div class="range-title"><label for="daysRange" data-i18n="days">Длительность поездки</label><div><input id="daysNumber" type="number" min="1" max="60" value="7" inputmode="numeric" aria-label="Длительность поездки" data-i18n-aria="days"><span data-i18n="daysUnit">дней</span></div></div><input id="daysRange" type="range" min="1" max="60" value="7"><div class="range-ends"><span>1</span><span>60</span></div></div>
-     <div class="planner-range"><div class="range-title"><label for="budgetRange" data-i18n="budget">Твой бюджет на всю поездку</label><div><span>€</span><input id="budgetNumber" type="number" min="0" max="1000000" step="50" value="2000" inputmode="decimal" aria-label="Твой бюджет на всю поездку" data-i18n-aria="budget"></div></div><input id="budgetRange" type="range" min="0" max="30000" step="50" value="2000"><div class="range-ends"><span>€0</span><span>€30 000+</span></div></div>
+     <div class="planner-range"><div class="range-title"><label for="budgetRange" data-i18n="budget">Твой бюджет на всю поездку</label><div><span id="budgetSymbol">₸</span><input id="budgetNumber" type="number" min="0" max="500000000" step="1000" value="1000000" inputmode="decimal" aria-label="Твой бюджет на всю поездку" data-i18n-aria="budget"></div></div><input id="budgetRange" type="range" min="0" max="15000000" step="1000" value="1000000"><div class="range-ends"><span id="budgetMin">₸0</span><span id="budgetMax">₸15 000 000+</span></div></div>
      <div class="planner-inputs">
       <label class="planner-field"><span data-i18n="travelers">Путешественники</span><input id="travelers" type="number" min="1" max="12" value="1" inputmode="numeric"></label>
       <label class="planner-field"><span data-i18n="nights">Ночей в отеле</span><input id="nights" type="number" min="0" max="60" value="6" inputmode="numeric"></label>
-      <label class="planner-field"><span data-i18n="flightInput">Билеты туда-обратно, € за человека</span><input id="flightPrice" type="number" min="0" max="1000000" step="0.01" placeholder="0" inputmode="decimal"><small data-i18n="zeroIfNone">Если расхода нет, введи 0</small></label>
-      <label class="planner-field"><span data-i18n="hotelInput">Отель, € за номер за ночь</span><input id="hotelPrice" type="number" min="0" max="1000000" step="0.01" placeholder="0" inputmode="decimal"><small data-i18n="zeroIfNone">Если расхода нет, введи 0</small></label>
+      <label class="planner-field"><span data-i18n="flightInput">Билеты туда-обратно, за человека</span><input id="flightPrice" type="number" min="0" max="500000000" step="0.01" placeholder="0" inputmode="decimal"><small data-i18n="zeroIfNone">Если расхода нет, введи 0</small></label>
+      <label class="planner-field"><span data-i18n="hotelInput">Отель, за номер за ночь</span><input id="hotelPrice" type="number" min="0" max="500000000" step="0.01" placeholder="0" inputmode="decimal"><small data-i18n="zeroIfNone">Если расхода нет, введи 0</small></label>
       <label class="planner-field"><span data-i18n="rooms">Номеров</span><input id="rooms" type="number" min="1" max="12" value="1" inputmode="numeric"></label>
-      <label class="planner-field"><span data-i18n="dailyInput">Повседневные расходы, € за человека в день</span><input id="dailyPrice" type="number" min="0" max="1000000" step="0.01" inputmode="decimal"><small id="dailySource"></small></label>
+      <label class="planner-field"><span data-i18n="dailyInput">Повседневные расходы, за человека в день</span><input id="dailyPrice" type="number" min="0" max="500000000" step="0.01" inputmode="decimal"><small id="dailySource"></small></label>
      </div>
     </div>
-    <div class="planner-result" aria-live="polite"><span class="eyebrow" data-i18n="resultEyebrow">РАСЧЁТ ПОЕЗДКИ</span><h3 id="tripCityName"></h3><div id="tripSummary"></div><p id="tripStatus" class="trip-status"></p><p class="planner-disclaimer" data-i18n="plannerDisclaimer">Итог — оценка для планирования. Билеты и отель берутся из твоих полей; повседневные расходы — ориентир Qansha или твоя сумма. Валюта расчёта: евро.</p></div>
+    <div class="planner-result" aria-live="polite"><span class="eyebrow" data-i18n="resultEyebrow">РАСЧЁТ ПОЕЗДКИ</span><h3 id="tripCityName"></h3><div id="tripSummary"></div><p id="tripStatus" class="trip-status"></p><p class="planner-disclaimer" data-i18n="plannerDisclaimer">Итог — приблизительный. Билеты и отель — твои суммы; дневной ориентир не включает отель. Валюта расчёта выбирается выше.</p></div>
    </div>
   </section>
 
@@ -69,9 +70,9 @@
 
   <section id="compare" class="compare-section"><div class="section-heading"><div><span class="eyebrow" data-i18n="compareEyebrow">ПОНЯТНОЕ СРАВНЕНИЕ</span><h2 data-i18n="compareTitle">Сравни два города</h2><p data-i18n="compareText">Посмотри разницу в дневном бюджете и проживании.</p></div></div><div class="compare-controls"><label><span data-i18n="cityOne">Первый город</span><select id="compareOne"></select></label><span class="versus">VS</span><label><span data-i18n="cityTwo">Второй город</span><select id="compareTwo"></select></label></div><div id="compareResult" class="compare-result"></div></section>
 
-  <section id="method" class="method-section"><div class="method-icon">i</div><div><span class="eyebrow" data-i18n="methodEyebrow">КАК ЧИТАТЬ ДАННЫЕ</span><h2 data-i18n="methodTitle">Ориентир для планирования, не ценовое обещание</h2><p data-i18n="methodText">Первая версия использует ограниченный набор оценок из прежнего планировщика Qansha. Цены зависят от района, сезона и привычек; перед покупкой проверяй их у продавца. Мы будем расширять справочник и добавлять даты обновления по мере появления проверяемых данных.</p><small class="attribution"><span data-i18n="attribution">Справочник городов:</span> <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a> · CC BY 4.0</small></div></section>
+  <section id="method" class="method-section"><div class="method-icon">i</div><div><span class="eyebrow" data-i18n="methodEyebrow">КАК ЧИТАТЬ ДАННЫЕ</span><h2 data-i18n="methodTitle">Ориентир для планирования, не ценовое обещание</h2><p data-i18n="methodText">Для новых профилей используем опубликованные расходы путешественников и краудсорсинговые местные цены. Дневной ориентир туристических городов приблизительно равен среднему расходу за день минус половина цены двухместного номера. Для городов Центральной Азии используем три недорогих приёма пищи и две поездки на транспорте. Это разные методики; сезон, район и стиль поездки влияют на итог. Ранние профили Qansha оставлены отдельно как редакционные оценки.</p><small class="attribution"><span data-i18n="attribution">Справочник городов:</span> <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a> · CC BY 4.0 · <a href="https://www.budgetyourtrip.com/howitworks.php" target="_blank" rel="noopener">Budget Your Trip</a> · <a href="https://www.numbeo.com/cost-of-living/" target="_blank" rel="noopener">Numbeo</a><br><span data-i18n="rateAttribution">Курсы: Нацбанк РК; при недоступности используется датированный резерв.</span> <a href="https://nationalbank.kz/ru/page/rss" target="_blank" rel="noopener">НБ РК</a> · <span id="rateDate"></span></small></div></section>
  </main>
- <footer><a class="brand" href="#top"><span class="brand-icon">Q</span><span><b>Qansha<span>?</span></b><small data-i18n="footerTag">Планируй города с умом</small></span></a><span data-i18n="footerNote">Цены — ориентировочные оценки, не оферта.</span></footer>
+ <footer><a class="brand" href="#top"><span class="brand-icon">Q</span><span><b>Qansha<span>?</span></b><small data-i18n="footerTag">Сколько? — Один ответ</small></span></a><span data-i18n="footerNote">Цены — ориентировочные оценки, не оферта.</span></footer>
  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
