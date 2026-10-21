@@ -167,7 +167,7 @@
    if(id===state.hotelRequestId){state.hotelSearching=false;state.hotelPendingKey=null;$('searchHotels').disabled=false;renderHotelRecommendation();renderBudget()}
   }
  }
- function pickRecommended(tier){if(!state.hotels.length)return null;const fractions={economy:0,standard:.48,comfort:.85};return state.hotels[Math.round((state.hotels.length-1)*fractions[tier])]||null}
+ function pickRecommended(tier){const pool=hotelsFiltered().map(({o})=>o);if(!pool.length)return null;if(tier==='comfort'){const quality=pool.filter(o=>Number(o.stars)>=4&&Number(o.rating)>=4);if(quality.length)return quality[Math.round((quality.length-1)*.5)]}const fractions={economy:0,standard:.48,comfort:.85};return pool[Math.round((pool.length-1)*fractions[tier])]||null}
  const tierNames={economy:'Эконом',standard:'Средний',comfort:'Комфорт'};
  function updateTierControls(){document.querySelectorAll('[data-hotel-tier]').forEach(b=>{const active=b.dataset.hotelTier===state.tier;b.classList.toggle('is-active',active);b.setAttribute('aria-pressed',String(active))});$('budgetTier').value=state.tier}
  function setTier(tier){if(!tierNames[tier])return;state.tier=tier;state.daily=Math.round(placeForBudget().daily*tierFactor[tier]);$('dailyBudget').value=state.daily;updateTierControls();state.manualHotelPick=false;
