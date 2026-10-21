@@ -280,7 +280,7 @@ async function calendar(q){
  return {kind:'calendar',mode,prices,checked:dates.length,note:mode==='flight'?'Это минимальная найденная цена в одну сторону на одного взрослого; не билет туда-обратно.':'Это найденная стоимость одного номера за всю поездку; наличие нужно подтвердить.'};
 }
 module.exports=async(req,res)=>{
- res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');
+ res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','public, max-age=0, must-revalidate');res.setHeader('Vercel-CDN-Cache-Control','public, s-maxage=900, stale-while-revalidate=120');
  const k=txt(req.query?.kind);const weight=k==='calendar'?9:k==='flights'?2:k==='flightReturns'?2:k==='hotels'&&txt(req.query?.source)==='all'?2:k==='hotelPhotos'||k==='hotelDetails'||k==='flightBooking'?2:1;
  if(!charge(req,res,{scope:'search',weight}))return;
  try{const data=k==='flights'?await flights(req.query):k==='flightReturns'?await flightReturns(req.query):k==='hotels'?(txt(req.query?.source)==='all'?await combinedHotels(req.query):txt(req.query?.source)==='booking'?await bookingHotels(req.query):await hotels(req.query)):k==='calendar'?await calendar(req.query):k==='hotelDetails'?await hotelDetails(req.query):k==='hotelPhotos'?await hotelPhotos(req.query):k==='flightBooking'?await flightBooking(req.query):bad('Неизвестный запрос.');return res.status(200).json(data)}
