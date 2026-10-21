@@ -27,10 +27,22 @@ test('visible destinations include many unpriced cities without adding fictitiou
  const fragment=src.slice(src.indexOf(' const DATA='),src.indexOf(' const byLang='));
  const {ALL,STR}=vm.runInNewContext(fragment.replaceAll(' const ',' var ')+';({ALL,STR})');
  assert.ok(ALL.length>=80);
- assert.equal(ALL.filter(city=>Number.isFinite(city.daily)).length,34);
+ assert.equal(ALL.filter(city=>Number.isFinite(city.daily)).length,65);
  assert.ok(ALL.some(city=>city.en==='Shanghai'&&city.source?.includes('budgetyourtrip.com')));
  assert.ok(ALL.some(city=>city.en==='Astana'&&city.source?.includes('numbeo.com')));
- assert.equal(ALL.find(city=>city.en==='Shanghai').daily,141-175/2);
+ assert.equal(ALL.find(city=>city.en==='Shanghai').daily,137-170/2);
+ assert.equal(ALL.find(city=>city.en==='London').foodDay,79);
+ assert.equal(ALL.find(city=>city.en==='London').localTransportDay,34);
+ assert.equal(ALL.find(city=>city.en==='Bishkek').dinnerTwo,2500);
+ assert.equal(new Set(ALL.map(city=>city.country+'|'+city.en)).size,ALL.length);
  assert.equal(ALL.find(city=>city.en==='Astana').hotel,null);
  for(const lang of ['ru','kk','en'])assert.ok(STR[lang].plannerTitle);
+});
+
+test('opening city details cannot insert content above the focused planner',()=>{
+ const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+ assert.ok(html.indexOf('id="planner"')<html.indexOf('id="compare"'));
+ assert.ok(html.indexOf('id="compare"')<html.indexOf('id="cities"'));
+ assert.ok(html.indexOf('id="cities"')<html.indexOf('id="cityProfile"'));
+ assert.ok(html.indexOf('id="cityProfile"')<html.indexOf('id="method"'));
 });
