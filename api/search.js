@@ -112,9 +112,15 @@ async function hotels(q){
  const nights=(Date.parse(checkOut)-Date.parse(checkIn))/86400000;
  if(nights>30)bad('Максимальная длительность проживания — 30 ночей.');
  const rooms=Math.ceil(travelers/2),perRoomAdults=travelers===1?1:2;
+ const minStars=Number(q.minStars||0),minPrice=Number(q.minPrice||0);
+ if(!Number.isInteger(minStars)||minStars<0||minStars>5||!Number.isFinite(minPrice)||minPrice<0||minPrice>100000)bad('Некорректные фильтры отеля.');
+ const hotelClass=minStars?Array.from({length:6-minStars},(_,i)=>String(minStars+i)).join(','):'';
  const pageToken=txt(q.pageToken);if(pageToken&&(pageToken.length>2600||!/^[A-Za-z0-9_+=:/-]+$/.test(pageToken)))bad('Некорректная страница поиска.');
  const data=await serp({engine:'google_hotels',q:`Hotels in ${city}`,check_in_date:checkIn,check_out_date:checkOut,
-  adults:String(perRoomAdults),currency:'EUR',hl:providerLanguage(q),gl:'kz',sort_by:'3',...(pageToken?{next_page_token:pageToken}:{})});
+  adults:String(perRoomAdults),currency:'EUR',hl:providerLanguage(q),gl:'kz',sort_by:minStars>=4?'8':'3',
+  ...(hotelClass?{hotel_class:hotelClass}:{}),
+  ...(minPrice?{min_price:String(Math.max(1,Math.floor(minPrice/nights)))}:{}),
+  ...(pageToken?{next_page_token:pageToken}:{})});
  const items=[...(data.properties||[]),...(data.non_matching_properties||[])].filter(h=>h?.name);
  const result=items.map((h,i)=>{
   // Total rate is per room for selected adult count; multiply only as a disclosed estimate.
@@ -146,6 +152,9 @@ async function bookingHotels(q){
  const nights=(Date.parse(checkOut)-Date.parse(checkIn))/86400000;
  if(nights>30)bad('Максимальная длительность проживания — 30 ночей.');
  const rooms=Math.ceil(travelers/2);
+ const minStars=Number(q.minStars||0),minPrice=Number(q.minPrice||0);
+ if(!Number.isInteger(minStars)||minStars<0||minStars>5||!Number.isFinite(minPrice)||minPrice<0||minPrice>100000)bad('Некорректные фильтры отеля.');
+ const hotelClass=minStars?Array.from({length:6-minStars},(_,i)=>String(minStars+i)).join(','):'';
  const raw=txt(q.pageToken);
  let offset=0,sessionToken='';
  if(raw){
@@ -156,6 +165,8 @@ async function bookingHotels(q){
  }
  const data=await serp({engine:'booking',q:city,check_in_date:checkIn,check_out_date:checkOut,
   adults:String(travelers),rooms:String(rooms),currency:'EUR',hl:providerLanguage(q)==='ru'?'ru':'en-us',sort_by:'price',
+  ...(hotelClass?{hotel_class:hotelClass}:{}),
+  ...(minPrice?{min_price:String(Math.max(1,Math.floor(minPrice/nights)))}:{}),
   limit:'25',offset:String(offset),...(sessionToken?{session_token:sessionToken}:{})});
  const items=(data.properties||[]).filter(h=>h?.name&&!h.sold_out);
  const offers=items.map(h=>{
@@ -188,15 +199,37 @@ async function bookingHotels(q){
 
 
 async function combinedHotels(q){
- if(txt(q.pageToken))bad('Для дополнительных страниц переключитесь на отдельный источник.');
- const settled=await Promise.allSettled([hotels(q),bookingHotels(q)]);
+ let page={google:'',booking:''};
+ const raw=txt(q.pageToken);
+ if(raw){
+  if(!raw.startsWith('all.')||raw.length>7000)bad('Некорректная страница поиска.');
+  try{
+   const decoded=JSON.parse(Buffer.from(raw.slice(4),'base64url').toString('utf8'));
+   if(!decoded||typeof decoded!=='object'||Array.isArray(decoded))bad('Некорректная страница поиска.');
+   page={google:typeof decoded.google==='string'?decoded.google:'',booking:typeof decoded.booking==='string'?decoded.booking:''};
+  }catch(e){if(e.status)throw e;bad('Некорректная страница поиска.')}
+ }
+ const settled=await Promise.allSettled([
+  hotels({...q,pageToken:page.google}),
+  bookingHotels({...q,pageToken:page.booking})
+ ]);
  const good=settled.filter(x=>x.status==='fulfilled').map(x=>x.value);
  if(!good.length)throw settled[0].reason;
- const offers=good.flatMap(x=>x.offers||[]).sort((a,b)=>a.price-b.price);
- return {kind:'hotels',offers,nextPageToken:null,nights:good[0].nights,
+ const unique=new Map();
+ for(const offer of good.flatMap(x=>x.offers||[])){
+  const key=(offer.name+'|'+(offer.address||'')).toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+  const prior=unique.get(key);
+  if(!prior||(!prior.thumbnail&&offer.thumbnail)||(!prior.bookingUrl&&offer.bookingUrl))unique.set(key,{...prior,...offer,source:prior?prior.source+' + '+offer.source:offer.source});
+ }
+ const offers=[...unique.values()].sort((a,b)=>a.price-b.price);
+ const bySource=source=>settled.find(x=>x.status==='fulfilled'&&x.value.source===source)?.value;
+ const googleNext=bySource('Google Hotels')?.nextPageToken||'';
+ const bookingNext=bySource('Booking.com')?.nextPageToken||'';
+ const nextPageToken=googleNext||bookingNext?'all.'+Buffer.from(JSON.stringify({google:googleNext,booking:bookingNext}),'utf8').toString('base64url'):null;
+ return {kind:'hotels',offers,nextPageToken,nights:good[0].nights,
   rooms:good[0].rooms,source:good.map(x=>x.source).join(' + '),
   searchedAt:new Date().toISOString(),environment:env,
-  guestAllocationNote:'Сравнение двух поставщиков по выбранным датам. Цены могут различаться по налогам, категориям номера и условиям размещения. Для дополнительных результатов откройте источник по отдельности.',
+  guestAllocationNote:'Сравнение Google Hotels и Booking.com по выбранным датам. Цены могут различаться по налогам, категориям номера и условиям размещения.',
   partialResults:good.length!==2};
 }
 
