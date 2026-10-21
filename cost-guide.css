@@ -91,6 +91,7 @@
 .budget-range .range-title input{width:clamp(120px,18vw,190px);font-variant-numeric:tabular-nums}
 .trip-row b,.trip-total strong{min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:right;font-variant-numeric:tabular-nums}
 .cities-section,.compare-section,.profile-section,.no-data,.method-section{scroll-margin-top:100px}
+html{scroll-behavior:auto}
 main>.profile-section,main>.no-data{margin-top:18px;margin-bottom:0}
 main>.planner-section{margin-top:44px}
 .planner-inputs .planner-field{grid-template-rows:minmax(34px,auto) 48px auto;gap:6px}
