@@ -1,10 +1,10 @@
 {
-  "name": "qansha-travel-planner",
+  "name": "qansha-city-cost-guide",
   "version": "3.0.0",
   "private": true,
-  "description": "Qansha minimalist flights, hotels and travel budget website",
+  "description": "Qansha city cost guide and city comparison website",
   "scripts": {
-    "test": "node --check app.js && node --check i18n.js && node --check lib/security.js && node --check api/search.js && node --check api/locations.js && node --check api/cities.js && node --test tests/*.test.js"
+    "test": "node --check cost-guide.js && node --check app.js && node --check i18n.js && node --check lib/security.js && node --check api/search.js && node --check api/locations.js && node --check api/cities.js && node --test tests/*.test.js"
   },
   "engines": {
     "node": ">=20"
