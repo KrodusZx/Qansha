@@ -38,3 +38,10 @@
 .city-price:has(b:not(:first-child)){min-width:0}
 @media(max-width:800px){.planner-layout{grid-template-columns:1fr}.planner-result{position:static}.planner-form,.planner-result{padding:23px}.main-nav{min-width:0;flex:1;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.main-nav::-webkit-scrollbar{display:none}.language{flex:none}}
 @media(max-width:480px){.planner-inputs{gap:13px}.planner-field{font-size:12px}.planner-form,.planner-result{padding:19px}.range-title{font-size:12px}.range-title input{width:73px}.trip-total strong{font-size:24px}.topbar{gap:7px}.brand{min-width:0}.brand small{display:none}.city-price{white-space:normal;max-width:125px}.city-price b{font-size:15px}}
+
+/* Keep city suggestions readable above the hero card on desktop, and in the
+   normal flow on small screens where the software keyboard shrinks the view. */
+.hero-copy{z-index:2}
+@media(max-width:800px){
+  .search .suggestions{position:relative;top:auto;left:auto;right:auto;max-height:min(35vh,240px)}
+}
