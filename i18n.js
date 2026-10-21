@@ -22,10 +22,13 @@
  ["Выбирай свой отель","Қонақүйіңізді таңдаңыз","Choose your hotel"],
  ["Найти отели","Қонақүйлерді іздеу","Search hotels"],
  ["Где искать отели?","Қонақүйлерді қайдан іздейміз?","Where to search for hotels?"],
- ["Google Hotels — основная выдача","Google Hotels — негізгі нәтижелер","Google Hotels — main results"],
- ["Booking.com — дополнительные варианты (тест)","Booking.com — қосымша нұсқалар (сынақ)","Booking.com — additional options (beta)"],
- ["Все источники вместе (2 API-запроса, тест)","Барлық дереккөз бірге (2 API сұрау, сынақ)","All providers combined (2 API calls, beta)"],
- ["Выбор другого источника требует нового запроса к SerpApi. Условия и цены подтвердит продавец.","Басқа дереккөзді таңдау SerpApi-ға жаңа сұрау жібереді. Шарттар мен бағаларды сатушы растайды.","Choosing another provider makes a new SerpApi request. The seller confirms rates and conditions."],
+ ["Все источники — Google Hotels + Booking.com","Барлық дереккөздер — Google Hotels + Booking.com","All providers — Google Hotels + Booking.com"],
+ ["В режиме «Все источники» показываем больше вариантов и загружаем следующие страницы обоих источников. Цены и наличие подтвердит продавец.","«Барлық дереккөз» режимінде көбірек нұсқаны көрсетіп, екі дереккөздің де келесі беттерін жүктейміз. Баға мен қолжетімділікті сатушы растайды.","With All providers selected, we show more options and load additional pages from both sources. The seller confirms prices and availability."],
+ ["Цена от за весь срок (","Бүкіл мерзімге ең төменгі баға (","Price from for entire stay ("],
+
+
+
+
  ["Бесплатная отмена","Тегін бас тарту","Free cancellation"],
  ["Если подтверждено поставщиком","Жеткізуші растаған болса","If confirmed by provider"],
  ["Фото и детали","Суреттер мен мәліметтер","Photos & details"],
