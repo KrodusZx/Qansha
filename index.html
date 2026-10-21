@@ -18,11 +18,12 @@
  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23df5425' rx='24'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='67' font-weight='bold' fill='white'%3EQ%3C/text%3E%3C/svg%3E">
  <link rel="stylesheet" href="cost-guide.css">
  <script src="cost-guide.js" defer></script>
+ <script src="trip-planner.js" defer></script>
 </head>
 <body>
  <header class="topbar">
   <a class="brand" href="#top" aria-label="Qansha home"><span class="brand-icon">Q</span><span><b>Qansha<span>?</span></b><small data-i18n="tagline">Цены городов мира</small></span></a>
-  <nav class="main-nav" aria-label="Main navigation"><a href="#cities" data-i18n="navCities">Города</a><a href="#compare" data-i18n="navCompare">Сравнить</a><a href="#method" data-i18n="navMethod">Методика</a></nav>
+  <nav class="main-nav" aria-label="Main navigation"><a href="#planner" data-i18n="navPlanner">План поездки</a><a href="#cities" data-i18n="navCities">Города</a><a href="#compare" data-i18n="navCompare">Сравнить</a><a href="#method" data-i18n="navMethod">Методика</a></nav>
   <div class="language" role="group" aria-label="Language"><button data-lang="kk">ҚАЗ</button><button data-lang="ru" class="active">РУС</button><button data-lang="en">EN</button></div>
  </header>
  <main id="top">
@@ -43,7 +44,28 @@
   </section>
   <section id="noData" class="no-data" hidden><div class="no-data-icon">⌖</div><h2 id="noDataTitle"></h2><p data-i18n="noDataText">Город найден в справочнике, но цены для него ещё не собраны. Мы не подставляем чужие или выдуманные цифры.</p></section>
 
-  <section id="cities" class="cities-section"><div class="section-heading"><div><span class="eyebrow" data-i18n="popularEyebrow">ПЕРВЫЕ ГОРОДА В СПРАВОЧНИКЕ</span><h2 data-i18n="popularTitle">Популярные города</h2><p data-i18n="popularText">Выбери город, чтобы посмотреть ориентиры расходов.</p></div><label class="sort-control"><span data-i18n="sortLabel">Сортировка</span><select id="sortCities"><option value="cost" data-i18n="sortLow">Сначала дешевле</option><option value="expensive" data-i18n="sortHigh">Сначала дороже</option><option value="name" data-i18n="sortName">По названию</option></select></label></div><div id="cityGrid" class="city-grid"></div></section>
+  <section id="planner" class="planner-section">
+   <div class="section-heading"><div><span class="eyebrow" data-i18n="plannerEyebrow">ПЛАНИРОВЩИК ПОЕЗДКИ</span><h2 data-i18n="plannerTitle">Сколько уйдёт на поездку?</h2><p data-i18n="plannerIntro">Укажи цену билетов и отеля. Мы добавим ориентир повседневных расходов и сравним итог с твоим бюджетом.</p></div></div>
+   <div class="planner-layout">
+    <div class="planner-form">
+     <label class="planner-field"><span data-i18n="destination">Город поездки</span><select id="plannerCity"></select></label>
+     <a class="planner-world-link" href="#citySearchForm" data-i18n="otherCity">Не нашёл город? Найти среди городов мира ↑</a>
+     <div class="planner-range"><div class="range-title"><label for="daysRange" data-i18n="days">Длительность поездки</label><div><input id="daysNumber" type="number" min="1" max="60" value="7" inputmode="numeric" aria-label="Days"><span data-i18n="daysUnit">дней</span></div></div><input id="daysRange" type="range" min="1" max="60" value="7"><div class="range-ends"><span>1</span><span>60</span></div></div>
+     <div class="planner-range"><div class="range-title"><label for="budgetRange" data-i18n="budget">Твой бюджет на всю поездку</label><div><span>€</span><input id="budgetNumber" type="number" min="0" max="1000000" step="50" value="2000" inputmode="decimal" aria-label="Budget"></div></div><input id="budgetRange" type="range" min="0" max="30000" step="50" value="2000"><div class="range-ends"><span>€0</span><span>€30 000+</span></div></div>
+     <div class="planner-inputs">
+      <label class="planner-field"><span data-i18n="travelers">Путешественники</span><input id="travelers" type="number" min="1" max="12" value="1" inputmode="numeric"></label>
+      <label class="planner-field"><span data-i18n="nights">Ночей в отеле</span><input id="nights" type="number" min="0" max="60" value="6" inputmode="numeric"></label>
+      <label class="planner-field"><span data-i18n="flightInput">Билеты туда-обратно, € за человека</span><input id="flightPrice" type="number" min="0" max="1000000" step="0.01" placeholder="0" inputmode="decimal"><small data-i18n="zeroIfNone">Если расхода нет, введи 0</small></label>
+      <label class="planner-field"><span data-i18n="hotelInput">Отель, € за номер за ночь</span><input id="hotelPrice" type="number" min="0" max="1000000" step="0.01" placeholder="0" inputmode="decimal"><small data-i18n="zeroIfNone">Если расхода нет, введи 0</small></label>
+      <label class="planner-field"><span data-i18n="rooms">Номеров</span><input id="rooms" type="number" min="1" max="12" value="1" inputmode="numeric"></label>
+      <label class="planner-field"><span data-i18n="dailyInput">Повседневные расходы, € за человека в день</span><input id="dailyPrice" type="number" min="0" max="1000000" step="0.01" inputmode="decimal"><small id="dailySource"></small></label>
+     </div>
+    </div>
+    <div class="planner-result" aria-live="polite"><span class="eyebrow" data-i18n="resultEyebrow">РАСЧЁТ ПОЕЗДКИ</span><h3 id="tripCityName"></h3><div id="tripSummary"></div><p id="tripStatus" class="trip-status"></p><p class="planner-disclaimer" data-i18n="plannerDisclaimer">Итог — оценка для планирования. Билеты и отель берутся из твоих полей; повседневные расходы — ориентир Qansha или твоя сумма. Валюта расчёта: евро.</p></div>
+   </div>
+  </section>
+
+  <section id="cities" class="cities-section"><div class="section-heading"><div><span class="eyebrow" data-i18n="popularEyebrow">ГОРОДА В СПРАВОЧНИКЕ</span><h2 data-i18n="popularTitle">Популярные города</h2><p data-i18n="popularText">Выбери город, чтобы посмотреть ориентиры расходов или рассчитать поездку со своими ценами.</p></div><label class="sort-control"><span data-i18n="sortLabel">Сортировка</span><select id="sortCities"><option value="cost" data-i18n="sortLow">Сначала дешевле</option><option value="expensive" data-i18n="sortHigh">Сначала дороже</option><option value="name" data-i18n="sortName">По названию</option></select></label></div><div id="cityGrid" class="city-grid"></div><button id="showMoreCities" class="show-more" type="button" data-i18n="showMoreCities">Показать больше городов</button></section>
 
   <section id="compare" class="compare-section"><div class="section-heading"><div><span class="eyebrow" data-i18n="compareEyebrow">ПОНЯТНОЕ СРАВНЕНИЕ</span><h2 data-i18n="compareTitle">Сравни два города</h2><p data-i18n="compareText">Посмотри разницу в дневном бюджете и проживании.</p></div></div><div class="compare-controls"><label><span data-i18n="cityOne">Первый город</span><select id="compareOne"></select></label><span class="versus">VS</span><label><span data-i18n="cityTwo">Второй город</span><select id="compareTwo"></select></label></div><div id="compareResult" class="compare-result"></div></section>
 
