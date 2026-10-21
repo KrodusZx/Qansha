@@ -77,8 +77,8 @@
 }
 @media(max-width:360px){.topbar{padding-inline:10px}.language button{padding:6px 3px}.currency-control select{min-width:70px;max-width:70px}.topbar .brand b{font-size:15px}.topbar .brand small{font-size:8px}}
 
-/* The city details live after the planner and directory, so opening a profile
-   cannot move a focused planner input on a phone. */
+/* Search results appear immediately below the hero; planner edits do not
+   expand or collapse this section while a form field is focused. */
 .quick-facts--two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .brand .brand-latin{color:#af4622;font-weight:750}
 .brand .brand-local{color:var(--muted)}
@@ -91,6 +91,12 @@
 .budget-range .range-title input{width:clamp(120px,18vw,190px);font-variant-numeric:tabular-nums}
 .trip-row b,.trip-total strong{min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:right;font-variant-numeric:tabular-nums}
 .cities-section,.compare-section,.profile-section,.no-data,.method-section{scroll-margin-top:100px}
+html{scroll-behavior:auto}
+main>.profile-section,main>.no-data{margin-top:18px;margin-bottom:0}
+main>.planner-section{margin-top:44px}
+.planner-inputs .planner-field{grid-template-rows:minmax(34px,auto) 48px auto;gap:6px}
+.planner-inputs .planner-field>span{align-self:end}
+.planner-inputs .planner-field small{min-height:0}
 @media(max-width:600px){
  html{scroll-behavior:auto}
  .currency-control button{min-width:80px}
@@ -104,4 +110,6 @@
  .range-ends span:last-child{text-align:right;overflow-wrap:anywhere}
  .trip-total{align-items:flex-start}
  .trip-total strong{font-size:clamp(19px,5.8vw,27px)}
+ .planner-inputs .planner-field{grid-template-rows:minmax(34px,auto) 48px auto}
+ .planner-inputs .planner-field small{min-height:0}
 }

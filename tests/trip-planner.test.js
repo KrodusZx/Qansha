@@ -39,10 +39,17 @@ test('visible destinations include many unpriced cities without adding fictitiou
  for(const lang of ['ru','kk','en'])assert.ok(STR[lang].plannerTitle);
 });
 
-test('opening city details cannot insert content above the focused planner',()=>{
+test('search profile precedes planner, trip result, comparison, and city directory',()=>{
  const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+ assert.ok(html.indexOf('id="citySearchForm"')<html.indexOf('id="cityProfile"'));
+ assert.ok(html.indexOf('id="cityProfile"')<html.indexOf('id="planner"'));
+ assert.ok(html.indexOf('id="noData"')<html.indexOf('id="planner"'));
+ assert.ok(html.indexOf('id="planner"')<html.indexOf('class="planner-result"'));
  assert.ok(html.indexOf('id="planner"')<html.indexOf('id="compare"'));
  assert.ok(html.indexOf('id="compare"')<html.indexOf('id="cities"'));
- assert.ok(html.indexOf('id="cities"')<html.indexOf('id="cityProfile"'));
- assert.ok(html.indexOf('id="cityProfile"')<html.indexOf('id="method"'));
+ assert.ok(html.indexOf('id="cities"')<html.indexOf('id="method"'));
+ const guide=fs.readFileSync(require('node:path').join(__dirname,'../cost-guide.js'),'utf8');
+ const plannerSelection=guide.slice(guide.indexOf('selectCity:id=>'),guide.indexOf("}};lang=['ru'"));
+ assert.ok(plannerSelection.includes('selectedCity=p'));
+ assert.ok(!plannerSelection.includes('showProfile('));
 });
