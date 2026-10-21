@@ -27,7 +27,7 @@ test('visible destinations include many unpriced cities without adding fictitiou
  const fragment=src.slice(src.indexOf(' const DATA='),src.indexOf(' const byLang='));
  const {ALL,STR}=vm.runInNewContext(fragment.replaceAll(' const ',' var ')+';({ALL,STR})');
  assert.ok(ALL.length>=80);
- assert.equal(ALL.filter(city=>Number.isFinite(city.daily)).length,65);
+ assert.equal(ALL.filter(city=>Number.isFinite(city.daily)).length,61);
  assert.ok(ALL.some(city=>city.en==='Shanghai'&&city.source?.includes('budgetyourtrip.com')));
  assert.ok(ALL.some(city=>city.en==='Astana'&&city.source?.includes('numbeo.com')));
  assert.equal(ALL.find(city=>city.en==='Shanghai').daily,137-170/2);
@@ -36,6 +36,9 @@ test('visible destinations include many unpriced cities without adding fictitiou
  assert.equal(ALL.find(city=>city.en==='Bishkek').dinnerTwo,2500);
  assert.equal(new Set(ALL.map(city=>city.country+'|'+city.en)).size,ALL.length);
  assert.equal(ALL.find(city=>city.en==='Astana').hotel,null);
+ assert.equal(ALL.find(city=>city.en==='Almaty').daily,undefined);
+ assert.ok(ALL.filter(city=>Number.isFinite(city.daily)).every(city=>city.source&&city.checked));
+ assert.equal(ALL.find(city=>city.en==='Tokyo').daily,178-149/2);
  for(const lang of ['ru','kk','en'])assert.ok(STR[lang].plannerTitle);
 });
 
