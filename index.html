@@ -22,9 +22,9 @@
 </head>
 <body>
  <header class="topbar">
-  <a class="brand" href="#top" aria-label="Qansha home"><span class="brand-icon">Q</span><span><b>Qansha<span>?</span></b><small data-i18n="tagline">Цены городов мира</small></span></a>
-  <nav class="main-nav" aria-label="Main navigation"><a href="#planner" data-i18n="navPlanner">План поездки</a><a href="#cities" data-i18n="navCities">Города</a><a href="#compare" data-i18n="navCompare">Сравнить</a><a href="#method" data-i18n="navMethod">Методика</a></nav>
-  <div class="language" role="group" aria-label="Language"><button data-lang="kk">ҚАЗ</button><button data-lang="ru" class="active">РУС</button><button data-lang="en">EN</button></div>
+  <a class="brand" href="#top" aria-label="Qansha, наверх" data-i18n-aria="homeAria"><span class="brand-icon">Q</span><span><b>Qansha<span>?</span></b><small data-i18n="tagline">Цены городов мира</small></span></a>
+  <nav class="main-nav" aria-label="Навигация" data-i18n-aria="navAria"><a href="#planner" data-i18n="navPlanner">План поездки</a><a href="#cities" data-i18n="navCities">Города</a><a href="#compare" data-i18n="navCompare">Сравнить</a><a href="#method" data-i18n="navMethod">Методика</a></nav>
+  <div class="language" role="group" aria-label="Язык" data-i18n-aria="langAria"><button data-lang="kk">ҚАЗ</button><button data-lang="ru" class="active">РУС</button><button data-lang="en">EN</button></div>
  </header>
  <main id="top">
   <section class="hero">
@@ -34,11 +34,11 @@
    <div class="hero-stat"><span class="stat-mark">₸</span><div><b data-i18n="statTitle">Планируй расходы заранее</b><p data-i18n="statText">Еда · транспорт · жильё · повседневные покупки</p></div><span class="stat-arrow">↗</span></div>
   </section>
 
-  <section class="quick-facts" aria-label="Qansha cost data"><div><strong>17</strong><span data-i18n="factCities">городских профилей</span></div><div><strong>3</strong><span data-i18n="factLanguages">языка интерфейса</span></div><div><strong>0</strong><span data-i18n="factSearchCost">платных поисковых API</span></div></section>
+  <section class="quick-facts" aria-label="Данные Qansha" data-i18n-aria="factsAria"><div><strong>17</strong><span data-i18n="factCities">городских профилей</span></div><div><strong>3</strong><span data-i18n="factLanguages">языка интерфейса</span></div><div><strong>0</strong><span data-i18n="factSearchCost">платных поисковых API</span></div></section>
 
   <section id="cityProfile" class="profile-section" hidden>
-   <div class="section-heading"><div><span class="eyebrow" data-i18n="profileEyebrow">ГОРОДСКОЙ ПРОФИЛЬ</span><h2 id="profileTitle"></h2><p id="profileSubtitle"></p></div><button id="closeProfile" class="close-btn" type="button" aria-label="Close">×</button></div>
-   <div class="tier-switch" role="group" aria-label="Spending style"><button data-tier="economy" data-i18n="tierEconomy">Экономно</button><button class="active" data-tier="standard" data-i18n="tierStandard">Средне</button><button data-tier="comfort" data-i18n="tierComfort">Комфорт</button></div>
+   <div class="section-heading"><div><span class="eyebrow" data-i18n="profileEyebrow">ГОРОДСКОЙ ПРОФИЛЬ</span><h2 id="profileTitle"></h2><p id="profileSubtitle"></p></div><button id="closeProfile" class="close-btn" type="button" aria-label="Закрыть" data-i18n-aria="closeAria">×</button></div>
+   <div class="tier-switch" role="group" aria-label="Уровень расходов" data-i18n-aria="styleAria"><button data-tier="economy" data-i18n="tierEconomy">Экономно</button><button class="active" data-tier="standard" data-i18n="tierStandard">Средне</button><button data-tier="comfort" data-i18n="tierComfort">Комфорт</button></div>
    <div id="priceGrid" class="price-grid"></div>
    <p class="data-note" data-i18n="estimateNote">Ориентировочные оценки Qansha из планировщика поездки. Это не текущие цены магазинов и не средняя стоимость жизни.</p>
   </section>
@@ -50,8 +50,8 @@
     <div class="planner-form">
      <label class="planner-field"><span data-i18n="destination">Город поездки</span><select id="plannerCity"></select></label>
      <a class="planner-world-link" href="#citySearchForm" data-i18n="otherCity">Не нашёл город? Найти среди городов мира ↑</a>
-     <div class="planner-range"><div class="range-title"><label for="daysRange" data-i18n="days">Длительность поездки</label><div><input id="daysNumber" type="number" min="1" max="60" value="7" inputmode="numeric" aria-label="Days"><span data-i18n="daysUnit">дней</span></div></div><input id="daysRange" type="range" min="1" max="60" value="7"><div class="range-ends"><span>1</span><span>60</span></div></div>
-     <div class="planner-range"><div class="range-title"><label for="budgetRange" data-i18n="budget">Твой бюджет на всю поездку</label><div><span>€</span><input id="budgetNumber" type="number" min="0" max="1000000" step="50" value="2000" inputmode="decimal" aria-label="Budget"></div></div><input id="budgetRange" type="range" min="0" max="30000" step="50" value="2000"><div class="range-ends"><span>€0</span><span>€30 000+</span></div></div>
+     <div class="planner-range"><div class="range-title"><label for="daysRange" data-i18n="days">Длительность поездки</label><div><input id="daysNumber" type="number" min="1" max="60" value="7" inputmode="numeric" aria-label="Длительность поездки" data-i18n-aria="days"><span data-i18n="daysUnit">дней</span></div></div><input id="daysRange" type="range" min="1" max="60" value="7"><div class="range-ends"><span>1</span><span>60</span></div></div>
+     <div class="planner-range"><div class="range-title"><label for="budgetRange" data-i18n="budget">Твой бюджет на всю поездку</label><div><span>€</span><input id="budgetNumber" type="number" min="0" max="1000000" step="50" value="2000" inputmode="decimal" aria-label="Твой бюджет на всю поездку" data-i18n-aria="budget"></div></div><input id="budgetRange" type="range" min="0" max="30000" step="50" value="2000"><div class="range-ends"><span>€0</span><span>€30 000+</span></div></div>
      <div class="planner-inputs">
       <label class="planner-field"><span data-i18n="travelers">Путешественники</span><input id="travelers" type="number" min="1" max="12" value="1" inputmode="numeric"></label>
       <label class="planner-field"><span data-i18n="nights">Ночей в отеле</span><input id="nights" type="number" min="0" max="60" value="6" inputmode="numeric"></label>
