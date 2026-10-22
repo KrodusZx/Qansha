@@ -70,7 +70,9 @@ if(typeof document!=='undefined')(() => {
  for(const id of ['budgetRange','budgetNumber'])$(id).addEventListener('input',event=>setBudget(event.target.value));
  for(const id of ['travelers','nights','flightPrice','hotelPrice','rooms'])$(id).addEventListener('input',render);
  $('dailyPrice').addEventListener('input',()=>{manualDaily=true;updateDaily(false);render();});
- cityInput.addEventListener('focus',()=>{closeCitySearch();cityInput.value='';});
+ function prepareCitySearch(){const lang=guide.getState().lang;const label=selected?name(selected,lang)+' · '+guide.countryName(selected.country):'';if(cityInput.value===label){closeCitySearch();cityInput.value='';}}
+ cityInput.addEventListener('pointerdown',prepareCitySearch);
+ cityInput.addEventListener('focus',prepareCitySearch);
  cityInput.addEventListener('input',()=>{const query=cityInput.value.trim();closeCitySearch();if(query.length>=2)searchTimer=setTimeout(()=>findPlannerCities(query),220);});
  cityInput.addEventListener('keydown',event=>{if(event.key==='Escape'){closeCitySearch(true);cityInput.blur();}else if(event.key==='Enter'){event.preventDefault();if(suggestions.length)choosePlannerCity(suggestions[0]);else if(cityInput.value.trim().length>=2)findPlannerCities(cityInput.value.trim()).then(()=>{if(suggestions.length)choosePlannerCity(suggestions[0]);});}});
  document.addEventListener('pointerdown',event=>{if(!event.target.closest('.planner-city-field')&&!cityResults.hidden)closeCitySearch(true);});
