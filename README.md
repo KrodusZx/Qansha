@@ -5,8 +5,8 @@ Qansha is a city cost guide and trip budget planner in Russian, Kazakh, and Engl
 ## City and cost data
 
 - The site searches the local GeoNames-derived city directory (`data/world-cities.tsv`, CC BY 4.0), covering over 34,000 cities. It does not call a paid autocomplete API.
-- The homepage includes 61 city profiles with linked traveler spending or Numbeo food data. The daily figure is a planning scenario, not a live quote.
-- Separately sourced public transit fares show the price of two selected city rides; short taxi examples appear only where a fare basis was checked. These transit cards are independent of the traveler-reported daily figure and show the source and checked date.
+- The homepage includes 65 city profiles. The original 17 editorial EUR estimates from 21 October 2026 are restored exactly, including the daily, room, dinner-for-two, grocery-basket, and single-ride figures. They have no external price source and are labelled as historical planning estimates. The other 48 profiles retain linked traveler spending or Numbeo food data. None are live quotes.
+- Separately sourced public transit fares show the price of two selected city rides; short taxi examples appear only where a fare basis was checked. These cards are independent of the daily figure and show the source and checked date. The original editorial single-ride estimate is labelled separately where present.
 - Destinations without Qansha figures can still be selected. Travelers enter their own daily spending assumption; the site never attributes that number to Qansha.
 
 ## Trip planner
