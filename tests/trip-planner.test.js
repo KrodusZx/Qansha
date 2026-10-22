@@ -15,10 +15,11 @@ test('trip cost includes round-trip flights per traveler, rooms per night, and d
 
 test('National Bank rates normalize the quoted quantity of Uzbek som',()=>{
  const {parseRates}=require('../api/rates');
- const xml='<rss><channel>'+[['EUR',505.04,1],['USD',450.69,1],['RUB',5.45,1],['CNY',67.49,1],['UZS',3.74,100],['TJS',48.99,1],['KGS',5.15,1]].map(([code,rate,quant])=>`<item><title>${code}</title><description>${rate}</description><quant>${quant}</quant><pubDate>21.10.2026</pubDate></item>`).join('')+'</channel></rss>';
+ const xml='<rss><channel>'+[['EUR',505.04,1],['USD',450.69,1],['RUB',5.45,1],['CNY',67.49,1],['UZS',3.74,100],['TJS',48.99,1],['KGS',5.15,1],['JPY',300,100]].map(([code,rate,quant])=>`<item><title>${code}</title><description>${rate}</description><quant>${quant}</quant><pubDate>21.10.2026</pubDate></item>`).join('')+'</channel></rss>';
  const result=parseRates(xml);
  assert.equal(result.rates.UZS,.0374);
  assert.equal(result.rates.EUR,505.04);
+ assert.equal(result.rates.JPY,3);
  assert.equal(result.date,'21.10.2026');
 });
 
@@ -66,11 +67,27 @@ test('search profile precedes planner, trip result, comparison, and city directo
  assert.match(guide,/showCityProfile:choice=>\{const p=resolveCity\(choice\);if\(Number\.isFinite\(p\.daily\)\)showProfile\(p\);else showUnknown\(p\);\}/);
 });
 
-test('search never schedules a later scroll after the traveler starts swiping',()=>{
+test('city suggestion selection happens before keyboard blur and cancels queued searches',()=>{
  const guide=fs.readFileSync(require('node:path').join(__dirname,'../cost-guide.js'),'utf8');
  const choose=guide.slice(guide.indexOf(' function chooseCity('),guide.indexOf(" document.addEventListener('click'"));
+ assert.match(choose,/clearTimeout\(timer\)/);
  assert.match(choose,/showProfile\(p,false\)/);
  assert.match(choose,/showUnknown\([^;]+,false\)/);
  assert.match(choose,/\$\('citySearch'\)\.value=''/);
+ assert.match(choose,/pointerdown/);
+ assert.match(choose,/e\.preventDefault\(\);chooseCity\(c\)/);
  assert.doesNotMatch(guide,/scrollTimer|scrollIntoView/);
+});
+
+test('transport cards use sourced city fares, while missing fares are not invented',()=>{
+ const src=fs.readFileSync(require('node:path').join(__dirname,'../transport-data.js'),'utf8');
+ const context={window:{}};vm.runInNewContext(src,context);
+ const data=context.window.QanshaTransport;
+ assert.ok(Object.keys(data).length>=25);
+ assert.equal(data['FR|Paris'].price*2,5.1);
+ assert.equal(data['KZ|Astana'].price*2,220);
+ assert.equal(data['GB|London'].taxi.two,40.4);
+ assert.equal(new Set(Object.values(data).map(row=>row.country)).size,32);
+ assert.equal(data['TR|Antalya'],undefined);
+ assert.ok(Object.values(data).every(row=>row.source.startsWith('https://')&&row.checked));
 });
