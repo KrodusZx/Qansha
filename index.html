@@ -20,6 +20,8 @@
  <script src="currency.js" defer></script>
  <script src="cost-guide.js" defer></script>
  <script src="trip-planner.js" defer></script>
+ <script src="country-guide.js" defer></script>
+ <link rel="stylesheet" href="country-guide.css">
 </head>
 <body>
  <header class="topbar">
@@ -66,6 +68,8 @@
   <section id="compare" class="compare-section"><div class="section-heading"><div><span class="eyebrow" data-i18n="compareEyebrow">ПОНЯТНОЕ СРАВНЕНИЕ</span><h2 data-i18n="compareTitle">Сравни два города</h2><p data-i18n="compareText">Посмотри разницу в дневном бюджете и проживании.</p></div></div><div class="compare-controls"><label><span data-i18n="cityOne">Первый город</span><select id="compareOne"></select></label><span class="versus" aria-hidden="true">↔</span><label><span data-i18n="cityTwo">Второй город</span><select id="compareTwo"></select></label></div><div id="compareResult" class="compare-result"></div></section>
 
   <section id="cities" class="cities-section"><div class="section-heading"><div><span class="eyebrow" data-i18n="popularEyebrow">ГОРОДА В СПРАВОЧНИКЕ</span><h2 data-i18n="popularTitle">Популярные города</h2><p data-i18n="popularText">Выбери город, чтобы посмотреть ориентиры расходов или рассчитать поездку со своими ценами.</p></div><label class="sort-control"><span data-i18n="sortLabel">Сортировка</span><select id="sortCities"><option value="cost" data-i18n="sortLow">Сначала дешевле</option><option value="expensive" data-i18n="sortHigh">Сначала дороже</option><option value="name" data-i18n="sortName">По названию</option></select></label></div><div id="cityGrid" class="city-grid"></div><button id="showMoreCities" class="show-more" type="button" data-i18n="showMoreCities">Показать больше городов</button></section>
+
+  <section id="countryGuide" class="country-guide"><div class="section-heading"><div><span id="countryEyebrow" class="eyebrow"></span><h2 id="countryTitle"></h2><p id="countryIntro"></p></div><strong id="countryCount" class="country-count"></strong></div><div class="country-controls"><label><span id="countryRegionLabel"></span><select id="countryRegion"></select></label><label><span id="countrySelectLabel"></span><select id="countrySelect"></select></label></div><div class="country-detail"><p id="countryIndicator" aria-live="polite"></p><p id="countryContext"></p><a href="https://data.worldbank.org/indicator/FP.CPI.TOTL.ZG" target="_blank" rel="noopener">World Bank · FP.CPI.TOTL.ZG ↗</a> <a id="countryOfficial" href="#" target="_blank" rel="noopener" hidden></a><h3 id="countryCitiesTitle"></h3><div id="countryCities" class="country-city-grid"></div><small><span id="countrySource"></span> · <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames · CC BY 4.0</a></small></div></section>
 
   <section class="quick-facts quick-facts--two" aria-label="Данные Qansha" data-i18n-aria="factsAria"><div><strong id="profileCount">61</strong><span data-i18n="factCities">городских профилей</span></div><div><strong>3</strong><span data-i18n="factLanguages">языка интерфейса</span></div></section>
 
