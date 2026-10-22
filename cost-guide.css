@@ -41,12 +41,15 @@
 @media(max-width:800px){.planner-layout{grid-template-columns:1fr}.planner-result{position:static}.planner-form,.planner-result{padding:23px}.main-nav{min-width:0;flex:1;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.main-nav::-webkit-scrollbar{display:none}.language{flex:none}}
 @media(max-width:480px){.planner-inputs{gap:13px}.planner-field{font-size:12px}.planner-form,.planner-result{padding:19px}.range-title{font-size:12px}.range-title input{width:73px}.trip-total strong{font-size:24px}.topbar{gap:7px}.brand{min-width:0}.brand small{display:none}.city-price{white-space:normal;max-width:125px}.city-price b{font-size:15px}}
 
-/* Keep city suggestions readable above the hero card on desktop, and in the
-   normal flow on small screens where the software keyboard shrinks the view. */
+/* The suggestion overlay never changes the hero's height when iOS opens or
+   closes its keyboard. A changing hero height caused scroll anchoring jumps. */
 .hero-copy{z-index:2}
 @media(max-width:800px){
-  .search .suggestions{position:relative;top:auto;left:auto;right:auto;max-height:min(35vh,240px)}
+  .hero{overflow:visible}
+  .search .suggestions{position:absolute;top:100%;left:0;right:0;max-height:min(35vh,240px)}
 }
+.price-card strong{overflow-wrap:anywhere}
+.price-card small a{color:var(--orange);font-weight:750}
 
 /* Compact language and currency controls without clipping the brand slogan. */
 .header-controls{display:flex;align-items:center;gap:10px;flex:none}
