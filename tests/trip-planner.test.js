@@ -28,7 +28,7 @@ test('visible destinations include many unpriced cities without adding fictitiou
  const fragment=src.slice(src.indexOf(' const DATA='),src.indexOf(' const byLang='));
  const {ALL,STR}=vm.runInNewContext(fragment.replaceAll(' const ',' var ')+';({ALL,STR})');
  assert.ok(ALL.length>=80);
- assert.equal(ALL.filter(city=>Number.isFinite(city.daily)).length,61);
+ assert.equal(ALL.filter(city=>Number.isFinite(city.daily)).length,65);
  assert.ok(ALL.some(city=>city.en==='Shanghai'&&city.source?.includes('budgetyourtrip.com')));
  assert.ok(ALL.some(city=>city.en==='Astana'&&city.source?.includes('numbeo.com')));
  assert.equal(ALL.find(city=>city.en==='Shanghai').daily,137-170/2);
@@ -37,13 +37,39 @@ test('visible destinations include many unpriced cities without adding fictitiou
  assert.equal(ALL.find(city=>city.en==='Bishkek').dinnerTwo,2500);
  assert.equal(ALL.find(city=>city.en==='Bishkek').foodDay,3*600);
  assert.equal(ALL.find(city=>city.en==='Bishkek').localTransportDay,2*20);
- assert.ok(ALL.filter(city=>Number.isFinite(city.daily)).every(city=>Number.isFinite(city.foodDay)));
+ assert.ok(ALL.filter(city=>city.sourceType!=='editorial'&&Number.isFinite(city.daily)).every(city=>Number.isFinite(city.foodDay)));
  assert.equal(new Set(ALL.map(city=>city.country+'|'+city.en)).size,ALL.length);
  assert.equal(ALL.find(city=>city.en==='Astana').hotel,null);
- assert.equal(ALL.find(city=>city.en==='Almaty').daily,undefined);
- assert.ok(ALL.filter(city=>Number.isFinite(city.daily)).every(city=>city.source&&city.checked));
- assert.equal(ALL.find(city=>city.en==='Tokyo').daily,178-149/2);
+ assert.ok(ALL.filter(city=>city.sourceType!=='editorial'&&Number.isFinite(city.daily)).every(city=>city.source&&city.checked));
+ assert.equal(ALL.find(city=>city.en==='Tokyo').daily,68);
  for(const lang of ['ru','kk','en'])assert.ok(STR[lang].plannerTitle);
+});
+
+test('the first 17 city guides retain their original EUR estimates and are labelled editorial',()=>{
+ const src=fs.readFileSync(require('node:path').join(__dirname,'../cost-guide.js'),'utf8');
+ const fragment=src.slice(src.indexOf(' const DATA='),src.indexOf(' const byLang='));
+ const cities=vm.runInNewContext(fragment.replaceAll(' const ',' var ')+';ALL');
+ const original=[
+  ['Istanbul',36,53,35,16,2],['Bangkok',32,41,23,14,1],['Paris',72,112,72,28,2.5],
+  ['Tbilisi',29,37,32,13,.6],['Almaty',31,43,28,14,.9],['Tashkent',25,33,21,10,.5],
+  ['Baku',36,48,34,15,.5],['Dubai',79,110,74,35,1.8],['Rome',64,93,66,28,1.7],
+  ['Barcelona',59,91,57,25,2.5],['Prague',43,66,49,22,1.6],
+  ['Kuala Lumpur',29,40,26,13,.6],['Da Nang',24,33,22,11,.4],
+  ['Tokyo',68,108,64,29,1.5],['Zurich',112,157,122,48,4.2],
+  ['Reykjavik',101,142,118,44,4.2],['Singapore',75,114,73,33,1.6]
+ ];
+ assert.equal(cities.filter(city=>city.sourceType==='editorial').length,17);
+ for(const [name,daily,hotel,meal,groceries,transit] of original){
+  const city=cities.find(item=>item.en===name);
+  assert.ok(city,name);
+  assert.deepEqual([city.daily,city.hotel,city.meal,city.groceries,city.transit],
+   [daily,hotel,meal,groceries,transit],name);
+  assert.equal(city.unit,'EUR');
+  assert.equal(city.source,null);
+  assert.equal(city.checked,'2026-10-21');
+ }
+ assert.equal(cities.find(city=>city.en==='Shanghai').sourceType,'travel');
+ assert.equal(cities.find(city=>city.en==='Astana').sourceType,'local');
 });
 
 test('search profile precedes planner, trip result, comparison, and city directory',()=>{
