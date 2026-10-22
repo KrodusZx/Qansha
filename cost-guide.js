@@ -258,7 +258,14 @@
  $('citySuggestions').addEventListener('pointerdown',e=>{const button=e.target.closest('[data-index]');if(!button)return;const c=items[Number(button.dataset.index)];if(!c)return;e.preventDefault();chooseCity(c);});
  document.addEventListener('click',e=>{const langBtn=e.target.closest('[data-lang]');if(langBtn){lang=langBtn.dataset.lang;try{localStorage.setItem('qansha_cost_lang',lang)}catch{}applyLocale();return;}const tierBtn=e.target.closest('[data-tier]');if(tierBtn){tier=tierBtn.dataset.tier;document.querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('active',b===tierBtn));const p=DATA.find(x=>x.country+'|'+x.en===document.body.dataset.city);if(p)renderPrices(p);window.dispatchEvent(new CustomEvent('qansha:change',{detail:{type:'tier'}}));return;}const cityBtn=e.target.closest('[data-city]');if(cityBtn){const [c,n]=cityBtn.dataset.city.split('|');const p=ALL.find(p=>p.country===c&&p.en===n);if(Number.isFinite(p?.daily))showProfile(p);else if(p)showUnknown(p);return;}const suggest=e.target.closest('[data-index]');if(suggest){const c=items[Number(suggest.dataset.index)];if(c)chooseCity(c);return;}if(e.target.closest('#closeProfile')){$('cityProfile').hidden=true;document.body.dataset.city='';return;}if(!e.target.closest('#citySearchForm'))closeSuggestions();});
  $('citySearch').addEventListener('focus',()=>{if($('citySearch').value){$('citySearch').value='';seq++;closeSuggestions();}});
- $('citySearch').addEventListener('input',e=>{clearTimeout(timer);const v=e.target.value;timer=setTimeout(()=>searchCities(v),350);});
+ $('citySearch').addEventListener('input',e=>{
+  clearTimeout(timer);
+  // Hide outdated suggestions and invalidate requests before the next debounce.
+  // Otherwise tapping Search quickly can select a city from the previous query.
+  seq++;closeSuggestions();
+  const v=e.target.value;
+  if(v.trim().length>=2)timer=setTimeout(()=>searchCities(v),350);
+ });
  $('citySearch').addEventListener('keydown',e=>{if(e.key==='Escape')closeSuggestions();if(e.key==='Enter'&&!$('citySuggestions').hidden&&items.length){e.preventDefault();chooseCity(items[0]);}});
  $('citySearchForm').addEventListener('submit',async e=>{e.preventDefault();const term=$('citySearch').value.trim();if(items.length){chooseCity(items[0]);return;}if(term.length<2)return;const request=++seq;const found=await lookupCities(term);if(request===seq&&found.length)chooseCity(found[0]);else if(request===seq)renderSuggestions([]);});
  $('sortCities').addEventListener('change',renderCities);$('showMoreCities').addEventListener('click',()=>{showAllCities=true;renderCities();});$('compareOne').addEventListener('change',renderCompare);$('compareTwo').addEventListener('change',renderCompare);$('closeProfile').addEventListener('click',()=>{$('cityProfile').hidden=true;document.body.dataset.city='';});
