@@ -8,6 +8,9 @@
  const convert=(amount,from='EUR',to=currency)=>Number(amount)*rates[from]/rates[to];
  const format=(amount,lang='ru',from='EUR')=>{
   if(!Number.isFinite(amount))return '—';
+  // The NBK feed can omit a less common currency. Keep that tariff legible
+  // in its original unit instead of rendering NaN in the selected currency.
+  if(!Number.isFinite(rates[from]))return new Intl.NumberFormat(locale(lang),{style:'currency',currency:from,maximumFractionDigits:2}).format(amount);
   const digits=['KZT','UZS'].includes(currency)?0:2;
   return new Intl.NumberFormat(locale(lang),{style:'currency',currency,maximumFractionDigits:digits}).format(convert(amount,from));
  };
