@@ -34,7 +34,7 @@ if(typeof document!=='undefined')(() => {
  function choosePlannerCity(city){closeCitySearch();cityInput.blur();guide.showCityProfile(city);}
  function showCitySuggestions(cities){
   suggestions=cities;cityResults.replaceChildren();
-  for(const city of cities){const button=document.createElement('button');button.type='button';button.className='planner-city-option';button.setAttribute('role','option');const title=document.createElement('span');title.textContent=name(city,guide.getState().lang);const place=document.createElement('small');place.textContent=guide.countryName(city.country)+(city.region?' · '+city.region:'');button.append(title,place);button.addEventListener('click',()=>choosePlannerCity(city));cityResults.append(button);}
+  for(const city of cities){const button=document.createElement('button');button.type='button';button.className='planner-city-option';button.setAttribute('role','option');const title=document.createElement('span');title.textContent=name(city,guide.getState().lang);const place=document.createElement('small');place.textContent=guide.countryName(city.country)+(city.region?' · '+city.region:'');button.append(title,place);button.addEventListener('pointerdown',event=>{event.preventDefault();choosePlannerCity(city);});button.addEventListener('click',()=>{if(!cityResults.hidden)choosePlannerCity(city);});cityResults.append(button);}
   if(!cities.length){const empty=document.createElement('p');empty.className='planner-city-empty';empty.textContent=guide.translate('emptySearch');cityResults.append(empty);}
   cityResults.hidden=false;cityInput.setAttribute('aria-expanded','true');
  }
