@@ -12,8 +12,10 @@
 .planner-field input,.planner-field select,.range-title input{width:100%;min-width:0;min-height:46px;border:1px solid #d9cbc0;border-radius:12px;background:white;padding:9px 12px;color:var(--ink)}
 .planner-field:focus-within input,.planner-field:focus-within select,.range-title input:focus{outline:2px solid #e99b6e;outline-offset:1px}
 .planner-field small{font-size:11px;color:var(--muted);font-weight:500}
-.planner-world-link{display:inline-block;margin:10px 0 19px;color:#ae431e;font-size:12px;font-weight:700;text-decoration:none}
-.planner-world-link:hover{text-decoration:underline}
+.planner-city-field{position:relative;margin-bottom:19px;z-index:5}
+.planner-city-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;max-height:min(38vh,260px);overflow:auto;border:1px solid var(--line);border-radius:14px;background:white;box-shadow:var(--shadow);z-index:10}
+.planner-city-option{display:flex;width:100%;min-height:52px;align-items:center;justify-content:space-between;gap:12px;border:0;border-bottom:1px solid var(--line);padding:10px 14px;text-align:left;background:white;color:var(--ink)}
+.planner-city-option:hover,.planner-city-option:focus{background:#fff4eb}.planner-city-option span{font-weight:700}.planner-city-option small{margin:0;text-align:right}.planner-city-empty{margin:0;padding:12px 14px;color:var(--muted)}
 .planner-range{padding:18px 0;border-top:1px solid var(--line)}
 .range-title{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:750}
 .range-title div{display:flex;align-items:center;gap:5px;white-space:nowrap}
