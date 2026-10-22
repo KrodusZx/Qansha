@@ -22,22 +22,23 @@ if(typeof document!=='undefined')(() => {
   kk:{autoDaily:'Осы қала мен шығын деңгейіне арналған Qansha бағдары',manualDaily:'Сенің болжамың. Qansha-да бұл қаланың бағасы әзірге жоқ.',editedDaily:'Qansha бағдарының орнына сен енгізген сома',fillPrices:'Билет пен қонақүй бағасын енгіз (0 болуы мүмкін).',fillDaily:'Бір адамға бір күндік шамамен шығынды енгіз.',flightLine:'Билеттер',hotelLine:'Қонақүй',dailyLine:'Күнделікті шығындар',totalLine:'Сапардың жалпы құны',perPersonLine:'Бір адамға',underBudget:'Бюджетте қалады',overBudget:'Бюджеттен асады',exactBudget:'Дәл бюджетке сәйкес',dailyMath:'күн × саяхатшы',hotelMath:'түн × бөлме',flightMath:'бір адамға × саяхатшы'},
   en:{autoDaily:'Qansha guide for this city and spending style',manualDaily:'Your estimate. Qansha does not yet have prices for this city.',editedDaily:'Your amount instead of the Qansha guide',fillPrices:'Enter flight and hotel prices (0 is fine).',fillDaily:'Enter an estimated daily expense per person.',flightLine:'Flights',hotelLine:'Hotel',dailyLine:'Everyday spending',totalLine:'Trip total',perPersonLine:'Per person',underBudget:'Left in budget',overBudget:'Over budget',exactBudget:'Exactly on budget',dailyMath:'days × travelers',hotelMath:'nights × rooms',flightMath:'per traveler × travelers'}
  };
- let selected=null,manualDaily=false,previousDays=7;
+ let selected=null,manualDaily=false,previousDays=7,searchTimer,searchSeq=0,suggestions=[];
  const numeric=id=>{const value=$(id).value.trim();return value===''?null:Number(value)};
  const fx=window.QanshaMoney;
  const money=(value,lang)=>fx.format(value,lang,fx.get().currency);
  const name=(city,lang)=>city?city[lang]||city.en||city.city||'':'';
- const selectionKey=city=>city?city.country+'|'+(city.en||city.city):'';
-
- function cityOptions(){
-  const state=guide.getState(),box=$('plannerCity'),old=box.value;
-  const list=[...state.cities];
-  if(selected&&!list.some(c=>selectionKey(c)===selectionKey(selected)))list.unshift(selected);
-  list.sort((a,b)=>name(a,state.lang).localeCompare(name(b,state.lang),state.lang));
-  box.innerHTML='';
-  for(const city of list){const opt=document.createElement('option');opt.value=selectionKey(city);opt.textContent=name(city,state.lang)+' · '+guide.countryName(city.country)+(city.daily==null?' · '+guide.translate('noDataSuffix'):'');box.appendChild(opt);}
-  box.value=selected?selectionKey(selected):old;
+ const cityInput=$('plannerCitySearch'),cityResults=$('plannerCitySuggestions');
+ const placeholders={ru:'Введи город',kk:'Қаланы енгіз',en:'Type a city'};
+ function syncCitySearch(){const lang=guide.getState().lang;cityInput.placeholder=placeholders[lang];cityInput.value=selected?name(selected,lang)+' · '+guide.countryName(selected.country):'';}
+ function closeCitySearch(restore=false){clearTimeout(searchTimer);searchSeq++;suggestions=[];cityResults.replaceChildren();cityResults.hidden=true;cityInput.setAttribute('aria-expanded','false');if(restore)syncCitySearch();}
+ function choosePlannerCity(city){closeCitySearch();cityInput.blur();guide.selectCity(city);}
+ function showCitySuggestions(cities){
+  suggestions=cities;cityResults.replaceChildren();
+  for(const city of cities){const button=document.createElement('button');button.type='button';button.className='planner-city-option';button.setAttribute('role','option');const title=document.createElement('span');title.textContent=name(city,guide.getState().lang);const place=document.createElement('small');place.textContent=guide.countryName(city.country)+(city.region?' · '+city.region:'');button.append(title,place);button.addEventListener('click',()=>choosePlannerCity(city));cityResults.append(button);}
+  if(!cities.length){const empty=document.createElement('p');empty.className='planner-city-empty';empty.textContent=guide.translate('emptySearch');cityResults.append(empty);}
+  cityResults.hidden=false;cityInput.setAttribute('aria-expanded','true');
  }
+ async function findPlannerCities(query){const request=++searchSeq;const cities=await guide.lookupCities(query);if(request===searchSeq&&cityInput.value.trim()===query)showCitySuggestions(cities);}
  function updateDaily(reset){
   const {tier,lang}=guide.getState();
   const hasEstimate=selected&&Number.isFinite(selected.daily);
@@ -63,22 +64,25 @@ if(typeof document!=='undefined')(() => {
  }
  function setDays(value){const days=Math.max(1,Math.min(60,Math.round(Number(value)||1)));$('daysRange').value=days;$('daysNumber').value=days;if(numeric('nights')===Math.max(0,previousDays-1))$('nights').value=Math.max(0,days-1);previousDays=days;render();}
  function setBudget(value){const budget=Math.max(0,Math.min(Number($('budgetNumber').max),Number(value)||0));$('budgetNumber').value=budget;$('budgetRange').value=Math.min(Number($('budgetRange').max),budget);render();}
- function updateBudgetScale(){const currency=fx.get().currency,round=value=>Math.max(1,Math.round(value));$('budgetRange').max=round(fx.convert(30000,'EUR'));$('budgetRange').step=currency==='KZT'||currency==='UZS'?1:.01;$('budgetNumber').max=round(fx.convert(1000000,'EUR'));$('budgetNumber').step=currency==='KZT'||currency==='UZS'?1:.01;$('budgetSymbol').textContent={KZT:'₸',USD:'$',RUB:'₽',CNY:'¥',UZS:'UZS',TJS:'TJS',KGS:'KGS',EUR:'€'}[currency];$('budgetMin').textContent=money(0,guide.getState().lang);$('budgetMax').textContent=money(Number($('budgetRange').max),guide.getState().lang)+'+';$('budgetRange').value=Math.min(Number($('budgetRange').max),Number($('budgetNumber').value)||0);}
+ function updateBudgetScale(){const currency=fx.get().currency,round=value=>Math.max(1,Math.round(value));$('budgetRange').max=round(fx.convert(30000,'EUR'));$('budgetRange').step=round(fx.convert(50,'EUR'));$('budgetNumber').max=round(fx.convert(1000000,'EUR'));$('budgetNumber').step=currency==='KZT'||currency==='UZS'?1:.01;$('budgetSymbol').textContent={KZT:'₸',USD:'$',RUB:'₽',CNY:'¥',UZS:'UZS',TJS:'TJS',KGS:'KGS',EUR:'€'}[currency];$('budgetMin').textContent=money(0,guide.getState().lang);$('budgetMax').textContent=money(Number($('budgetRange').max),guide.getState().lang)+'+';$('budgetRange').value=Math.min(Number($('budgetRange').max),Number($('budgetNumber').value)||0);}
  function convertInputs(previous,currency){for(const id of ['flightPrice','hotelPrice','dailyPrice','budgetNumber']){const field=$(id);if(field.value==='')continue;const value=fx.convert(Number(field.value),previous,currency);field.value=String(Math.round(value*(currency==='KZT'||currency==='UZS'?1:100))/(currency==='KZT'||currency==='UZS'?1:100));}updateBudgetScale();render();}
  for(const id of ['daysRange','daysNumber'])$(id).addEventListener('input',event=>setDays(event.target.value));
  for(const id of ['budgetRange','budgetNumber'])$(id).addEventListener('input',event=>setBudget(event.target.value));
  for(const id of ['travelers','nights','flightPrice','hotelPrice','rooms'])$(id).addEventListener('input',render);
  $('dailyPrice').addEventListener('input',()=>{manualDaily=true;updateDaily(false);render();});
- $('plannerCity').addEventListener('change',()=>guide.selectCity($('plannerCity').value));
+ cityInput.addEventListener('focus',()=>{closeCitySearch();cityInput.value='';});
+ cityInput.addEventListener('input',()=>{const query=cityInput.value.trim();closeCitySearch();if(query.length>=2)searchTimer=setTimeout(()=>findPlannerCities(query),220);});
+ cityInput.addEventListener('keydown',event=>{if(event.key==='Escape'){closeCitySearch(true);cityInput.blur();}else if(event.key==='Enter'){event.preventDefault();if(suggestions.length)choosePlannerCity(suggestions[0]);else if(cityInput.value.trim().length>=2)findPlannerCities(cityInput.value.trim()).then(()=>{if(suggestions.length)choosePlannerCity(suggestions[0]);});}});
+ document.addEventListener('pointerdown',event=>{if(!event.target.closest('.planner-city-field')&&!cityResults.hidden)closeCitySearch(true);});
  window.addEventListener('qansha:currency',event=>convertInputs(event.detail.previous,event.detail.currency));
  window.addEventListener('qansha:rates',()=>{updateBudgetScale();if(!manualDaily)updateDaily(true);render();});
  window.addEventListener('qansha:change',event=>{
   const state=guide.getState();
-  if(event.detail.type==='city'){selected=state.selected;cityOptions();updateDaily(true);}
+  if(event.detail.type==='city'){selected=state.selected;closeCitySearch();syncCitySearch();updateDaily(true);}
   else if(event.detail.type==='tier'&&!manualDaily)updateDaily(true);
-  else if(event.detail.type==='locale')cityOptions();
+  else if(event.detail.type==='locale')syncCitySearch();
   updateDaily(false);render();
  });
  selected=guide.getState().selected||guide.getState().cities.find(c=>c.en==='Astana');
- cityOptions();updateBudgetScale();updateDaily(true);render();
+ syncCitySearch();updateBudgetScale();updateDaily(true);render();
 })();
