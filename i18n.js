@@ -1563,7 +1563,27 @@
   window.QANSHA_UI?.refreshLocale();
   translateAll();
  }
- window.QANSHA_I18N={t,city:(code,fallback)=>t(fallback),idea:(country,i,fallback)=>t(fallback),locale,language:()=>lang,refresh,setLanguage:setLang};
+ const cityNames={
+  NQZ:['Астана','Астана','Astana'],ALA:['Алматы','Алматы','Almaty'],
+  PAR:['Париж','Париж','Paris'],CDG:['Париж · Шарль-де-Голль','Париж · Шарль-де-Голль','Paris · Charles de Gaulle'],ORY:['Париж · Орли','Париж · Орли','Paris · Orly'],
+  LHR:['Лондон · Хитроу','Лондон · Хитроу','London · Heathrow'],LON:['Лондон','Лондон','London'],
+  JFK:['Нью-Йорк','Нью-Йорк','New York'],NYC:['Нью-Йорк','Нью-Йорк','New York'],
+  DXB:['Дубай','Дубай','Dubai'],IST:['Стамбул','Ыстанбұл','Istanbul'],BKK:['Бангкок','Бангкок','Bangkok'],
+  TAS:['Ташкент','Ташкент','Tashkent'],GYD:['Баку','Баку','Baku'],PEK:['Пекин','Бейжің','Beijing'],
+  SHA:['Шанхай','Шанхай','Shanghai'],HKG:['Гонконг','Гонконг','Hong Kong'],SIN:['Сингапур','Сингапур','Singapore'],
+  TYO:['Токио','Токио','Tokyo'],HND:['Токио · Ханэда','Токио · Ханэда','Tokyo · Haneda'],
+  ICN:['Сеул','Сеул','Seoul'],FCO:['Рим','Рим','Rome'],BCN:['Барселона','Барселона','Barcelona'],
+  ZRH:['Цюрих','Цюрих','Zurich'],GVA:['Женева','Женева','Geneva'],KEF:['Рейкьявик','Рейкьявик','Reykjavik'],
+  BER:['Берлин','Берлин','Berlin'],VIE:['Вена','Вена','Vienna'],KUL:['Куала-Лумпур','Куала-Лумпур','Kuala Lumpur'],
+  SYX:['Санья','Санья','Sanya'],SZX:['Шэньчжэнь','Шэньчжэнь','Shenzhen'],CAN:['Гуанчжоу','Гуанчжоу','Guangzhou'],
+  CIT:['Шымкент','Шымкент','Shymkent'],SCO:['Актау','Ақтау','Aktau'],EVN:['Ереван','Ереван','Yerevan'],
+  TBS:['Тбилиси','Тбилиси','Tbilisi'],RMO:['Кишинёв','Кишинев','Chisinau'],DAD:['Дананг','Дананг','Da Nang'],
+  HKT:['Пхукет','Пхукет','Phuket'],MUC:['Мюнхен','Мюнхен','Munich'],AMS:['Амстердам','Амстердам','Amsterdam'],
+  PRG:['Прага','Прага','Prague'],BSZ:['Бишкек','Бішкек','Bishkek'],DYU:['Душанбе','Душанбе','Dushanbe']
+ };
+ function city(code,fallback){const names=cityNames[String(code||'').toUpperCase()];return names?names[({ru:0,kk:1,en:2})[lang]]:t(fallback)}
+ function cityAliases(code){return cityNames[String(code||'').toUpperCase()]?.slice()||[]}
+ window.QANSHA_I18N={t,city,cityAliases,idea:(country,i,fallback)=>t(fallback),locale,language:()=>lang,refresh,setLanguage:setLang};
  document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
   observer=new MutationObserver(schedule);
