@@ -52,15 +52,21 @@ test('search profile precedes planner, trip result, comparison, and city directo
  assert.ok(html.indexOf('id="compare"')<html.indexOf('id="cities"'));
  assert.ok(html.indexOf('id="cities"')<html.indexOf('id="method"'));
  const guide=fs.readFileSync(require('node:path').join(__dirname,'../cost-guide.js'),'utf8');
- const plannerSelection=guide.slice(guide.indexOf('selectCity:id=>'),guide.indexOf("}};lang=['ru'"));
+ const plannerSelection=guide.slice(guide.indexOf('selectCity:choice=>'),guide.indexOf("}};lang=['ru'"));
  assert.ok(plannerSelection.includes('selectedCity=p'));
  assert.ok(!plannerSelection.includes('showProfile('));
+ assert.ok(html.includes('id="plannerCitySearch"'));
+ assert.ok(html.includes('id="plannerCitySuggestions"'));
+ const planner=fs.readFileSync(require('node:path').join(__dirname,'../trip-planner.js'),'utf8');
+ assert.match(planner,/guide\.lookupCities\(query\)/);
+ assert.match(planner,/guide\.selectCity\(city\)/);
 });
 
 test('search never schedules a later scroll after the traveler starts swiping',()=>{
  const guide=fs.readFileSync(require('node:path').join(__dirname,'../cost-guide.js'),'utf8');
  const choose=guide.slice(guide.indexOf(' function chooseCity('),guide.indexOf(" document.addEventListener('click'"));
- assert.match(choose,/showProfile\(local,false\)/);
+ assert.match(choose,/showProfile\(p,false\)/);
  assert.match(choose,/showUnknown\([^;]+,false\)/);
+ assert.match(choose,/\$\('citySearch'\)\.value=''/);
  assert.doesNotMatch(guide,/scrollTimer|scrollIntoView/);
 });
