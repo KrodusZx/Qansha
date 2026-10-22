@@ -217,5 +217,5 @@
  document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCurrencyMenu();});
  window.addEventListener('qansha:currency',applyLocale);
  window.addEventListener('qansha:rates',applyLocale);
- window.QanshaGuide={getState:()=>({lang,tier,selected:selectedCity,cities:ALL}),translate:t,countryName,lookupCities,selectCity:choice=>{const p=typeof choice==='string'?ALL.find(c=>c.country+'|'+c.en===choice):resolveCity(choice);if(!p)return;selectedCity=p;window.dispatchEvent(new CustomEvent('qansha:change',{detail:{type:'city'}}));}};lang=['ru','kk','en'].includes(lang)?lang:'ru';applyLocale();renderCompare();
+ window.QanshaGuide={getState:()=>({lang,tier,selected:selectedCity,cities:ALL}),translate:t,countryName,lookupCities,showCityProfile:choice=>{const p=resolveCity(choice);if(Number.isFinite(p.daily))showProfile(p);else showUnknown(p);},selectCity:choice=>{const p=typeof choice==='string'?ALL.find(c=>c.country+'|'+c.en===choice):resolveCity(choice);if(!p)return;selectedCity=p;window.dispatchEvent(new CustomEvent('qansha:change',{detail:{type:'city'}}));}};lang=['ru','kk','en'].includes(lang)?lang:'ru';applyLocale();renderCompare();
 })();
