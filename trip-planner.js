@@ -79,6 +79,6 @@ if(typeof document!=='undefined')(() => {
   else if(event.detail.type==='locale')cityOptions();
   updateDaily(false);render();
  });
- selected=guide.getState().selected||guide.getState().cities.find(c=>c.en==='Almaty');
+ selected=guide.getState().selected||guide.getState().cities.find(c=>c.en==='Astana');
  cityOptions();updateBudgetScale();updateDaily(true);render();
 })();
