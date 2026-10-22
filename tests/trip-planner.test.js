@@ -34,6 +34,9 @@ test('visible destinations include many unpriced cities without adding fictitiou
  assert.equal(ALL.find(city=>city.en==='London').foodDay,79);
  assert.equal(ALL.find(city=>city.en==='London').localTransportDay,34);
  assert.equal(ALL.find(city=>city.en==='Bishkek').dinnerTwo,2500);
+ assert.equal(ALL.find(city=>city.en==='Bishkek').foodDay,3*600);
+ assert.equal(ALL.find(city=>city.en==='Bishkek').localTransportDay,2*20);
+ assert.ok(ALL.filter(city=>Number.isFinite(city.daily)).every(city=>Number.isFinite(city.foodDay)));
  assert.equal(new Set(ALL.map(city=>city.country+'|'+city.en)).size,ALL.length);
  assert.equal(ALL.find(city=>city.en==='Astana').hotel,null);
  assert.equal(ALL.find(city=>city.en==='Almaty').daily,undefined);
