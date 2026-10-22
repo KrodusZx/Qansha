@@ -31,7 +31,7 @@ if(typeof document!=='undefined')(() => {
  const placeholders={ru:'Введи город',kk:'Қаланы енгіз',en:'Type a city'};
  function syncCitySearch(){const lang=guide.getState().lang;cityInput.placeholder=placeholders[lang];cityInput.value=selected?name(selected,lang)+' · '+guide.countryName(selected.country):'';}
  function closeCitySearch(restore=false){clearTimeout(searchTimer);searchSeq++;suggestions=[];cityResults.replaceChildren();cityResults.hidden=true;cityInput.setAttribute('aria-expanded','false');if(restore)syncCitySearch();}
- function choosePlannerCity(city){closeCitySearch();cityInput.blur();guide.selectCity(city);}
+ function choosePlannerCity(city){closeCitySearch();cityInput.blur();guide.showCityProfile(city);}
  function showCitySuggestions(cities){
   suggestions=cities;cityResults.replaceChildren();
   for(const city of cities){const button=document.createElement('button');button.type='button';button.className='planner-city-option';button.setAttribute('role','option');const title=document.createElement('span');title.textContent=name(city,guide.getState().lang);const place=document.createElement('small');place.textContent=guide.countryName(city.country)+(city.region?' · '+city.region:'');button.append(title,place);button.addEventListener('click',()=>choosePlannerCity(city));cityResults.append(button);}
