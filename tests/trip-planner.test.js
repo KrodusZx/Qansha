@@ -59,7 +59,8 @@ test('search profile precedes planner, trip result, comparison, and city directo
  assert.ok(html.includes('id="plannerCitySuggestions"'));
  const planner=fs.readFileSync(require('node:path').join(__dirname,'../trip-planner.js'),'utf8');
  assert.match(planner,/guide\.lookupCities\(query\)/);
- assert.match(planner,/guide\.selectCity\(city\)/);
+ assert.match(planner,/guide\.showCityProfile\(city\)/);
+ assert.match(guide,/showCityProfile:choice=>\{const p=resolveCity\(choice\);if\(Number\.isFinite\(p\.daily\)\)showProfile\(p\);else showUnknown\(p\);\}/);
 });
 
 test('search never schedules a later scroll after the traveler starts swiping',()=>{
