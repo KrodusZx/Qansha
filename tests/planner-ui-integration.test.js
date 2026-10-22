@@ -15,8 +15,10 @@ const originals=cities.filter(city=>city.sourceType==='editorial');
 class Element {
  constructor(id=''){
   this.id=id;this.value='';this.max='1000000';this.min='0';this.hidden=true;
-  this.textContent='';this.className='';this.children=[];this.listeners={};this.attrs={};
+  this._textContent='';this.className='';this.children=[];this.listeners={};this.attrs={};
  }
+ get textContent(){return this._textContent;}
+ set textContent(value){this._textContent=String(value);this.children=[];}
  addEventListener(name,callback){(this.listeners[name]??=[]).push(callback);}
  dispatch(name,options={}){
   const event={type:name,target:this,preventDefault(){},...options};
@@ -24,7 +26,7 @@ class Element {
   return event;
  }
  append(...nodes){this.children.push(...nodes);}
- replaceChildren(...nodes){this.children=[...nodes];this.textContent='';}
+ replaceChildren(...nodes){this.children=[...nodes];this._textContent='';}
  setAttribute(name,value){this.attrs[name]=String(value);}
  blur(){}
  closest(){return null;}
