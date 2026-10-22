@@ -1,5 +1,6 @@
 'use strict';
 const CODES=['EUR','USD','RUB','CNY','UZS','TJS','KGS'];
+const OPTIONAL_CODES=['TRY','GEL','AED','CZK','JPY','CHF','ISK','KRW','GBP','CAD','HUF','PLN','IDR','THB','AUD','INR','MAD','MYR','VND'];
 const NBK_URL='https://nationalbank.kz/rss/rates_all.xml';
 
 function parseRates(xml){
@@ -7,7 +8,7 @@ function parseRates(xml){
  for(const match of xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)){
   const item=match[1],value=tag=>item.match(new RegExp('<'+tag+'(?:\\s[^>]*)?>([^<]+)<\\/'+tag+'>','i'))?.[1]?.trim();
   const code=value('title');
-  if(!CODES.includes(code))continue;
+  if(!CODES.includes(code)&&!OPTIONAL_CODES.includes(code))continue;
   const rate=Number(value('description')?.replace(',','.'));
   const quant=Number(value('quant')||1);
   if(Number.isFinite(rate)&&rate>0&&Number.isFinite(quant)&&quant>0)rates[code]=rate/quant;
